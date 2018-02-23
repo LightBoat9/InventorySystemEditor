@@ -14,9 +14,21 @@ config/name="InventorySystemEditor"
 run/main_scene="res://Test.tscn"
 config/icon="res://icon.png"
 
+[display]
+
+window/size/width=896
+window/size/height=504
+window/stretch/mode="2d"
+window/stretch/aspect="keep"
+
 [editor_plugins]
 
 enabled=PoolStringArray( "inventory" )
+
+[input]
+
+ui_fullscreen=[ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":70,"unicode":0,"echo":false,"script":null)
+ ]
 
 [rendering]
 
