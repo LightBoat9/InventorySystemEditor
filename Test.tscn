@@ -1,44 +1,43 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://addons/inventory/types/inventory_simple.gd" type="Script" id=1]
-[ext_resource path="res://icon.png" type="Texture" id=2]
-[ext_resource path="res://addons/inventory/assets/potionRed.png" type="Texture" id=3]
-[ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=4]
+[ext_resource path="res://addons/inventory/assets/potionRed.png" type="Texture" id=1]
+[ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=2]
+[ext_resource path="res://icon.png" type="Texture" id=3]
+[ext_resource path="res://addons/inventory/types/inventory_simple.gd" type="Script" id=4]
 
 [node name="Node2D" type="Node2D" index="0"]
 
-[node name="InventorySimple" type="Control" parent="." index="0"]
+[node name="InventoryItem2" type="Sprite" parent="." index="0"]
+
+position = Vector2( 46.3516, 62.8831 )
+texture = ExtResource( 1 )
+centered = false
+script = ExtResource( 2 )
+__meta__ = {
+"_editor_icon": ExtResource( 3 )
+}
+draggable = true
+
+[node name="InventorySimple" type="Control" parent="." index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 216.0
-margin_top = 85.0
-margin_right = 256.0
-margin_bottom = 125.0
+margin_right = 40.0
+margin_bottom = 40.0
 rect_pivot_offset = Vector2( 0, 0 )
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-script = ExtResource( 1 )
+script = ExtResource( 4 )
 __meta__ = {
-"_editor_icon": ExtResource( 2 )
+"_editor_icon": ExtResource( 3 )
 }
 hslots = 2
 vslots = 2
-hoffset = 32
-voffset = 32
-
-[node name="InventoryItem2" type="Sprite" parent="." index="1"]
-
-position = Vector2( 46.3516, 62.8831 )
-texture = ExtResource( 3 )
-centered = false
-script = ExtResource( 4 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
+hoffset = 64
+voffset = 64
 
 
