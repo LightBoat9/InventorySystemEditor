@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://addons/inventory/types/inventory_simple.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=4]
 [ext_resource path="res://addons/inventory/assets/backpack.png" type="Texture" id=5]
 [ext_resource path="res://addons/inventory/assets/sword.png" type="Texture" id=6]
+[ext_resource path="res://addons/inventory/assets/slot.png" type="Texture" id=7]
 
 [sub_resource type="GDScript" id=1]
 
@@ -56,6 +57,7 @@ margin_top = 12.0
 margin_right = 57.0
 margin_bottom = 52.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -122,6 +124,7 @@ margin_top = 320.0
 margin_right = 285.0
 margin_bottom = 396.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -139,6 +142,7 @@ margin_top = 16.0
 margin_right = 61.0
 margin_bottom = 30.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -160,6 +164,7 @@ margin_top = -1.0
 margin_right = 239.0
 margin_bottom = 15.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -188,6 +193,7 @@ margin_top = 48.0
 margin_right = 59.0
 margin_bottom = 62.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -209,6 +215,7 @@ margin_top = -3.0
 margin_right = 238.0
 margin_bottom = 13.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -237,6 +244,7 @@ margin_top = 400.0
 margin_right = 288.0
 margin_bottom = 476.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -254,6 +262,7 @@ margin_top = 16.0
 margin_right = 69.0
 margin_bottom = 30.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -274,6 +283,7 @@ margin_left = 61.0
 margin_right = 240.0
 margin_bottom = 16.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -302,6 +312,7 @@ margin_top = 48.0
 margin_right = 59.0
 margin_bottom = 62.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 mouse_filter = 2
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
@@ -323,6 +334,7 @@ margin_top = 3.0
 margin_right = 240.0
 margin_bottom = 19.0
 rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
 focus_mode = 2
 mouse_filter = 0
 mouse_default_cursor_shape = 0
@@ -339,5 +351,25 @@ editable = true
 tick_count = 0
 ticks_on_borders = false
 focus_mode = 2
+
+[node name="TextureRect" type="TextureRect" parent="." index="5"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 355.0
+margin_top = 118.0
+margin_right = 387.0
+margin_bottom = 150.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 7 )
+stretch_mode = 0
+_sections_unfolded = [ "Margin" ]
 
 

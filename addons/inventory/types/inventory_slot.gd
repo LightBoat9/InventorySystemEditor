@@ -1,5 +1,5 @@
 tool
-extends Sprite
+extends TextureRect
 	
 signal item_added
 signal item_removed
@@ -16,7 +16,6 @@ var item = null
 func _enter_tree():
 	add_to_group("inventory_slots")
 	texture = load("res://addons/inventory/assets/slot.png")
-	centered = false
 	_init_item_texture()
 	set_process_input(true)
 	set_process(true)
