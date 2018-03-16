@@ -10,7 +10,7 @@ source_file="res://addons/inventory/assets/potionRed.png"
 source_md5="a4a269a44633f41b78d330f47b0c50d4"
 
 dest_files=[ "res://.import/potionRed.png-e24d225dcb212330447f5ab5a29266bc.stex" ]
-dest_md5="dcc82b0c0f9efc4d47940caa26c1f20e"
+dest_md5="93d20caeda461f9960092ddde736792f"
 
 [params]
 
@@ -19,7 +19,7 @@ compress/lossy_quality=0.7
 compress/hdr_mode=0
 compress/normal_map=0
 flags/repeat=0
-flags/filter=true
+flags/filter=false
 flags/mipmaps=false
 flags/anisotropic=false
 flags/srgb=2

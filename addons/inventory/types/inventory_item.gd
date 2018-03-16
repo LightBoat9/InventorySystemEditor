@@ -6,26 +6,24 @@ export(bool) var draggable = true
 export(bool) var return_if_dragged = true
 export(bool) var drag_on_remove = true
 export(bool) var stackable = true
-export(int) var stack = 1
+export(int) var stack = 1 setget set_stack
+export(Vector2) var stack_label_position = Vector2(64, 64) setget set_stack_label_position
 export(int) var max_stack = 99
 
 onready var initial_parent = get_parent()
 var mouse_over = false
 var dragging = false
-var _drop_z_index = 1
+var drag_start_position = Vector2()
 
 var slot = null
 var return_slot = null
 
-var stack_label
+var stack_label = Label.new()
 	
 func _enter_tree():
 	# TODO : MAKE STACK LABEL EXPORTS
-	if not stack_label:
-		stack_label = Label.new()
-		stack_label.set_text(str(stack))
-		stack_label.rect_position = rect_size - Vector2(stack_label.get_line_height(), stack_label.get_line_height())
-		stack_label.show_on_top = true
+	_update_stack_label()
+	if not stack_label.get_parent():
 		add_child(stack_label)
 	add_to_group("inventory_items")
 	if draggable:
@@ -53,6 +51,7 @@ func _input(event):
 				_drop()
 			dragging = event.pressed
 			if dragging:
+				drag_start_position = rect_global_position
 				for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
 					if inst != self:
 						inst.dragging = false
@@ -60,14 +59,17 @@ func _input(event):
 	
 func _physics_process(delta):
 	if dragging and draggable:
-		rect_position = get_global_mouse_position() - rect_size / 2
+		rect_global_position = get_global_mouse_position() - rect_size / 2
 		
 func _drop():
 	for inst in get_tree().get_nodes_in_group("inventory_slots"):
 		if inst.mouse_over:
 			if inst.item and inst.item.id == id:
-				inst.item.add_stack(stack)
-				queue_free()
+				var overflow = inst.item.set_stack(inst.item.stack + stack)
+				set_stack(overflow)
+				if return_slot and not return_slot.item and overflow:
+					return_slot.set_item(self)
+					return_slot = null
 				return
 			elif not inst.item:
 				slot = inst
@@ -75,12 +77,30 @@ func _drop():
 				return
 	for inst in get_tree().get_nodes_in_group("inventory_items"):
 		if inst != self and inst.mouse_over and inst.id == id:
-			inst.add_stack(stack)
-			queue_free()
+			set_stack(inst.set_stack(inst.stack + stack))
 			return
 	if return_slot and not return_slot.item:
 		return_slot.set_item(self)
 		return_slot = null
+	
+func _update_stack_label():
+	stack_label.text = str(stack)
+	stack_label.rect_position = stack_label_position
+	
+func set_stack(amount):
+	var overflow = 0
+	stack = amount
+	if stack > max_stack:
+		overflow = stack - max_stack
+		stack = max_stack
+	if stack <= 0:
+		queue_free()
+	_update_stack_label()
+	return overflow
+			
+func set_stack_label_position(position):
+	stack_label_position = position
+	_update_stack_label()
 			
 func remove_from_slot():
 	"""Adds the item back into the world"""
@@ -90,7 +110,3 @@ func remove_from_slot():
 	if return_if_dragged:
 		return_slot = slot
 	slot = null
-		
-func add_stack(amount):
-	stack += amount
-	stack_label.set_text(str(stack))

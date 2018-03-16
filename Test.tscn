@@ -350,67 +350,7 @@ tick_count = 0
 ticks_on_borders = false
 focus_mode = 2
 
-[node name="InventoryItem" type="TextureRect" parent="." index="3"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 406.0
-margin_top = 118.0
-margin_right = 470.0
-margin_bottom = 182.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 3 )
-stretch_mode = 0
-script = ExtResource( 4 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-id = 0
-draggable = true
-return_if_dragged = true
-drag_on_remove = true
-stackable = true
-stack = 1
-max_stack = 99
-
-[node name="InventoryItem2" type="TextureRect" parent="." index="4"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 327.0
-margin_top = 174.0
-margin_right = 391.0
-margin_bottom = 238.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 5 )
-stretch_mode = 0
-script = ExtResource( 4 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-id = 1
-draggable = true
-return_if_dragged = true
-drag_on_remove = true
-stackable = true
-stack = 1
-max_stack = 99
-
-[node name="InventoryItem3" type="TextureRect" parent="." index="5"]
+[node name="InventoryItem3" type="TextureRect" parent="." index="3"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -437,7 +377,101 @@ draggable = true
 return_if_dragged = true
 drag_on_remove = true
 stackable = true
-stack = 1
+stack = 5
+stack_label_position = Vector2( 48, 48 )
+max_stack = 99
+
+[node name="InventoryItem" type="TextureRect" parent="." index="4"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 421.0
+margin_top = 108.0
+margin_right = 485.0
+margin_bottom = 172.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 3 )
+stretch_mode = 0
+script = ExtResource( 4 )
+__meta__ = {
+"_editor_icon": ExtResource( 2 )
+}
+id = 0
+draggable = true
+return_if_dragged = true
+drag_on_remove = true
+stackable = true
+stack = 5
+stack_label_position = Vector2( 48, 48 )
+max_stack = 99
+
+[node name="InventoryItem4" type="TextureRect" parent="." index="5"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 520.0
+margin_top = 132.0
+margin_right = 584.0
+margin_bottom = 196.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 3 )
+stretch_mode = 0
+script = ExtResource( 4 )
+__meta__ = {
+"_editor_icon": ExtResource( 2 )
+}
+id = 0
+draggable = true
+return_if_dragged = true
+drag_on_remove = true
+stackable = true
+stack = 5
+stack_label_position = Vector2( 48, 48 )
+max_stack = 99
+
+[node name="InventoryItem2" type="TextureRect" parent="." index="6"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 327.0
+margin_top = 174.0
+margin_right = 391.0
+margin_bottom = 238.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 5 )
+stretch_mode = 0
+script = ExtResource( 4 )
+__meta__ = {
+"_editor_icon": ExtResource( 2 )
+}
+id = 1
+draggable = true
+return_if_dragged = true
+drag_on_remove = true
+stackable = true
+stack = 5
+stack_label_position = Vector2( 48, 48 )
 max_stack = 99
 
 
