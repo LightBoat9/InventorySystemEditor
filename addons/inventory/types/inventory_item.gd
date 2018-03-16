@@ -78,6 +78,7 @@ func _drop():
 	for inst in get_tree().get_nodes_in_group("inventory_items"):
 		if inst != self and inst.mouse_over and inst.id == id:
 			set_stack(inst.set_stack(inst.stack + stack))
+			rect_global_position = drag_start_position
 			return
 	if return_slot and not return_slot.item:
 		return_slot.set_item(self)
