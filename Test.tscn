@@ -70,39 +70,9 @@ vslots = 2
 hoffset = 32
 voffset = 32
 draggable = true
-drag_top_left = Vector2( 0, -32 )
-drag_bottom_right = Vector2( 64, 32 )
+drag_rect = Rect2( 0, -32, 64, 32 )
 
-[node name="InventorySimple2" type="Control" parent="." index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 454.0
-margin_top = 238.0
-margin_right = 486.0
-margin_bottom = 270.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Rect" ]
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-hslots = 2
-vslots = 2
-hoffset = 32
-voffset = 32
-draggable = true
-drag_top_left = Vector2( 0, -32 )
-drag_bottom_right = Vector2( 64, 32 )
-
-[node name="CanvasLayer" type="CanvasLayer" parent="." index="2"]
+[node name="CanvasLayer" type="CanvasLayer" parent="." index="1"]
 
 layer = 1
 offset = Vector2( 0, 0 )
@@ -350,7 +320,7 @@ tick_count = 0
 ticks_on_borders = false
 focus_mode = 2
 
-[node name="InventoryItem3" type="TextureRect" parent="." index="3"]
+[node name="InventoryItem3" type="TextureRect" parent="." index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -381,7 +351,7 @@ stack = 25
 stack_label_position = Vector2( 48, 48 )
 max_stack = 99
 
-[node name="InventoryItem" type="TextureRect" parent="." index="4"]
+[node name="InventoryItem" type="TextureRect" parent="." index="3"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -412,7 +382,7 @@ stack = 55
 stack_label_position = Vector2( 48, 48 )
 max_stack = 99
 
-[node name="InventoryItem4" type="TextureRect" parent="." index="5"]
+[node name="InventoryItem4" type="TextureRect" parent="." index="4"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -443,7 +413,7 @@ stack = 55
 stack_label_position = Vector2( 48, 48 )
 max_stack = 99
 
-[node name="InventoryItem2" type="TextureRect" parent="." index="6"]
+[node name="InventoryItem2" type="TextureRect" parent="." index="5"]
 
 anchor_left = 0.0
 anchor_top = 0.0

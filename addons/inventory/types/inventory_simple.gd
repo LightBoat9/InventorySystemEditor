@@ -1,6 +1,11 @@
 tool
 extends Control
 
+signal item_added
+signal item_removed
+signal drag_start
+signal dragging
+
 var InventorySlot = load("res://addons/inventory/types/inventory_slot.gd")
 
 var arr_slots = []
@@ -18,27 +23,23 @@ export(int) var vslots = 2 setget set_vslots
 export(int) var hoffset = 32 setget set_hoffset
 export(int) var voffset = 32 setget set_voffset
 export(bool) var draggable = true
-export(Vector2) var drag_top_left = Vector2()
-export(Vector2) var drag_bottom_right = Vector2(64, 64)
+export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
 
 func _enter_tree():
 	_remove_slots()
 	_add_slots()
-	if draggable:
-		add_to_group("inventory_dragabbles")
-	else:
-		if is_in_group("inventory_dragabbles"):
-			remove_from_group("inventory_dragabbles")
 	
 func _ready():
+	if draggable:
+		add_to_group("inventory_dragabbles")
 	set_process_input(true)
 	set_physics_process(true)
 	
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_over = (
-			event.position.x >= rect_position.x + drag_top_left.x and event.position.x <= rect_position.x + drag_bottom_right.x and
-			event.position.y >= rect_position.y + drag_top_left.y and event.position.y <= rect_position.y + drag_top_left.y + drag_bottom_right.y
+			event.global_position.x >= rect_global_position.x + drag_rect.position.x and event.global_position.x <= rect_global_position.x + drag_rect.position.x + drag_rect.size.x and
+			event.global_position.y >= rect_global_position.y + drag_rect.position.y and event.global_position.y <= rect_global_position.y + drag_rect.position.y + drag_rect.size.y
 			)
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
@@ -46,6 +47,7 @@ func _input(event):
 				if mouse_over:
 					dragging = event.pressed
 					_mouse_relative = rect_position - get_global_mouse_position()
+					emit_signal("drag_start")
 				else:
 					dragging = false
 				if dragging:
@@ -56,6 +58,11 @@ func _input(event):
 func _physics_process(delta):
 	if dragging:
 		rect_position = get_global_mouse_position() + _mouse_relative
+		emit_signal("dragging")
+	
+func _draw():
+	print("TEST")
+	draw_rect(drag_rect, Color(1,1,1))
 	
 func _add_slots():
 	for y in range(hslots):
@@ -85,9 +92,11 @@ func _update_slot_position():
 			
 func _item_added(item):
 	arr_items.append(item)
+	emit_signal("item_added", item)
 	
 func _item_removed(item):
 	arr_items.erase(item)
+	emit_signal("item_removed", item)
 	
 func _add_removed_items():
 	for slot in arr_slots:
@@ -117,3 +126,6 @@ func set_voffset(value):
 	voffset = value
 	_update_slot_position()
 	
+func set_drag_rect(value):
+	drag_rect = value
+	update()

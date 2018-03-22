@@ -52,16 +52,17 @@ func _gui_input(event):
 				emit_signal("item_removed", item)
 	
 func set_item(item):
-	self.item = item
-	item.rect_position = Vector2()
-	
-	if scale_item:
-		item.rect_scale = texture.get_size() / item.texture.get_size()
-	
-	item.slot = self
-	if item.get_parent():
-		item.get_parent().remove_child(item)
-	item.rect_position = Vector2()
-	add_child(item)
-	
-	emit_signal("item_added", item)
+	if not self.item:
+		self.item = item
+		item.rect_position = Vector2()
+		
+		if scale_item:
+			item.rect_scale = texture.get_size() / item.texture.get_size()
+		
+		item.slot = self
+		if item.get_parent():
+			item.get_parent().remove_child(item)
+		item.rect_position = Vector2()
+		add_child(item)
+		
+		emit_signal("item_added", item)
