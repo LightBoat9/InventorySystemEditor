@@ -4,7 +4,7 @@ extends Control
 signal item_added
 signal item_removed
 signal drag_start
-signal dragging
+signal drag_stop
 
 var InventorySlot = load("res://addons/inventory/types/inventory_slot.gd")
 
@@ -22,8 +22,11 @@ export(int) var hslots = 2 setget set_hslots
 export(int) var vslots = 2 setget set_vslots
 export(int) var hoffset = 32 setget set_hoffset
 export(int) var voffset = 32 setget set_voffset
-export(bool) var draggable = true
+export(bool) var draggable = true setget set_draggable
+export(bool) var drag_rect_show = true setget set_drag_rect_show
 export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
+export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
+export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
 
 func _enter_tree():
 	_remove_slots()
@@ -54,15 +57,16 @@ func _input(event):
 					for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
 						if inst != self:
 							inst.dragging = false
+				else:
+					emit_signal("drag_stop")
 			
 func _physics_process(delta):
 	if dragging:
 		rect_position = get_global_mouse_position() + _mouse_relative
-		emit_signal("dragging")
 	
 func _draw():
-	print("TEST")
-	draw_rect(drag_rect, Color(1,1,1))
+	if drag_rect_show:
+		draw_rect(drag_rect, drag_rect_color)
 	
 func _add_slots():
 	for y in range(hslots):
@@ -71,6 +75,7 @@ func _add_slots():
 			inst.rect_global_position = Vector2(x * hoffset, y * voffset)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
+			inst.slot_texture = slot_texture
 			add_child(inst)
 			arr_slots.append(inst)
 	_add_removed_items()
@@ -85,10 +90,12 @@ func _remove_slots():
 		if inst.get_parent():
 			inst.get_parent().remove_child(inst)
 		
-func _update_slot_position():
+func _update_slots():
 	for y in range(hslots):
 		for x in range(vslots):
-			arr_slots[x+(y*vslots)].rect_position = Vector2(x * hoffset, y * voffset)
+			var slot = arr_slots[x+(y*vslots)]
+			slot.rect_position = Vector2(x * hoffset, y * voffset)
+			slot.slot_texture = slot_texture
 			
 func _item_added(item):
 	arr_items.append(item)
@@ -120,12 +127,27 @@ func set_vslots(value):
 	
 func set_hoffset(value):
 	hoffset = value
-	_update_slot_position()
+	_update_slots()
 	
 func set_voffset(value):
 	voffset = value
-	_update_slot_position()
+	_update_slots()
+	
+func set_slot_texture(value):
+	slot_texture = value
+	_update_slots()
 	
 func set_drag_rect(value):
 	drag_rect = value
 	update()
+	
+func set_drag_rect_color(value):
+	drag_rect_color = value
+	update()
+	
+func set_drag_rect_show(value):
+	drag_rect_show = value
+	update()
+	
+func set_draggable(value):
+	draggable = value

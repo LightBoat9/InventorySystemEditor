@@ -5,7 +5,8 @@ signal item_added
 signal item_removed
 	
 export(Color) var hover_modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
-export var scale_item = true
+export(bool) var scale_item = true
+export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
 	
 var _default_modulate
 	
@@ -15,13 +16,12 @@ var _default_scale
 	
 var InventoryItem = load("res://addons/inventory/types/inventory_item.gd")
 	
-
 var item = null
 	
 func _enter_tree():
 	_default_modulate = modulate
 	add_to_group("inventory_slots")
-	texture = load("res://addons/inventory/assets/slot.png")
+	texture = slot_texture
 	set_process_input(true)
 	set_process(true)
 	
@@ -66,3 +66,7 @@ func set_item(item):
 		add_child(item)
 		
 		emit_signal("item_added", item)
+		
+func set_slot_texture(value):
+	slot_texture = value
+	texture = slot_texture

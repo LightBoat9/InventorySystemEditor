@@ -1,5 +1,8 @@
 tool
 extends TextureRect
+
+signal drag_start
+signal drag_stop
 	
 export var id = 0
 export(bool) var draggable = true
@@ -26,13 +29,9 @@ func _enter_tree():
 	if not stack_label.get_parent():
 		add_child(stack_label)
 	add_to_group("inventory_items")
-	if draggable:
-		add_to_group("inventory_dragabbles")
-	else:
-		if is_in_group("inventory_dragabbles"):
-			remove_from_group("inventory_dragabbles")
 	
 func _ready():
+	add_to_group("inventory_dragabbles")
 	set_process_input(true)
 	set_physics_process(true)
 		
@@ -51,10 +50,13 @@ func _input(event):
 				_drop()
 			dragging = event.pressed
 			if dragging:
+				emit_signal("drag_start")
 				drag_start_position = rect_global_position
 				for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
 					if inst != self:
 						inst.dragging = false
+			else:
+				emit_signal("drag_stop")
 						
 	
 func _physics_process(delta):
