@@ -19,8 +19,7 @@ var _mouse_relative = Vector2()
 var drag_region
 var dragging = false
 
-export(int) var hslots = 2 setget set_hslots
-export(int) var vslots = 2 setget set_vslots
+export(Vector2) var slots = Vector2(2,2) setget set_slots
 export(Vector2) var offset = Vector2() setget set_offset
 export(Vector2) var spacing = Vector2(32,32) setget set_spacing
 export(bool) var draggable = true setget set_draggable
@@ -58,7 +57,11 @@ func _input(event):
 				else:
 					dragging = false
 				if dragging:
+					var ItemType = load("res://addons/inventory/types/inventory_item.gd")
 					for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
+						if inst.dragging and inst is ItemType:
+							dragging = false
+							break
 						if inst != self:
 							inst.dragging = false
 				else:
@@ -73,8 +76,8 @@ func _draw():
 		draw_rect(drag_rect, drag_rect_color)
 	
 func _add_slots():
-	for y in range(hslots):
-		for x in range(vslots):
+	for y in range(slots.y):
+		for x in range(slots.x):
 			var inst = InventorySlot.new()
 			inst.rect_global_position = Vector2(offset.x + x * spacing.x,offset.y + y * spacing.y)
 			inst.connect("item_added", self, "_item_added")
@@ -98,16 +101,19 @@ func _remove_slots():
 			inst.get_parent().remove_child(inst)
 		
 func _update_slots():
-	for y in range(hslots):
-		for x in range(vslots):
-			var slot = arr_slots[x+(y*vslots)]
+	for y in range(slots.y):
+		for x in range(slots.x):
+			var slot = arr_slots[x+(y*slots.x)]
+			if slot.item:
+				slot.item.rect_position = slot.rect_position
 			slot.rect_position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
 			slot.texture = slot_texture
 			slot.scale_item = scale_items
-			if slot.item:
-				slot.item.rect_scale = slot.item._default_scale
 			
 func _item_added(item):
+	item.get_parent().remove_child(item)
+	add_child(item)
+	item.rect_position = item.slot.rect_position
 	if not arr_items.has(item):
 		arr_items.append(item)
 		emit_signal("item_added", item)
@@ -129,14 +135,9 @@ func _add_removed_items():
 		arr_items_dropped.append(item)
 	_temp_items.clear()
 			
-func set_hslots(value):
+func set_slots(value):
 	_remove_slots()
-	hslots = value
-	_add_slots()
-	
-func set_vslots(value):
-	_remove_slots()
-	vslots = value
+	slots = value
 	_add_slots()
 	
 func set_offset(value):

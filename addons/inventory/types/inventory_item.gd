@@ -29,7 +29,6 @@ var return_slot = null
 var stack_label = Label.new()
 	
 func _enter_tree():
-	# TODO : MAKE STACK LABEL EXPORTS
 	_update_stack_label()
 	if not stack_label.get_parent():
 		add_child(stack_label)
@@ -122,14 +121,14 @@ func remove_from_slot():
 	slot = null
 	
 func drag_init():
-	self.set_as_toplevel(true)
-	emit_signal("drag_start")
+	var parent = get_parent()
+	parent.remove_child(self)
+	parent.add_child(self)
 	drag_start_position = rect_global_position
 	for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
 		if inst != self:
 			inst.dragging = false
-			if overlap_on_drag:
-				inst.set_as_toplevel(false)
+	emit_signal("drag_start")
 				
 func set_stack_label_position(position):
 	stack_label_position = position
