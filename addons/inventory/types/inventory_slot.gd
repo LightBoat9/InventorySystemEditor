@@ -5,8 +5,8 @@ signal item_added
 signal item_removed
 	
 export(Color) var hover_modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
-export(bool) var scale_item = true
-export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
+export(bool) var scale_item = false
+export(Texture) var overlay = null setget set_overlay
 	
 var _default_modulate
 	
@@ -21,12 +21,15 @@ var item = null
 func _enter_tree():
 	_default_modulate = modulate
 	add_to_group("inventory_slots")
-	texture = slot_texture
 	set_process_input(true)
 	set_process(true)
 	
 func _ready():
 	_default_scale = rect_scale
+	
+func _draw():
+	if overlay:
+		draw_texture(overlay, Vector2(0,0))
 	
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -38,8 +41,6 @@ func _input(event):
 			modulate = hover_modulate
 		else:
 			modulate = _default_modulate
-	
-func _gui_input(event):
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:
 			if item and mouse_over and event.pressed:
@@ -58,7 +59,10 @@ func set_item(item):
 		item.rect_position = Vector2()
 		
 		if scale_item:
-			item.rect_scale = texture.get_size() / item.texture.get_size()
+			item.rect_scale = Vector2(1,1)
+			item.rect_size = texture.get_size()
+			item.expand = true
+			item.stretch_mode = STRETCH_SCALE
 		
 		item.slot = self
 		if item.get_parent():
@@ -67,7 +71,7 @@ func set_item(item):
 		add_child(item)
 		
 		emit_signal("item_added", item)
-		
-func set_slot_texture(value):
-	slot_texture = value
-	texture = slot_texture
+	
+func set_overlay(value):
+	overlay = value
+	update()

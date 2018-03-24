@@ -1,5 +1,5 @@
 tool
-extends Control
+extends TextureRect
 
 signal item_added
 signal item_moved
@@ -21,10 +21,11 @@ var dragging = false
 
 export(int) var hslots = 2 setget set_hslots
 export(int) var vslots = 2 setget set_vslots
-export(int) var hoffset = 32 setget set_hoffset
-export(int) var voffset = 32 setget set_voffset
+export(Vector2) var offset = Vector2() setget set_offset
+export(Vector2) var spacing = Vector2(32,32) setget set_spacing
 export(bool) var draggable = true setget set_draggable
 export(bool) var drag_rect_show = true setget set_drag_rect_show
+export(bool) var scale_items = false setget set_scale_items
 export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
 export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
 export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
@@ -32,6 +33,8 @@ export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png"
 func _enter_tree():
 	_remove_slots()
 	_add_slots()
+	update()
+	_update_slots()
 	
 func _ready():
 	if draggable:
@@ -73,10 +76,11 @@ func _add_slots():
 	for y in range(hslots):
 		for x in range(vslots):
 			var inst = InventorySlot.new()
-			inst.rect_global_position = Vector2(x * hoffset, y * voffset)
+			inst.rect_global_position = Vector2(offset.x + x * spacing.x,offset.y + y * spacing.y)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
-			inst.slot_texture = slot_texture
+			inst.texture = slot_texture
+			inst.scale_item = scale_items
 			add_child(inst)
 			arr_slots.append(inst)
 	_add_removed_items()
@@ -97,8 +101,11 @@ func _update_slots():
 	for y in range(hslots):
 		for x in range(vslots):
 			var slot = arr_slots[x+(y*vslots)]
-			slot.rect_position = Vector2(x * hoffset, y * voffset)
-			slot.slot_texture = slot_texture
+			slot.rect_position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
+			slot.texture = slot_texture
+			slot.scale_item = scale_items
+			if slot.item:
+				slot.item.rect_scale = slot.item._default_scale
 			
 func _item_added(item):
 	if not arr_items.has(item):
@@ -132,16 +139,20 @@ func set_vslots(value):
 	vslots = value
 	_add_slots()
 	
-func set_hoffset(value):
-	hoffset = value
+func set_offset(value):
+	offset = value
 	_update_slots()
 	
-func set_voffset(value):
-	voffset = value
+func set_spacing(value):
+	spacing = value
 	_update_slots()
 	
 func set_slot_texture(value):
 	slot_texture = value
+	_update_slots()
+	
+func set_scale_items(value):
+	scale_items = value
 	_update_slots()
 	
 func set_drag_rect(value):
@@ -158,3 +169,5 @@ func set_drag_rect_show(value):
 	
 func set_draggable(value):
 	draggable = value
+	set_drag_rect_show(draggable)
+	

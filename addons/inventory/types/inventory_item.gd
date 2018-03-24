@@ -13,6 +13,7 @@ export(bool) var drag_on_remove = true
 export(bool) var overlap_on_drag = true
 # Stack Exports
 export(bool) var stackable = true
+export(bool) var stack_label_show = true setget set_stack_label_show
 export(int) var stack = 1 setget set_stack
 export(Vector2) var stack_label_position = Vector2(64, 64) setget set_stack_label_position
 export(int) var max_stack = 99
@@ -45,8 +46,8 @@ func _set_top_itemdragging():
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_over = (
-			event.position.x >= rect_position.x and event.position.x <= rect_position.x + rect_size.x and
-			event.position.y >= rect_position.y and event.position.y <= rect_position.y + rect_size.y
+			event.position.x >= rect_position.x and event.position.x <= rect_position.x + rect_size.x * rect_scale.x and
+			event.position.y >= rect_position.y and event.position.y <= rect_position.y + rect_size.y * rect_scale.y
 			)
 	elif event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
 		if draggable:
@@ -61,7 +62,7 @@ func _input(event):
 	
 func _physics_process(delta):
 	if dragging and draggable:
-		rect_global_position = get_global_mouse_position() - rect_size / 2
+		rect_global_position = get_global_mouse_position() - (rect_size * rect_scale) / 2
 		
 func _drop():
 	for inst in get_tree().get_nodes_in_group("inventory_slots"):
@@ -89,6 +90,10 @@ func _drop():
 		return_slot = null
 	
 func _update_stack_label():
+	if stack_label_show:
+		stack_label.show()
+	else:
+		stack_label.hide()
 	stack_label.text = str(stack)
 	stack_label.rect_position = stack_label_position
 	
@@ -102,10 +107,6 @@ func set_stack(amount):
 		queue_free()
 	_update_stack_label()
 	return overflow
-			
-func set_stack_label_position(position):
-	stack_label_position = position
-	_update_stack_label()
 			
 func remove_from_slot():
 	"""Adds the item back into the world"""
@@ -129,3 +130,11 @@ func drag_init():
 			inst.dragging = false
 			if overlap_on_drag:
 				inst.set_as_toplevel(false)
+				
+func set_stack_label_position(position):
+	stack_label_position = position
+	_update_stack_label()
+	
+func set_stack_label_show(value):
+	stack_label_show = value
+	_update_stack_label()

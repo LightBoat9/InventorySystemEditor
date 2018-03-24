@@ -1,371 +1,56 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://addons/inventory/types/inventory_simple.gd" type="Script" id=1]
 [ext_resource path="res://icon.png" type="Texture" id=2]
-[ext_resource path="res://addons/inventory/assets/slot_minecraft.png" type="Texture" id=3]
-[ext_resource path="res://addons/inventory/assets/backpack.png" type="Texture" id=4]
+[ext_resource path="res://addons/inventory/assets/slot.png" type="Texture" id=3]
+[ext_resource path="res://addons/inventory/assets/potionRed.png" type="Texture" id=4]
 [ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=5]
-[ext_resource path="res://addons/inventory/assets/potionRed.png" type="Texture" id=6]
-
-[sub_resource type="GDScript" id=1]
-
-script/source = "extends CanvasLayer
-
-onready var Inv = get_parent().get_node(\"InventorySimple\")
-onready var DimBG = get_node(\"DimBG\")
-onready var HSlots = DimBG.get_node(\"HSlots/HSlider\")
-onready var VSlots = DimBG.get_node(\"VSlots/HSlider\")
-
-onready var OffsetBG = get_node(\"OffsetBG\")
-onready var HOffset = OffsetBG.get_node(\"HOffset/HSlider\")
-onready var VOffset = OffsetBG.get_node(\"VOffset/HSlider\")
-
-func _ready():
-	HSlots.connect(\"value_changed\", self, \"hslots_update\")
-	VSlots.connect(\"value_changed\", self, \"vslots_update\")
-	HOffset.connect(\"value_changed\", self, \"hoffset_update\")
-	VOffset.connect(\"value_changed\", self, \"voffset_update\")
-	set_process_input(true)
-	
-func _input(event):
-	if event.is_action_pressed(\"ui_fullscreen\"):
-		OS.window_fullscreen = not OS.window_fullscreen
-	
-func hslots_update(num):
-	Inv.hslots = int(num)
-	
-func vslots_update(num):
-	Inv.vslots = int(num)
-		
-func hoffset_update(num):
-	Inv.hoffset = int(num)
-		
-func voffset_update(num):
-	Inv.voffset = int(num)"
+[ext_resource path="res://addons/inventory/assets/sword.png" type="Texture" id=6]
 
 [node name="Node2D" type="Node2D" index="0"]
 
-[node name="InventorySimple" type="Control" parent="." index="0"]
+[node name="Inventory" type="TextureRect" parent="." index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 92.0
-margin_top = 78.0
-margin_right = 124.0
-margin_bottom = 110.0
+margin_left = 14.0
+margin_top = 10.0
+margin_right = 314.0
+margin_bottom = 293.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
-mouse_filter = 0
+mouse_filter = 1
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
+stretch_mode = 0
 script = ExtResource( 1 )
-_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_editor_icon": ExtResource( 2 )
 }
 hslots = 2
 vslots = 2
-hoffset = 36
-voffset = 36
-draggable = true
-drag_rect_show = false
-drag_rect = Rect2( 0, -32, 72, 72 )
-drag_rect_color = Color( 1, 1, 1, 1 )
-slot_texture = ExtResource( 3 )
-
-[node name="InventorySimple2" type="Control" parent="." index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 279.0
-margin_top = 143.0
-margin_right = 311.0
-margin_bottom = 175.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-script = ExtResource( 1 )
-_sections_unfolded = [ "Rect" ]
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-hslots = 2
-vslots = 2
-hoffset = 36
-voffset = 36
+offset = Vector2( 0, 0 )
+spacing = Vector2( 32, 32 )
 draggable = true
 drag_rect_show = true
-drag_rect = Rect2( 0, -32, 72, 72 )
+scale_items = true
+drag_rect = Rect2( 0, -32, 64, 32 )
 drag_rect_color = Color( 1, 1, 1, 1 )
 slot_texture = ExtResource( 3 )
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." index="2"]
-
-editor/display_folded = true
-layer = 1
-offset = Vector2( 0, 0 )
-rotation = 0.0
-scale = Vector2( 1, 1 )
-transform = Transform2D( 1, 0, 0, 1, 0, 0 )
-script = SubResource( 1 )
-
-[node name="DimBG" type="Panel" parent="CanvasLayer" index="0"]
+[node name="InventoryItem3" type="TextureRect" parent="." index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 320.0
-margin_right = 285.0
-margin_bottom = 396.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-_sections_unfolded = [ "Rect" ]
-
-[node name="HSlots" type="Label" parent="CanvasLayer/DimBG" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 16.0
-margin_right = 63.0
-margin_bottom = 30.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
-text = "H Slots"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Margin", "Rect" ]
-
-[node name="HSlider" type="HSlider" parent="CanvasLayer/DimBG/HSlots" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 60.0
-margin_top = -1.0
-margin_right = 239.0
-margin_bottom = 15.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 0
-min_value = 0.0
-max_value = 5.0
-step = 1.0
-page = 0.0
-value = 2.0
-exp_edit = false
-rounded = false
-editable = true
-tick_count = 6
-ticks_on_borders = false
-focus_mode = 2
-
-[node name="VSlots" type="Label" parent="CanvasLayer/DimBG" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 48.0
-margin_right = 59.0
-margin_bottom = 62.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
-text = "V Slots"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
-
-[node name="HSlider" type="HSlider" parent="CanvasLayer/DimBG/VSlots" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 59.0
-margin_top = -3.0
-margin_right = 238.0
-margin_bottom = 13.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 0
-min_value = 0.0
-max_value = 5.0
-step = 1.0
-page = 0.0
-value = 2.0
-exp_edit = false
-rounded = false
-editable = true
-tick_count = 6
-ticks_on_borders = false
-focus_mode = 2
-
-[node name="OffsetBG" type="Panel" parent="CanvasLayer" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 400.0
-margin_right = 288.0
-margin_bottom = 476.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-_sections_unfolded = [ "Rect" ]
-
-[node name="HOffset" type="Label" parent="CanvasLayer/OffsetBG" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 16.0
-margin_right = 69.0
-margin_bottom = 30.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
-text = "H Offset"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
-
-[node name="HSlider" type="HSlider" parent="CanvasLayer/OffsetBG/HOffset" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 61.0
-margin_right = 240.0
-margin_bottom = 16.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 0
-min_value = 32.0
-max_value = 64.0
-step = 1.0
-page = 0.0
-value = 32.0
-exp_edit = false
-rounded = false
-editable = true
-tick_count = 0
-ticks_on_borders = false
-focus_mode = 2
-
-[node name="VOffset" type="Label" parent="CanvasLayer/OffsetBG" index="1"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 48.0
-margin_right = 59.0
-margin_bottom = 62.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 2
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 4
-text = "V Slots"
-percent_visible = 1.0
-lines_skipped = 0
-max_lines_visible = -1
-_sections_unfolded = [ "Rect" ]
-
-[node name="HSlider" type="HSlider" parent="CanvasLayer/OffsetBG/VOffset" index="0"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 61.0
-margin_top = 3.0
-margin_right = 240.0
-margin_bottom = 19.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-focus_mode = 2
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 0
-min_value = 32.0
-max_value = 64.0
-step = 1.0
-page = 0.0
-value = 32.0
-exp_edit = false
-rounded = false
-editable = true
-tick_count = 0
-ticks_on_borders = false
-focus_mode = 2
-
-[node name="InventoryItem3" type="TextureRect" parent="." index="3"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 325.0
-margin_top = 86.0
-margin_right = 389.0
-margin_bottom = 150.0
+margin_left = 118.0
+margin_top = 28.0
+margin_right = 149.0
+margin_bottom = 59.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -373,104 +58,10 @@ mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
 texture = ExtResource( 4 )
+expand = true
 stretch_mode = 0
 script = ExtResource( 5 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-id = 0
-draggable = true
-return_if_dragged = true
-drag_on_remove = true
-overlap_on_drag = true
-stackable = true
-stack = 25
-stack_label_position = Vector2( 48, 48 )
-max_stack = 99
-
-[node name="InventoryItem" type="TextureRect" parent="." index="4"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 421.0
-margin_top = 108.0
-margin_right = 485.0
-margin_bottom = 172.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 4 )
-stretch_mode = 0
-script = ExtResource( 5 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-id = 0
-draggable = true
-return_if_dragged = true
-drag_on_remove = true
-overlap_on_drag = true
-stackable = true
-stack = 55
-stack_label_position = Vector2( 48, 48 )
-max_stack = 99
-
-[node name="InventoryItem4" type="TextureRect" parent="." index="5"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 695.0
-margin_top = 263.0
-margin_right = 759.0
-margin_bottom = 327.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 4 )
-stretch_mode = 0
-script = ExtResource( 5 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-id = 0
-draggable = true
-return_if_dragged = true
-drag_on_remove = true
-overlap_on_drag = true
-stackable = true
-stack = 55
-stack_label_position = Vector2( 48, 48 )
-max_stack = 99
-
-[node name="InventoryItem2" type="TextureRect" parent="." index="6"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 327.0
-margin_top = 174.0
-margin_right = 391.0
-margin_bottom = 238.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 1
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-texture = ExtResource( 6 )
-stretch_mode = 0
-script = ExtResource( 5 )
+_sections_unfolded = [ "Rect" ]
 __meta__ = {
 "_editor_icon": ExtResource( 2 )
 }
@@ -480,8 +71,44 @@ return_if_dragged = true
 drag_on_remove = true
 overlap_on_drag = true
 stackable = true
-stack = 55
-stack_label_position = Vector2( 48, 48 )
+stack_label_show = false
+stack = 1
+stack_label_position = Vector2( 24, 24 )
+max_stack = 99
+
+[node name="InventoryItem4" type="TextureRect" parent="." index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 120.0
+margin_top = 80.0
+margin_right = 152.0
+margin_bottom = 112.0
+rect_scale = Vector2( 2, 2 )
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 6 )
+expand = true
+stretch_mode = 0
+script = ExtResource( 5 )
+__meta__ = {
+"_editor_icon": ExtResource( 2 )
+}
+id = 2
+draggable = true
+return_if_dragged = true
+drag_on_remove = true
+overlap_on_drag = true
+stackable = true
+stack_label_show = true
+stack = 1
+stack_label_position = Vector2( 24, 24 )
 max_stack = 99
 
 
