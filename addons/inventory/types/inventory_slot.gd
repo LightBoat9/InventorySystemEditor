@@ -31,8 +31,8 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_over = (
-			event.global_position.x > rect_global_position.x and event.position.x < rect_global_position.x + rect_size.x and
-			event.global_position.y > rect_global_position.y and event.position.y < rect_global_position.y + rect_size.y
+			event.global_position.x >= rect_global_position.x and event.position.x <= rect_global_position.x + texture.get_size().x and
+			event.global_position.y >= rect_global_position.y and event.position.y <= rect_global_position.y + texture.get_size().y
 			)
 		if mouse_over:
 			modulate = hover_modulate
@@ -54,6 +54,7 @@ func _gui_input(event):
 func set_item(item):
 	if not self.item:
 		self.item = item
+		self.item.set_as_toplevel(false)
 		item.rect_position = Vector2()
 		
 		if scale_item:

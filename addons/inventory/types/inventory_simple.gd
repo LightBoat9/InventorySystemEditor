@@ -2,6 +2,7 @@ tool
 extends Control
 
 signal item_added
+signal item_moved
 signal item_removed
 signal drag_start
 signal drag_stop
@@ -87,6 +88,8 @@ func _remove_slots():
 	arr_items.clear()
 	while arr_slots.size():
 		var inst = arr_slots.pop_back()
+		if inst.item:
+			inst.item.slot = null
 		if inst.get_parent():
 			inst.get_parent().remove_child(inst)
 		
@@ -98,8 +101,11 @@ func _update_slots():
 			slot.slot_texture = slot_texture
 			
 func _item_added(item):
-	arr_items.append(item)
-	emit_signal("item_added", item)
+	if not arr_items.has(item):
+		arr_items.append(item)
+		emit_signal("item_added", item)
+	else:
+		emit_signal("item_moved", item)
 	
 func _item_removed(item):
 	arr_items.erase(item)
@@ -108,7 +114,8 @@ func _item_removed(item):
 func _add_removed_items():
 	for slot in arr_slots:
 		if len(_temp_items):
-			slot.set_item(_temp_items.pop_front())
+			var inst = _temp_items.pop_front()
+			slot.set_item(inst)
 		else:
 			break
 	for item in _temp_items:

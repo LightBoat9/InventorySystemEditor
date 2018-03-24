@@ -3,17 +3,21 @@ extends TextureRect
 
 signal drag_start
 signal drag_stop
-	
+
+# Property Exports
 export var id = 0
+# Drag Exports
 export(bool) var draggable = true
 export(bool) var return_if_dragged = true
 export(bool) var drag_on_remove = true
+export(bool) var overlap_on_drag = true
+# Stack Exports
 export(bool) var stackable = true
 export(int) var stack = 1 setget set_stack
 export(Vector2) var stack_label_position = Vector2(64, 64) setget set_stack_label_position
 export(int) var max_stack = 99
 
-onready var initial_parent = get_parent()
+onready var world_parent = get_parent()
 var mouse_over = false
 var dragging = false
 var drag_start_position = Vector2()
@@ -44,17 +48,13 @@ func _input(event):
 			event.position.x >= rect_position.x and event.position.x <= rect_position.x + rect_size.x and
 			event.position.y >= rect_position.y and event.position.y <= rect_position.y + rect_size.y
 			)
-	elif event is InputEventMouseButton and mouse_over and event.button_index == BUTTON_LEFT:
+	elif event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
 		if draggable:
 			if dragging and not event.pressed:
 				_drop()
-			dragging = event.pressed
+			dragging = mouse_over and event.pressed
 			if dragging:
-				emit_signal("drag_start")
-				drag_start_position = rect_global_position
-				for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
-					if inst != self:
-						inst.dragging = false
+				drag_init()
 			else:
 				emit_signal("drag_stop")
 						
@@ -66,6 +66,7 @@ func _physics_process(delta):
 func _drop():
 	for inst in get_tree().get_nodes_in_group("inventory_slots"):
 		if inst.mouse_over:
+			# Drop self or stack with other item
 			if inst.item and inst.item.id == id:
 				var overflow = inst.item.set_stack(inst.item.stack + stack)
 				set_stack(overflow)
@@ -73,6 +74,7 @@ func _drop():
 					return_slot.set_item(self)
 					return_slot = null
 				return
+			# Add self to slot
 			elif not inst.item:
 				slot = inst
 				slot.set_item(self)
@@ -107,9 +109,23 @@ func set_stack_label_position(position):
 			
 func remove_from_slot():
 	"""Adds the item back into the world"""
-	initial_parent.add_child(self)
+	if not get_parent():
+		world_parent.add_child(self)
 	
 	dragging = drag_on_remove
+	if dragging:
+		drag_init()
+		
 	if return_if_dragged:
 		return_slot = slot
 	slot = null
+	
+func drag_init():
+	self.set_as_toplevel(true)
+	emit_signal("drag_start")
+	drag_start_position = rect_global_position
+	for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
+		if inst != self:
+			inst.dragging = false
+			if overlap_on_drag:
+				inst.set_as_toplevel(false)
