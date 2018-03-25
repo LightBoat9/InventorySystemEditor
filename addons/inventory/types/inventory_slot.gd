@@ -27,14 +27,8 @@ func _draw():
 	
 func _input(event):
 	if event is InputEventMouseMotion:
-		mouse_over = (
-			event.global_position.x >= rect_global_position.x and event.position.x <= rect_global_position.x + texture.get_size().x and
-			event.global_position.y >= rect_global_position.y and event.position.y <= rect_global_position.y + texture.get_size().y
-			)
-		if mouse_over:
-			modulate = hover_modulate
-		else:
-			modulate = _default_modulate
+		mouse_over = _mouse_in_rect(event.global_position, rect_global_position, texture.get_size(), rect_scale)
+		modulate = hover_modulate if mouse_over else _default_modulate
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:
 			if item and mouse_over and event.pressed:
@@ -45,11 +39,18 @@ func _input(event):
 				item = null
 				emit_signal("item_removed", item)
 				
+func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
+	return (
+		mouse_pos.x >= rect_pos.x and 
+		mouse_pos.x <= rect_pos.x + size.x * scale.x and
+		mouse_pos.y >= rect_pos.y and 
+		mouse_pos.y <= rect_pos.y + size.y * scale.y
+		)
+				
 func set_item(item):
 	if not self.item:
 		self.item = item
 		
-		item.set_as_toplevel(false)
 		item.rect_position = Vector2()
 		item.slot = self
 		

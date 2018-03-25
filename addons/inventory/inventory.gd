@@ -9,3 +9,4 @@ func _enter_tree():
 func _exit_tree():
 	remove_custom_type("InventorySlot")
 	remove_custom_type("InventorySimple")
+	remove_custom_type("InventoryItem")

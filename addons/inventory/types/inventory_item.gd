@@ -18,7 +18,7 @@ export(int) var stack = 1 setget set_stack
 export(Vector2) var stack_label_position = Vector2(64, 64) setget set_stack_label_position
 export(int) var max_stack = 99
 
-onready var world_parent = get_parent()
+onready var world_parent = get_node("/root").get_child(get_node("/root").get_child_count() - 1)
 var mouse_over = false
 var dragging = false
 var drag_start_position = Vector2()
@@ -44,10 +44,7 @@ func _set_top_itemdragging():
 		
 func _input(event):
 	if event is InputEventMouseMotion:
-		mouse_over = (
-			event.position.x >= rect_position.x and event.position.x <= rect_position.x + rect_size.x * rect_scale.x and
-			event.position.y >= rect_position.y and event.position.y <= rect_position.y + rect_size.y * rect_scale.y
-			)
+		mouse_over = _mouse_in_rect(event.global_position, rect_global_position, rect_size, rect_scale)
 	elif event is InputEventMouseButton and event.button_index == BUTTON_LEFT:
 		if draggable:
 			if dragging and not event.pressed:
@@ -95,6 +92,14 @@ func _update_stack_label():
 		stack_label.hide()
 	stack_label.text = str(stack)
 	stack_label.rect_position = stack_label_position
+	
+func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
+	return (
+		mouse_pos.x >= rect_pos.x and 
+		mouse_pos.x <= rect_pos.x + size.x * scale.x and
+		mouse_pos.y >= rect_pos.y and 
+		mouse_pos.y <= rect_pos.y + size.y * scale.y
+		)
 	
 func set_stack(amount):
 	var overflow = 0

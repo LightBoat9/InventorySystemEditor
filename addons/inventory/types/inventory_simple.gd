@@ -1,34 +1,46 @@
 tool
 extends TextureRect
 
+## Signals
+# Sent when an inventory_item is added / moved / removed
 signal item_added
 signal item_moved
 signal item_removed
+signal item_dropped
+# Sent at the start / stop of dragging the inventory if dragging is enabled
 signal drag_start
 signal drag_stop
 
+## Objects
 var InventorySlot = load("res://addons/inventory/types/inventory_slot.gd")
 
+## Self Variables
+# Slots
 var arr_slots = []
-var _temp_items = []
+var _temp_items = [] # Temporary item storage for when editing the inventory
+# Items
 var arr_items = []
-var arr_items_dropped = []
-
+var arr_items_dropped = [] # Contains any items that were forced out of the inventory
+# Mouse
 var mouse_over = false
 var _mouse_relative = Vector2()
+# Drag
 var drag_region
 var dragging = false
 
+## Exports
+# Slots
 export(Vector2) var slots = Vector2(2,2) setget set_slots
 export(Vector2) var offset = Vector2() setget set_offset
 export(Vector2) var spacing = Vector2(32,32) setget set_spacing
+export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
+# Drag
 export(bool) var draggable = true setget set_draggable
 export(bool) var drag_rect_show = true setget set_drag_rect_show
-export(bool) var scale_items = false setget set_scale_items
 export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
 export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
-export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
 
+## Built In Methods
 func _enter_tree():
 	_remove_slots()
 	_add_slots()
@@ -36,17 +48,14 @@ func _enter_tree():
 	_update_slots()
 	
 func _ready():
-	if draggable:
-		add_to_group("inventory_dragabbles")
-	set_process_input(true)
-	set_physics_process(true)
+	for i in range(10):
+		var inst = load("res://addons/inventory/testing/Potion.tscn").instance()
+		inst.set_stack(55)
+		add_item(inst)
 	
 func _input(event):
 	if event is InputEventMouseMotion:
-		mouse_over = (
-			event.global_position.x >= rect_global_position.x + drag_rect.position.x and event.global_position.x <= rect_global_position.x + drag_rect.position.x + drag_rect.size.x and
-			event.global_position.y >= rect_global_position.y + drag_rect.position.y and event.global_position.y <= rect_global_position.y + drag_rect.position.y + drag_rect.size.y
-			)
+		mouse_over = _mouse_in_rect(event.global_position, rect_global_position + drag_rect.position, drag_rect.size, rect_scale)
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			if draggable:
@@ -75,6 +84,7 @@ func _draw():
 	if drag_rect_show:
 		draw_rect(drag_rect, drag_rect_color)
 	
+## Private Methods
 func _add_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
@@ -83,20 +93,19 @@ func _add_slots():
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
 			inst.texture = slot_texture
-			inst.scale_item = scale_items
 			add_child(inst)
 			arr_slots.append(inst)
 	_add_removed_items()
 			
 func _remove_slots():
-	while len(arr_items_dropped):
-		arr_items.append(arr_items_dropped.pop_front())
 	_temp_items = arr_items.duplicate()
 	arr_items.clear()
 	while arr_slots.size():
 		var inst = arr_slots.pop_back()
 		if inst.item:
 			inst.item.slot = null
+			if inst.item.get_parent():
+				inst.item.get_parent().remove_child(inst.item)
 		if inst.get_parent():
 			inst.get_parent().remove_child(inst)
 		
@@ -104,11 +113,10 @@ func _update_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
 			var slot = arr_slots[x+(y*slots.x)]
-			if slot.item:
-				slot.item.rect_position = slot.rect_position
 			slot.rect_position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
 			slot.texture = slot_texture
-			slot.scale_item = scale_items
+			if slot.item:
+				slot.item.rect_position = slot.rect_position
 			
 func _item_added(item):
 	item.get_parent().remove_child(item)
@@ -133,7 +141,32 @@ func _add_removed_items():
 			break
 	for item in _temp_items:
 		arr_items_dropped.append(item)
+		emit_signal("item_dropped", item)
 	_temp_items.clear()
+	
+func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
+	return (
+		mouse_pos.x >= rect_pos.x and 
+		mouse_pos.x <= rect_pos.x + size.x * scale.x and
+		mouse_pos.y >= rect_pos.y and 
+		mouse_pos.y <= rect_pos.y + size.y * scale.y
+		)
+	
+## Public Methods
+func add_item(item):
+	for y in range(slots.y):
+		for x in range(slots.x):
+			var slot = arr_slots[x+(y*slots.x)]
+			if slot.item and slot.item.id == item.id:
+				var overflow = slot.item.set_stack(slot.item.stack + item.stack)
+				item.set_stack(overflow)
+				if overflow == 0:
+					return
+			if not slot.item:
+				slot.set_item(item)
+				return
+	arr_items_dropped.append(item)
+	emit_signal("item_dropped", item)
 			
 func set_slots(value):
 	_remove_slots()
@@ -152,10 +185,6 @@ func set_slot_texture(value):
 	slot_texture = value
 	_update_slots()
 	
-func set_scale_items(value):
-	scale_items = value
-	_update_slots()
-	
 func set_drag_rect(value):
 	drag_rect = value
 	update()
@@ -170,5 +199,7 @@ func set_drag_rect_show(value):
 	
 func set_draggable(value):
 	draggable = value
-	set_drag_rect_show(draggable)
-	
+	if draggable:
+		add_to_group("inventory_dragabbles")
+	elif is_in_group("inventory_dragabbles"):
+		remove_from_group("inventory_dragabbles")
