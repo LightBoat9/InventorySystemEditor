@@ -31,9 +31,10 @@ var dragging = false
 ## Exports
 # Slots
 export(Vector2) var slots = Vector2(2,2) setget set_slots
+export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
 export(Vector2) var offset = Vector2() setget set_offset
 export(Vector2) var spacing = Vector2(32,32) setget set_spacing
-export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
+export(bool) var modulate_on_hover = false setget set_modulate_on_hover
 # Drag
 export(bool) var draggable = true setget set_draggable
 export(bool) var drag_rect_show = true setget set_drag_rect_show
@@ -172,6 +173,10 @@ func set_slots(value):
 	_remove_slots()
 	slots = value
 	_add_slots()
+			
+func set_slot_texture(value):
+	slot_texture = value
+	_update_slots()
 	
 func set_offset(value):
 	offset = value
@@ -181,8 +186,8 @@ func set_spacing(value):
 	spacing = value
 	_update_slots()
 	
-func set_slot_texture(value):
-	slot_texture = value
+func set_modulate_on_hover(value):
+	modulate_on_hover = value
 	_update_slots()
 	
 func set_drag_rect(value):

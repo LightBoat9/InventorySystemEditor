@@ -39,9 +39,6 @@ func _ready():
 	set_process_input(true)
 	set_physics_process(true)
 		
-func _set_top_itemdragging():
-	return true
-		
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_over = _mouse_in_rect(event.global_position, rect_global_position, rect_size, rect_scale)
@@ -54,7 +51,6 @@ func _input(event):
 				drag_init()
 			else:
 				emit_signal("drag_stop")
-						
 	
 func _physics_process(delta):
 	if dragging and draggable:
@@ -69,18 +65,19 @@ func _drop():
 				set_stack(overflow)
 				if return_slot and not return_slot.item and overflow:
 					return_slot.set_item(self)
-					return_slot = null
-				return
+				return_slot = null
+				break
 			# Add self to slot
 			elif not inst.item:
 				slot = inst
 				slot.set_item(self)
-				return
+				return_slot = null
+				break
 	for inst in get_tree().get_nodes_in_group("inventory_items"):
 		if inst != self and inst.mouse_over and inst.id == id:
 			set_stack(inst.set_stack(inst.stack + stack))
 			rect_global_position = drag_start_position
-			return
+			break
 	if return_slot and not return_slot.item:
 		return_slot.set_item(self)
 		return_slot = null
@@ -118,18 +115,16 @@ func remove_from_slot():
 		world_parent.add_child(self)
 	
 	dragging = drag_on_remove
-	if dragging:
-		drag_init()
 		
 	if return_if_dragged:
 		return_slot = slot
 	slot = null
 	
 func drag_init():
+	drag_start_position = rect_global_position
 	var parent = get_parent()
 	parent.remove_child(self)
 	parent.add_child(self)
-	drag_start_position = rect_global_position
 	for inst in get_tree().get_nodes_in_group("inventory_dragabbles"):
 		if inst != self:
 			inst.dragging = false

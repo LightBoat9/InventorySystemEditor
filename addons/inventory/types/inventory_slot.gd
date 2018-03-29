@@ -4,8 +4,8 @@ extends TextureRect
 signal item_added
 signal item_removed
 	
+export(bool) var modulate_on_hover = false
 export(Color) var hover_modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
-export(bool) var scale_item = false
 export(Texture) var overlay = null setget set_overlay
 	
 var mouse_over = false
@@ -27,8 +27,8 @@ func _draw():
 	
 func _input(event):
 	if event is InputEventMouseMotion:
-		mouse_over = _mouse_in_rect(event.global_position, rect_global_position, texture.get_size(), rect_scale)
-		modulate = hover_modulate if mouse_over else _default_modulate
+		mouse_over = _mouse_in_rect(event.global_position, rect_global_position, rect_size, rect_scale)
+		modulate = hover_modulate if mouse_over and modulate_on_hover else _default_modulate
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:
 			if item and mouse_over and event.pressed:
