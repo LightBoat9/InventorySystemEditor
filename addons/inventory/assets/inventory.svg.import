@@ -7,7 +7,7 @@ path="res://.import/inventory.svg-d0e0a1d39a1e8cf045b285f5309da620.stex"
 [deps]
 
 source_file="res://addons/inventory/assets/inventory.svg"
-source_md5="1b0ad8dcbf429a5c5d93a3a2df42a51e"
+source_md5="f11279dd86d82c2ceb4ed6fb02aed62a"
 
 dest_files=[ "res://.import/inventory.svg-d0e0a1d39a1e8cf045b285f5309da620.stex" ]
 dest_md5="642f20e4f6bbb43acee1a8e7e863d0f1"

@@ -16,7 +16,7 @@ export(bool) var overlap_on_drag = true
 export(bool) var stackable = true
 export(bool) var stack_label_show = true setget set_stack_label_show
 export(int) var stack = 1 setget set_stack
-export(Vector2) var stack_label_position = Vector2(32, 32) setget set_stack_label_position
+export(Vector2) var stack_label_position = Vector2(24, 24) setget set_stack_label_position
 export(int) var max_stack = 99
 
 onready var world_parent = get_node("/root").get_child(get_node("/root").get_child_count() - 1)
