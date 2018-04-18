@@ -4,7 +4,7 @@
 [ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=2]
 [ext_resource path="res://icon.png" type="Texture" id=3]
 
-[node name="Potion" type="TextureRect"]
+[node name="Potion" type="TextureRect" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -30,7 +30,6 @@ __meta__ = {
 }
 id = 1
 draggable = true
-return_if_dragged = true
 drag_on_remove = true
 overlap_on_drag = true
 stackable = true

@@ -3,6 +3,7 @@ extends TextureRect
 	
 signal item_added
 signal item_removed
+signal item_stack_changed
 	
 export(bool) var modulate_on_hover = false
 export(Color) var hover_modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
@@ -48,20 +49,22 @@ func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
 		)
 				
 func set_item(item):
-	if not self.item:
-		self.item = item
-		
-		item.rect_position = Vector2()
-		item.slot = self
-		
-		if item.get_parent():
-			item.get_parent().remove_child(item)
-		
-		item.rect_position = Vector2()
-		add_child(item)
-		
-		emit_signal("item_added", item)
+	self.item = item
+	
+	item.slot = self
+	item.connect("stack_changed", self, "_stack_changed")
+	
+	if item.get_parent():
+		item.get_parent().remove_child(item)
+	
+	item.rect_position = Vector2()
+	add_child(item)
+	
+	emit_signal("item_added", item)
 	
 func set_overlay(value):
 	overlay = value
 	update()
+	
+func _stack_changed(item):
+	emit_signal("item_stack_changed", item)

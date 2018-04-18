@@ -3,19 +3,20 @@ extends TextureRect
 
 signal drag_start
 signal drag_stop
+signal drag_outside_slot
+signal stack_changed
 
 # Property Exports
 export var id = 0
 # Drag Exports
 export(bool) var draggable = true
-export(bool) var return_if_dragged = true
 export(bool) var drag_on_remove = true
 export(bool) var overlap_on_drag = true
 # Stack Exports
 export(bool) var stackable = true
 export(bool) var stack_label_show = true setget set_stack_label_show
 export(int) var stack = 1 setget set_stack
-export(Vector2) var stack_label_position = Vector2(64, 64) setget set_stack_label_position
+export(Vector2) var stack_label_position = Vector2(32, 32) setget set_stack_label_position
 export(int) var max_stack = 99
 
 onready var world_parent = get_node("/root").get_child(get_node("/root").get_child_count() - 1)
@@ -63,24 +64,25 @@ func _drop():
 			if inst.item and inst.item.id == id:
 				var overflow = inst.item.set_stack(inst.item.stack + stack)
 				set_stack(overflow)
-				if return_slot and not return_slot.item and overflow:
+				if stack > 0 and return_slot and not return_slot.item and overflow:
 					return_slot.set_item(self)
 				return_slot = null
-				break
+				return
 			# Add self to slot
 			elif not inst.item:
 				slot = inst
 				slot.set_item(self)
 				return_slot = null
-				break
+				return
 	for inst in get_tree().get_nodes_in_group("inventory_items"):
 		if inst != self and inst.mouse_over and inst.id == id:
 			set_stack(inst.set_stack(inst.stack + stack))
 			rect_global_position = drag_start_position
-			break
-	if return_slot and not return_slot.item:
+			return
+	if stack > 0 and return_slot and not return_slot.item:
 		return_slot.set_item(self)
 		return_slot = null
+		emit_signal("drag_outside_slot", self)
 	
 func _update_stack_label():
 	if stack_label_show:
@@ -106,7 +108,10 @@ func set_stack(amount):
 		stack = max_stack
 	if stack <= 0:
 		queue_free()
+		if slot:
+			slot.item = null
 	_update_stack_label()
+	emit_signal("stack_changed", self)
 	return overflow
 			
 func remove_from_slot():
@@ -115,9 +120,8 @@ func remove_from_slot():
 		world_parent.add_child(self)
 	
 	dragging = drag_on_remove
-		
-	if return_if_dragged:
-		return_slot = slot
+
+	return_slot = slot
 	slot = null
 	
 func drag_init():

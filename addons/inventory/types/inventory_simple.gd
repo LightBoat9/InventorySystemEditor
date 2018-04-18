@@ -7,6 +7,7 @@ signal item_added
 signal item_moved
 signal item_removed
 signal item_dropped
+signal item_stack_changed
 # Sent at the start / stop of dragging the inventory if dragging is enabled
 signal drag_start
 signal drag_stop
@@ -48,12 +49,6 @@ func _enter_tree():
 	update()
 	_update_slots()
 	
-func _ready():
-	for i in range(10):
-		var inst = load("res://addons/inventory/testing/Potion.tscn").instance()
-		inst.set_stack(55)
-		add_item(inst)
-	
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_over = _mouse_in_rect(event.global_position, rect_global_position + drag_rect.position, drag_rect.size, rect_scale)
@@ -93,6 +88,7 @@ func _add_slots():
 			inst.rect_global_position = Vector2(offset.x + x * spacing.x,offset.y + y * spacing.y)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
+			inst.connect("item_stack_changed", self, "_item_stack_changed")
 			inst.texture = slot_texture
 			add_child(inst)
 			arr_slots.append(inst)
@@ -116,6 +112,7 @@ func _update_slots():
 			var slot = arr_slots[x+(y*slots.x)]
 			slot.rect_position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
 			slot.texture = slot_texture
+			slot.modulate_on_hover = modulate_on_hover
 			if slot.item:
 				slot.item.rect_position = slot.rect_position
 			
@@ -132,6 +129,13 @@ func _item_added(item):
 func _item_removed(item):
 	arr_items.erase(item)
 	emit_signal("item_removed", item)
+	
+func _item_stack_changed(item):
+	# Remove deleted items
+	for i in arr_items:
+		if i == item and item.stack == 0:
+			arr_items.remove(arr_items.find(item))
+	emit_signal("item_stack_changed", item)
 	
 func _add_removed_items():
 	for slot in arr_slots:
