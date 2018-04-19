@@ -1,11 +1,11 @@
 tool
-extends TextureRect
+extends Sprite
 	
 signal item_added
 signal item_removed
 signal item_stack_changed
 	
-export(bool) var modulate_on_hover = false
+export(bool) var modulate_on_hover = true
 export(Color) var hover_modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 export(Texture) var overlay = null setget set_overlay
 	
@@ -28,17 +28,22 @@ func _draw():
 	
 func _input(event):
 	if event is InputEventMouseMotion:
-		mouse_over = _mouse_in_rect(event.global_position, rect_global_position, rect_size, rect_scale)
+		if texture:
+			mouse_over = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale)
 		modulate = hover_modulate if mouse_over and modulate_on_hover else _default_modulate
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:
 			if item and mouse_over and event.pressed:
 				if item.get_parent():
 					item.get_parent().remove_child(item)
-				item.remove_from_slot()
-				item.rect_position = get_global_mouse_position() - item.rect_size / 2
-				item = null
-				emit_signal("item_removed", item)
+				var inst = remove_item()
+				inst.world_parent.add_child(inst)
+				inst.dragging = true
+				if not inst.centered:
+					inst.global_position = get_global_mouse_position() - (inst.texture.get_size() * inst.scale) / 2
+				else:
+					inst.global_position = get_global_mouse_position()
+				emit_signal("item_removed", inst)
 				
 func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
 	return (
@@ -52,15 +57,31 @@ func set_item(item):
 	self.item = item
 	
 	item.slot = self
-	item.connect("stack_changed", self, "_stack_changed")
+	if not item.is_connected("stack_changed", self, "_stack_changed"):
+		item.connect("stack_changed", self, "_stack_changed")
 	
 	if item.get_parent():
 		item.get_parent().remove_child(item)
 	
-	item.rect_position = Vector2()
+	if item.centered and texture:
+		item.position = Vector2() + ((item.texture.get_size()*item.scale) / 2)
+	else:
+		item.position = Vector2()
 	add_child(item)
 	
 	emit_signal("item_added", item)
+	
+func remove_item():
+	"""Removes the item from the slot and returns it"""
+	if not item:
+		return
+
+	item.return_slot = self
+	item.slot = null
+	
+	var inst = item
+	item = null
+	return inst
 	
 func set_overlay(value):
 	overlay = value

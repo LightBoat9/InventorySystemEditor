@@ -1,5 +1,5 @@
 tool
-extends TextureRect
+extends Sprite
 
 ## Signals
 # Sent when an inventory_item is added / moved / removed
@@ -15,6 +15,19 @@ signal drag_stop
 ## Objects
 var InventorySlot = load("res://addons/inventory/types/inventory_slot.gd")
 
+## Exports
+# Slots
+export(Vector2) var slots = Vector2(2,2) setget set_slots
+export(Texture) var slots_texture = load("res://addons/inventory/assets/slot.png") setget set_slots_texture
+export(Vector2) var spacing = Vector2(32,32) setget set_spacing
+export(bool) var slots_centered = false setget set_slots_centered
+export(bool) var slots_modulate_on_hover = false setget set_slots_modulate_on_hover
+# Drag
+export(bool) var draggable = true setget set_draggable
+export(bool) var drag_rect_show = true setget set_drag_rect_show
+export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
+export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
+
 ## Self Variables
 # Slots
 var arr_slots = []
@@ -29,21 +42,9 @@ var _mouse_relative = Vector2()
 var drag_region
 var dragging = false
 
-## Exports
-# Slots
-export(Vector2) var slots = Vector2(2,2) setget set_slots
-export(Texture) var slot_texture = load("res://addons/inventory/assets/slot.png") setget set_slot_texture
-export(Vector2) var offset = Vector2() setget set_offset
-export(Vector2) var spacing = Vector2(32,32) setget set_spacing
-export(bool) var modulate_on_hover = false setget set_modulate_on_hover
-# Drag
-export(bool) var draggable = true setget set_draggable
-export(bool) var drag_rect_show = true setget set_drag_rect_show
-export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
-export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
-
 ## Built In Methods
 func _enter_tree():
+	centered = false
 	_remove_slots()
 	_add_slots()
 	update()
@@ -51,13 +52,13 @@ func _enter_tree():
 	
 func _input(event):
 	if event is InputEventMouseMotion:
-		mouse_over = _mouse_in_rect(event.global_position, rect_global_position + drag_rect.position, drag_rect.size, rect_scale)
+		mouse_over = _mouse_in_rect(event.global_position, global_position + drag_rect.position, drag_rect.size, scale)
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			if draggable:
 				if mouse_over:
 					dragging = event.pressed
-					_mouse_relative = rect_position - get_global_mouse_position()
+					_mouse_relative = position - get_global_mouse_position()
 					emit_signal("drag_start")
 				else:
 					dragging = false
@@ -74,7 +75,7 @@ func _input(event):
 			
 func _physics_process(delta):
 	if dragging:
-		rect_position = get_global_mouse_position() + _mouse_relative
+		position = get_global_mouse_position() + _mouse_relative
 	
 func _draw():
 	if drag_rect_show:
@@ -85,11 +86,11 @@ func _add_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
 			var inst = InventorySlot.new()
-			inst.rect_global_position = Vector2(offset.x + x * spacing.x,offset.y + y * spacing.y)
+			inst.global_position = Vector2(offset.x + x * spacing.x,offset.y + y * spacing.y)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
 			inst.connect("item_stack_changed", self, "_item_stack_changed")
-			inst.texture = slot_texture
+			inst.texture = slots_texture
 			add_child(inst)
 			arr_slots.append(inst)
 	_add_removed_items()
@@ -110,16 +111,20 @@ func _update_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
 			var slot = arr_slots[x+(y*slots.x)]
-			slot.rect_position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
-			slot.texture = slot_texture
-			slot.modulate_on_hover = modulate_on_hover
+			slot.position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
+			slot.texture = slots_texture
+			slot.modulate_on_hover = slots_modulate_on_hover
+			slot.centered = slots_centered
 			if slot.item:
-				slot.item.rect_position = slot.rect_position
+				slot.item.position = slot.position
 			
 func _item_added(item):
 	item.get_parent().remove_child(item)
 	add_child(item)
-	item.rect_position = item.slot.rect_position
+	if item.centered and item.texture:
+		item.position = item.slot.position + ((item.texture.get_size()*item.scale) / 2)
+	else:
+		item.position = item.slot.position
 	if not arr_items.has(item):
 		arr_items.append(item)
 		emit_signal("item_added", item)
@@ -177,9 +182,14 @@ func set_slots(value):
 	_remove_slots()
 	slots = value
 	_add_slots()
+	_update_slots()
 			
-func set_slot_texture(value):
-	slot_texture = value
+func set_slots_texture(value):
+	slots_texture = value
+	_update_slots()
+	
+func set_slots_centered(value):
+	slots_centered = value
 	_update_slots()
 	
 func set_offset(value):
@@ -190,8 +200,8 @@ func set_spacing(value):
 	spacing = value
 	_update_slots()
 	
-func set_modulate_on_hover(value):
-	modulate_on_hover = value
+func set_slots_modulate_on_hover(value):
+	slots_modulate_on_hover = value
 	_update_slots()
 	
 func set_drag_rect(value):
