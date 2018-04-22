@@ -29,7 +29,7 @@ func _draw():
 func _input(event):
 	if event is InputEventMouseMotion:
 		if texture:
-			mouse_over = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale)
+			mouse_over = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale, centered)
 		modulate = hover_modulate if mouse_over and modulate_on_hover else _default_modulate
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:
@@ -45,12 +45,15 @@ func _input(event):
 					inst.global_position = get_global_mouse_position()
 				emit_signal("item_removed", inst)
 				
-func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
+func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1), is_centered=false):
+	var ofs = Vector2()
+	if is_centered:
+		ofs = size*scale/2
 	return (
-		mouse_pos.x >= rect_pos.x and 
-		mouse_pos.x <= rect_pos.x + size.x * scale.x and
-		mouse_pos.y >= rect_pos.y and 
-		mouse_pos.y <= rect_pos.y + size.y * scale.y
+		mouse_pos.x >= rect_pos.x - ofs.x and 
+		mouse_pos.x <= rect_pos.x - ofs.x + size.x * scale.x and
+		mouse_pos.y >= rect_pos.y - ofs.y and 
+		mouse_pos.y <= rect_pos.y - ofs.y + size.y * scale.y
 		)
 				
 func set_item(item):
@@ -63,7 +66,7 @@ func set_item(item):
 	if item.get_parent():
 		item.get_parent().remove_child(item)
 	
-	if item.centered and texture:
+	if item.centered and not centered and item.texture:
 		item.position = Vector2() + ((item.texture.get_size()*item.scale) / 2)
 	else:
 		item.position = Vector2()

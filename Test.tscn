@@ -79,7 +79,7 @@ script = SubResource( 2 )
 
 [node name="Inventory" type="Sprite" parent="." index="2"]
 
-position = Vector2( 98.5551, 65.9749 )
+position = Vector2( 113.216, 120.547 )
 centered = false
 script = ExtResource( 1 )
 _sections_unfolded = [ "Offset" ]
@@ -89,7 +89,7 @@ __meta__ = {
 slots = Vector2( 2, 2 )
 slots_texture = ExtResource( 3 )
 spacing = Vector2( 32, 32 )
-slots_centered = true
+slots_centered = false
 slots_modulate_on_hover = false
 draggable = true
 drag_rect_show = true
@@ -98,7 +98,8 @@ drag_rect_color = Color( 1, 1, 1, 1 )
 
 [node name="InventorySlot" type="Sprite" parent="." index="3"]
 
-centered = false
+position = Vector2( 496.397, 141.476 )
+texture = ExtResource( 3 )
 script = ExtResource( 4 )
 _sections_unfolded = [ "Offset" ]
 __meta__ = {
@@ -126,17 +127,5 @@ stack_label_show = true
 stack = 1
 stack_label_position = Vector2( 24, 24 )
 max_stack = 99
-
-[node name="InventorySlot2" type="Sprite" parent="." index="5"]
-
-centered = false
-script = ExtResource( 4 )
-_sections_unfolded = [ "Offset" ]
-__meta__ = {
-"_editor_icon": ExtResource( 5 )
-}
-modulate_on_hover = true
-hover_modulate = Color( 0.901961, 0.901961, 0.901961, 1 )
-overlay = null
 
 

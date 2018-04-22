@@ -44,7 +44,6 @@ var dragging = false
 
 ## Built In Methods
 func _enter_tree():
-	centered = false
 	_remove_slots()
 	_add_slots()
 	update()
@@ -121,7 +120,7 @@ func _update_slots():
 func _item_added(item):
 	item.get_parent().remove_child(item)
 	add_child(item)
-	if item.centered and item.texture:
+	if item.centered and not item.slot.centered and item.texture:
 		item.position = item.slot.position + ((item.texture.get_size()*item.scale) / 2)
 	else:
 		item.position = item.slot.position
