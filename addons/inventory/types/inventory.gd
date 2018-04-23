@@ -7,6 +7,7 @@ signal item_added
 signal item_moved
 signal item_removed
 signal item_dropped
+signal item_forced_out
 signal item_stack_changed
 # Signals from the slots
 signal slot_mouse_over
@@ -14,11 +15,9 @@ signal slot_mouse_over
 signal drag_start
 signal drag_stop
 
-## Objects
-var InventorySlot = load("res://addons/inventory/types/inventory_slot.gd")
-
 ## Exports
 # Slots
+export(String, FILE) var InventorySlot = "res://addons/inventory/types/inventory_slot.gd"
 export(Vector2) var slots = Vector2(2,2) setget set_slots
 export(Texture) var slots_texture = load("res://addons/inventory/assets/slot.png") setget set_slots_texture
 export(Vector2) var slots_spacing = Vector2(32, 32) setget set_slots_spacing
@@ -31,6 +30,8 @@ export(bool) var draggable = true setget set_draggable
 export(bool) var drag_rect_show = true setget set_drag_rect_show
 export(Rect2) var drag_rect = Rect2(Vector2(0,-32), Vector2(64,32)) setget set_drag_rect
 export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
+# Items
+export(bool) var items_drop = false
 
 ## Self Variables
 # Slots
@@ -88,15 +89,17 @@ func _draw():
 func _add_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
-			var inst = InventorySlot.new()
-			inst.global_position = Vector2(offset.x + x * slots_spacing.x,offset.y + y * slots_spacing.y)
+			var inst = load(InventorySlot).new()
+			inst.position = Vector2(offset.x + x * slots_spacing.x,offset.y + y * slots_spacing.y)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
 			inst.connect("item_stack_changed", self, "_item_stack_changed")
+			inst.connect("item_outside_slot", self, "_item_outside_slot")
 			inst.connect("mouse_over", self, "_slot_mouse_over")
 			inst.texture = slots_texture
-			add_child(inst)
+			inst.centered = slots_centered
 			arr_slots.append(inst)
+			add_child(inst)
 	_add_removed_items()
 			
 func _remove_slots():
@@ -110,6 +113,18 @@ func _remove_slots():
 				inst.item.get_parent().remove_child(inst.item)
 		if inst.get_parent():
 			inst.get_parent().remove_child(inst)
+			
+func _add_removed_items():
+	for slot in arr_slots:
+		if len(_temp_items):
+			var inst = _temp_items.pop_front()
+			slot.set_item(inst)
+		else:
+			break
+	for item in _temp_items:
+		arr_items_dropped.append(item)
+		emit_signal("item_forced_out", item)
+	_temp_items.clear()
 		
 func _update_slots():
 	for y in range(slots.y):
@@ -139,17 +154,13 @@ func _item_stack_changed(item):
 			arr_items.remove(arr_items.find(item))
 	emit_signal("item_stack_changed", item)
 	
-func _add_removed_items():
-	for slot in arr_slots:
-		if len(_temp_items):
-			var inst = _temp_items.pop_front()
-			slot.set_item(inst)
-		else:
-			break
-	for item in _temp_items:
+func _item_outside_slot(item):
+	if items_drop and item.slot:
+		if item in arr_items:
+			arr_items.erase(item)
+		item.remove_from_tree()
 		arr_items_dropped.append(item)
 		emit_signal("item_dropped", item)
-	_temp_items.clear()
 	
 func _slot_mouse_over(inst):
 	emit_signal("slot_mouse_over", inst)

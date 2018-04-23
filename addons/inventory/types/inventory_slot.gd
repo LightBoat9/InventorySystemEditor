@@ -4,6 +4,7 @@ extends Sprite
 signal item_added
 signal item_removed
 signal item_stack_changed
+signal item_outside_slot
 signal mouse_over
 	
 export(bool) var hover_modulate = true
@@ -12,8 +13,6 @@ export(Texture) var overlay = null setget set_overlay
 	
 var mouse_over = false
 var _default_modulate
-	
-var InventoryItem = load("res://addons/inventory/types/inventory_item.gd")
 	
 var item = null
 	
@@ -63,22 +62,24 @@ func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1), is_centered=f
 				
 func set_item(item):
 	self.item = item
-	
 	item.slot = self
+	
 	if not item.is_connected("stack_changed", self, "_stack_changed"):
 		item.connect("stack_changed", self, "_stack_changed")
 	
 	if item.get_parent():
 		item.get_parent().remove_child(item)
-	add_child(item)
-	
+		
+	item.connect("drag_outside_slot", self, "_item_outside_slot")
+		
 	if item.centered and not centered and item.texture:
-		item.position = Vector2() + ((item.texture.get_size()*item.scale) / 2)
+		item.position = Vector2() + ((item.texture.get_size() * item.scale) / 2)
 	elif not item.centered and centered and texture:
-		item.position = Vector2() - ((texture.get_size()*scale) / 2)
+		item.position = Vector2() - ((texture.get_size() * scale) / 2)
 	else:
 		item.position = Vector2()
 	
+	add_child(item)
 	emit_signal("item_added", item)
 	
 func remove_item():
@@ -86,6 +87,7 @@ func remove_item():
 	if not item:
 		return
 
+	item.disconnect("drag_outside_slot", self, "_item_outside_slot")
 	item.return_slot = self
 	item.slot = null
 	
@@ -99,3 +101,6 @@ func set_overlay(value):
 	
 func _stack_changed(item):
 	emit_signal("item_stack_changed", item)
+	
+func _item_outside_slot(item):
+	emit_signal("item_outside_slot", item)

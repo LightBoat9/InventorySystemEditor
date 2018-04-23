@@ -133,6 +133,19 @@ func _drag_init():
 		z_index += 1
 	emit_signal("drag_start")
 	
+func _is_top_item():
+	for inst in get_tree().get_nodes_in_group("inventory_items"):
+		if inst.mouse_over and inst.z_index > z_index:
+			return false
+	return true
+	
+func remove_from_tree():
+	if slot:
+		slot.remove_item()
+	slot = null
+	return_slot = null
+	get_parent().remove_child(self)
+	
 func set_stack(amount):
 	var overflow = 0
 	stack = amount
@@ -153,12 +166,6 @@ func set_dragging(value):
 		_drag_init()
 	else:
 		_drop()
-		
-func _is_top_item():
-	for inst in get_tree().get_nodes_in_group("inventory_items"):
-		if inst.mouse_over and inst.z_index > z_index:
-			return false
-	return true
 	
 func set_stack_label_position(position):
 	stack_label_position = position
