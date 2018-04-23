@@ -4,9 +4,10 @@ extends Sprite
 signal item_added
 signal item_removed
 signal item_stack_changed
+signal mouse_over
 	
-export(bool) var modulate_on_hover = true
-export(Color) var hover_modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
+export(bool) var hover_modulate = true
+export(Color) var modulate_color = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 export(Texture) var overlay = null setget set_overlay
 	
 var mouse_over = false
@@ -16,11 +17,11 @@ var InventoryItem = load("res://addons/inventory/types/inventory_item.gd")
 	
 var item = null
 	
+var _skip_mouse_click = false
+	
 func _enter_tree():
 	_default_modulate = modulate
 	add_to_group("inventory_slots")
-	set_process_input(true)
-	set_process(true)
 	
 func _draw():
 	if overlay:
@@ -30,10 +31,14 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if texture:
 			mouse_over = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale, centered)
-		modulate = hover_modulate if mouse_over and modulate_on_hover else _default_modulate
+		if mouse_over:
+			emit_signal("mouse_over", self)
+		modulate = modulate_color if mouse_over and hover_modulate else _default_modulate
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:
-			if item and mouse_over and event.pressed:
+			if _skip_mouse_click:
+				_skip_mouse_click = false
+			elif item and mouse_over and event.pressed and item._is_top_item():
 				if item.get_parent():
 					item.get_parent().remove_child(item)
 				var inst = remove_item()
@@ -65,12 +70,14 @@ func set_item(item):
 	
 	if item.get_parent():
 		item.get_parent().remove_child(item)
+	add_child(item)
 	
 	if item.centered and not centered and item.texture:
 		item.position = Vector2() + ((item.texture.get_size()*item.scale) / 2)
+	elif not item.centered and centered and texture:
+		item.position = Vector2() - ((texture.get_size()*scale) / 2)
 	else:
 		item.position = Vector2()
-	add_child(item)
 	
 	emit_signal("item_added", item)
 	

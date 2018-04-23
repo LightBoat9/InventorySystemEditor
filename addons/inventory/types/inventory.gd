@@ -2,12 +2,14 @@ tool
 extends Sprite
 
 ## Signals
-# Sent when an inventory_item is added / moved / removed
+# Sent when an inventory_item is changed in some way
 signal item_added
 signal item_moved
 signal item_removed
 signal item_dropped
 signal item_stack_changed
+# Signals from the slots
+signal slot_mouse_over
 # Sent at the start / stop of dragging the inventory if dragging is enabled
 signal drag_start
 signal drag_stop
@@ -19,9 +21,11 @@ var InventorySlot = load("res://addons/inventory/types/inventory_slot.gd")
 # Slots
 export(Vector2) var slots = Vector2(2,2) setget set_slots
 export(Texture) var slots_texture = load("res://addons/inventory/assets/slot.png") setget set_slots_texture
-export(Vector2) var spacing = Vector2(32,32) setget set_spacing
+export(Vector2) var slots_spacing = Vector2(32, 32) setget set_slots_spacing
+export(Vector2) var slots_offset = Vector2(0, 0) setget set_slots_offset
 export(bool) var slots_centered = false setget set_slots_centered
-export(bool) var slots_modulate_on_hover = false setget set_slots_modulate_on_hover
+export(bool) var slots_modulate = true setget set_slots_modulate
+export(Color) var slots_modulate_color = Color(230.0/255.0,230.0/255.0,230.0/255.0,1) setget set_slots_modulate_color
 # Drag
 export(bool) var draggable = true setget set_draggable
 export(bool) var drag_rect_show = true setget set_drag_rect_show
@@ -85,10 +89,11 @@ func _add_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
 			var inst = InventorySlot.new()
-			inst.global_position = Vector2(offset.x + x * spacing.x,offset.y + y * spacing.y)
+			inst.global_position = Vector2(offset.x + x * slots_spacing.x,offset.y + y * slots_spacing.y)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
 			inst.connect("item_stack_changed", self, "_item_stack_changed")
+			inst.connect("mouse_over", self, "_slot_mouse_over")
 			inst.texture = slots_texture
 			add_child(inst)
 			arr_slots.append(inst)
@@ -110,20 +115,13 @@ func _update_slots():
 	for y in range(slots.y):
 		for x in range(slots.x):
 			var slot = arr_slots[x+(y*slots.x)]
-			slot.position = Vector2(offset.x + x * spacing.x, offset.y + y * spacing.y)
+			slot.position = Vector2(slots_offset.x + x * slots_spacing.x, slots_offset.y + y * slots_spacing.y)
 			slot.texture = slots_texture
-			slot.modulate_on_hover = slots_modulate_on_hover
+			slot.hover_modulate = slots_modulate
+			slot.modulate_color = slots_modulate_color
 			slot.centered = slots_centered
-			if slot.item:
-				slot.item.position = slot.position
 			
 func _item_added(item):
-	item.get_parent().remove_child(item)
-	add_child(item)
-	if item.centered and not item.slot.centered and item.texture:
-		item.position = item.slot.position + ((item.texture.get_size()*item.scale) / 2)
-	else:
-		item.position = item.slot.position
 	if not arr_items.has(item):
 		arr_items.append(item)
 		emit_signal("item_added", item)
@@ -152,6 +150,9 @@ func _add_removed_items():
 		arr_items_dropped.append(item)
 		emit_signal("item_dropped", item)
 	_temp_items.clear()
+	
+func _slot_mouse_over(inst):
+	emit_signal("slot_mouse_over", inst)
 	
 func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
 	return (
@@ -191,16 +192,20 @@ func set_slots_centered(value):
 	slots_centered = value
 	_update_slots()
 	
-func set_offset(value):
-	offset = value
+func set_slots_offset(value):
+	slots_offset = value
 	_update_slots()
 	
-func set_spacing(value):
-	spacing = value
+func set_slots_spacing(value):
+	slots_spacing = value
 	_update_slots()
 	
-func set_slots_modulate_on_hover(value):
-	slots_modulate_on_hover = value
+func set_slots_modulate(value):
+	slots_modulate = value
+	_update_slots()
+	
+func set_slots_modulate_color(value):
+	slots_modulate_color = value
 	_update_slots()
 	
 func set_drag_rect(value):

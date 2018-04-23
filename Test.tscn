@@ -1,13 +1,15 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
-[ext_resource path="res://addons/inventory/types/inventory.gd" type="Script" id=1]
-[ext_resource path="res://addons/inventory/assets/inventory.svg" type="Texture" id=2]
-[ext_resource path="res://addons/inventory/assets/slot.png" type="Texture" id=3]
-[ext_resource path="res://addons/inventory/types/inventory_slot.gd" type="Script" id=4]
-[ext_resource path="res://addons/inventory/assets/slot.svg" type="Texture" id=5]
-[ext_resource path="res://addons/inventory/assets/sword.png" type="Texture" id=6]
-[ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=7]
-[ext_resource path="res://addons/inventory/assets/item.svg" type="Texture" id=8]
+[ext_resource path="res://addons/inventory/assets/background.png" type="Texture" id=1]
+[ext_resource path="res://addons/inventory/types/inventory.gd" type="Script" id=2]
+[ext_resource path="res://addons/inventory/assets/inventory.svg" type="Texture" id=3]
+[ext_resource path="res://addons/inventory/assets/slot.png" type="Texture" id=4]
+[ext_resource path="res://addons/inventory/types/inventory_slot.gd" type="Script" id=5]
+[ext_resource path="res://addons/inventory/assets/slot.svg" type="Texture" id=6]
+[ext_resource path="res://addons/inventory/assets/sword.png" type="Texture" id=7]
+[ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=8]
+[ext_resource path="res://addons/inventory/assets/item.svg" type="Texture" id=9]
+[ext_resource path="res://addons/inventory/assets/potionRed.png" type="Texture" id=10]
 
 [sub_resource type="GDScript" id=1]
 
@@ -79,52 +81,99 @@ script = SubResource( 2 )
 
 [node name="Inventory" type="Sprite" parent="." index="2"]
 
-position = Vector2( 113.216, 120.547 )
+position = Vector2( 88.2229, 38.952 )
+texture = ExtResource( 1 )
 centered = false
-script = ExtResource( 1 )
+script = ExtResource( 2 )
 _sections_unfolded = [ "Offset" ]
 __meta__ = {
-"_editor_icon": ExtResource( 2 )
+"_editor_icon": ExtResource( 3 )
 }
-slots = Vector2( 2, 2 )
-slots_texture = ExtResource( 3 )
-spacing = Vector2( 32, 32 )
+slots = Vector2( 3, 3 )
+slots_texture = ExtResource( 4 )
+slots_spacing = Vector2( 48, 48 )
+slots_offset = Vector2( 16, 16 )
 slots_centered = false
-slots_modulate_on_hover = false
+slots_modulate = true
+slots_modulate_color = Color( 1, 1, 1, 0.469608 )
 draggable = true
 drag_rect_show = true
-drag_rect = Rect2( 0, -32, 64, 32 )
-drag_rect_color = Color( 1, 1, 1, 1 )
+drag_rect = Rect2( 0, -16, 160, 16 )
+drag_rect_color = Color( 1, 1, 1, 0.176824 )
 
 [node name="InventorySlot" type="Sprite" parent="." index="3"]
 
 position = Vector2( 496.397, 141.476 )
-texture = ExtResource( 3 )
-script = ExtResource( 4 )
+texture = ExtResource( 4 )
+script = ExtResource( 5 )
 _sections_unfolded = [ "Offset" ]
 __meta__ = {
-"_editor_icon": ExtResource( 5 )
+"_editor_icon": ExtResource( 6 )
 }
-modulate_on_hover = true
 hover_modulate = Color( 0.901961, 0.901961, 0.901961, 1 )
+modulate_color = Color( 0.901961, 0.901961, 0.901961, 1 )
 overlay = null
 
-[node name="InventoryItem" type="Sprite" parent="." index="4"]
+[node name="Sword" type="Sprite" parent="." index="4"]
 
-position = Vector2( 323.358, 140.909 )
+position = Vector2( 350.055, 91.369 )
 scale = Vector2( 0.5, 0.5 )
-texture = ExtResource( 6 )
-script = ExtResource( 7 )
+texture = ExtResource( 7 )
+centered = false
+script = ExtResource( 8 )
 _sections_unfolded = [ "Offset", "Transform" ]
 __meta__ = {
-"_editor_icon": ExtResource( 8 )
+"_editor_icon": ExtResource( 9 )
 }
 id = 0
 draggable = true
+hold_to_drag = true
 drag_overlap = true
 stackable = true
 stack_label_show = true
-stack = 1
+stack = 10
+stack_label_position = Vector2( 24, 24 )
+max_stack = 99
+
+[node name="Sword2" type="Sprite" parent="." index="5"]
+
+position = Vector2( 404.311, 190.652 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 7 )
+centered = false
+script = ExtResource( 8 )
+_sections_unfolded = [ "Offset", "Transform" ]
+__meta__ = {
+"_editor_icon": ExtResource( 9 )
+}
+id = 0
+draggable = true
+hold_to_drag = true
+drag_overlap = true
+stackable = true
+stack_label_show = true
+stack = 4
+stack_label_position = Vector2( 24, 24 )
+max_stack = 99
+
+[node name="Pot" type="Sprite" parent="." index="6"]
+
+position = Vector2( 341.402, 211.621 )
+scale = Vector2( 0.5, 0.5 )
+texture = ExtResource( 10 )
+centered = false
+script = ExtResource( 8 )
+_sections_unfolded = [ "Offset", "Transform" ]
+__meta__ = {
+"_editor_icon": ExtResource( 9 )
+}
+id = 1
+draggable = true
+hold_to_drag = true
+drag_overlap = true
+stackable = true
+stack_label_show = true
+stack = 4
 stack_label_position = Vector2( 24, 24 )
 max_stack = 99
 
