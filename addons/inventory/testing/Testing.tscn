@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://addons/inventory/testing/test_inventory.gd" type="Script" id=1]
+
+[node name="Testing" type="Node"]
+
+[node name="Inventory" type="Node" parent="." index="0"]
+
+script = ExtResource( 1 )
+
+

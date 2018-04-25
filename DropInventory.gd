@@ -1,8 +1,8 @@
-tool
-extends "res://addons/inventory/types/inventory.gd"
+extends Node
 
 func _ready():
-	get_parent().get_node("Inventory").connect("item_forced_out", self, "_item_forced_out")
+	var node = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
+	node.get_node("Inventory").connect("item_dropped", self, "_item_dropped")
 	
-func _item_forced_out(item):
-	add_item(item)
+func _item_dropped(item):
+	get_parent().add_item(item)

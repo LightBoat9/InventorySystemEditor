@@ -1,5 +1,5 @@
 tool
-extends Sprite
+extends "res://addons/inventory/types/inventory_base.gd"
 	
 signal item_added
 signal item_removed
@@ -8,19 +8,27 @@ signal item_outside_slot
 signal mouse_over
 	
 export(bool) var hover_modulate = true
+export(bool) var item_drag_return = true
 export(Color) var modulate_color = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 export(Texture) var overlay = null setget set_overlay
 	
 var mouse_over = false
 var _default_modulate
+var _default_texture = load("res://addons/inventory/assets/slot.png")
+var dragging = false
 	
+var inventory = null
 var item = null
 	
 var _skip_mouse_click = false
 	
 func _enter_tree():
-	_default_modulate = modulate
+	add_to_group("inventory_nodes")
 	add_to_group("inventory_slots")
+	if _default_texture:
+		texture = _default_texture
+	_default_texture = null
+	_default_modulate = modulate
 	
 func _draw():
 	if overlay:
@@ -37,7 +45,7 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT:
 			if _skip_mouse_click:
 				_skip_mouse_click = false
-			elif item and mouse_over and event.pressed and item._is_top_item():
+			elif item and mouse_over and event.pressed and _is_top_z() and _is_top_z_slot():
 				if item.get_parent():
 					item.get_parent().remove_child(item)
 				var inst = remove_item()
@@ -59,9 +67,28 @@ func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1), is_centered=f
 		mouse_pos.y >= rect_pos.y - ofs.y and 
 		mouse_pos.y <= rect_pos.y - ofs.y + size.y * scale.y
 		)
+		
+func _relative_z_index():
+	if not inventory:
+		return z_index
+	else:
+		return z_index + inventory.z_index
+		
+func _is_top_z_slot():
+	for inst in get_tree().get_nodes_in_group("inventory_slots"):
+		if inst.mouse_over and inst._relative_z_index() > _relative_z_index():
+			return false
+	return true
+	
+func _is_top_z():
+	for inst in get_tree().get_nodes_in_group("inventory_nodes"):
+		if inst.mouse_over and inst.z_index > z_index:
+			return false
+	return true
 				
 func set_item(item):
 	self.item = item
+	item.z_index = z_index
 	item.slot = self
 	
 	if not item.is_connected("stack_changed", self, "_stack_changed"):
@@ -88,7 +115,8 @@ func remove_item():
 		return
 
 	item.disconnect("drag_outside_slot", self, "_item_outside_slot")
-	item.return_slot = self
+	if item_drag_return:
+		item.return_slot = self
 	item.slot = null
 	
 	var inst = item
