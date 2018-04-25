@@ -1,14 +1,24 @@
+"""
+	* Caution * 
+	
+	Changing this file will change the file for all custom nodes. 
+	
+	It is recommended to either...
+	a) Edit this instance from another script.
+	b) Extend this script by making a new Sprite and adding a script with the following code.
+	
+		tool
+		extends "res://addons/inventory/types/inventory_item.gd"
+		
+"""
 tool
 extends "res://addons/inventory/types/inventory_base.gd"
-
+	
 signal drag_start
 signal drag_stop
 signal drag_outside_slot
 signal stack_changed
-# Mouse signals
-signal mouse_enter
-signal mouse_exit
-
+	
 # Properties
 export var id = 0
 # Drag
@@ -20,9 +30,7 @@ export(int) var stack = 1 setget set_stack
 export(int) var max_stack = 99 setget set_max_stack
 export(bool) var remove_if_empty = true
 	
-	
 onready var world_parent = get_node("/root").get_child(get_node("/root").get_child_count() - 1)
-var mouse_over = false
 var dragging = false setget set_dragging
 var drag_start_position = Vector2()
 	
@@ -109,6 +117,8 @@ func _drop():
 		return_slot.set_item(self)
 		return_slot = null
 		emit_signal("drag_outside_slot", self)
+	elif return_slot:
+		dragging = true
 	
 func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1), is_centered=false):
 	var ofs = Vector2()

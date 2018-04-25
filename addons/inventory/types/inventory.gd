@@ -1,23 +1,33 @@
+"""
+	* Caution *
+	
+	Changing this file will change the file for all custom nodes. 
+	
+	It is recommended to either...
+	a) Edit this instance from another script.
+	b) Extend this script by making a new Sprite and adding a script with the following code.
+	
+		tool
+		extends "res://addons/inventory/types/inventory.gd"
+		
+"""
 tool
 extends "res://addons/inventory/types/inventory_base.gd"
 
-## Signals
-# Sent when an inventory_item is changed in some way
 signal item_added
 signal item_moved
 signal item_removed
 signal item_dropped
 signal item_stack_changed
-# Signals from the slots
-signal slot_mouse_over
-# Sent at the start / stop of dragging the inventory if dragging is enabled
+
+signal slot_mouse_enter
+signal slot_mouse_exit
+
 signal drag_start
 signal drag_stop
 
-## Exports
 # Slots
 export(GDScript) var custom_slot = load("res://addons/inventory/types/inventory_slot.gd") setget set_custom_slot
-export(GDScript) var child_script = null setget set_child_script
 export(Vector2) var slots_amount = Vector2(2, 2) setget set_slots_amount
 export(Vector2) var slots_spacing = Vector2(32, 32) setget set_slots_spacing
 export(Vector2) var slots_offset = Vector2(0, 0) setget set_slots_offset
@@ -28,19 +38,19 @@ export(bool) var drag_rect_show = true setget set_drag_rect_show
 export(Rect2) var drag_rect = Rect2(Vector2(-16,-32), Vector2(64,16)) setget set_drag_rect
 export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
 # Items
+# Remove the item from the inventory if dragged outside of it and dropped
 export(bool) var items_drop_remove = false
+# Whether to ignore this Sprites texture when dragging and dropping this item from the inventory
+export(bool) var items_ignore_background = false
 
-## Self Variables
-# Slots
 var slots = []
-var _temp_items = [] # Temporary item storage for when editing the inventory
-# Items
+
 var items = []
 var items_dropped = [] # Contains any items that were forced out of the inventory
-# Mouse
-var mouse_over = false
-var _mouse_relative = Vector2()
-# Drag
+
+var _mouse_relative = Vector2()  # Relative position of mouse for dragging relative
+var mouse_over_bgr = false
+
 var drag_region
 var dragging = false
 
@@ -59,6 +69,8 @@ func _enter_tree():
 func _input(event):
 	if event is InputEventMouseMotion:
 		mouse_over = _mouse_in_rect(event.global_position, global_position + drag_rect.position, drag_rect.size, scale)
+		if texture:
+			mouse_over_bgr = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale, centered)
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			if draggable:
@@ -87,13 +99,12 @@ func _add_slots():
 			inst.connect("item_removed", self, "_item_removed")
 			inst.connect("item_stack_changed", self, "_item_stack_changed")
 			inst.connect("item_outside_slot", self, "_item_outside_slot")
-			inst.connect("mouse_over", self, "_slot_mouse_over")
+			inst.connect("mouse_enter", self, "_slot_mouse_enter")
+			inst.connect("mouse_exit", self, "_slot_mouse_exit")
 			slots.append(inst)
 			add_child(inst)
-	_add_removed_items()
 			
 func _remove_slots():
-	_temp_items = items.duplicate()
 	items.clear()
 	while slots.size():
 		var inst = slots.pop_back()
@@ -103,18 +114,6 @@ func _remove_slots():
 				inst.item.get_parent().remove_child(inst.item)
 		if inst.get_parent():
 			inst.get_parent().remove_child(inst)
-			
-func _add_removed_items():
-	for slot in slots:
-		if len(_temp_items):
-			var inst = _temp_items.pop_front()
-			slot.set_item(inst)
-		else:
-			break
-	for item in _temp_items:
-		items_dropped.append(item)
-		emit_signal("item_dropped", item)
-	_temp_items.clear()
 		
 func _update_slots():
 	for y in range(slots_amount.y):
@@ -141,22 +140,29 @@ func _item_stack_changed(item):
 	emit_signal("item_stack_changed", item)
 	
 func _item_outside_slot(item):
-	if items_drop_remove and item.slot:
+	if items_drop_remove and item.slot and (not mouse_over_bgr or items_ignore_background):
 		if item in items:
 			items.erase(item)
 		item.remove_from_tree()
 		items_dropped.append(item)
 		emit_signal("item_dropped", item)
 	
-func _slot_mouse_over(inst):
-	emit_signal("slot_mouse_over", inst)
+func _slot_mouse_enter(inst):
+	emit_signal("slot_mouse_enter", inst)
 	
-func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1)):
+func _slot_mouse_exit(inst):
+	emit_signal("slot_mouse_exit", inst)
+	
+	
+func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1), is_centered=false):
+	var ofs = Vector2()
+	if is_centered:
+		ofs = size*scale/2
 	return (
-		mouse_pos.x > rect_pos.x and 
-		mouse_pos.x < rect_pos.x + size.x * scale.x and
-		mouse_pos.y > rect_pos.y and 
-		mouse_pos.y < rect_pos.y + size.y * scale.y
+		mouse_pos.x >= rect_pos.x - ofs.x and 
+		mouse_pos.x <= rect_pos.x - ofs.x + size.x * scale.x and
+		mouse_pos.y >= rect_pos.y - ofs.y and 
+		mouse_pos.y <= rect_pos.y - ofs.y + size.y * scale.y
 		)
 		
 func _is_top_z():
@@ -193,17 +199,36 @@ func add_item(item):
 				return
 	items_dropped.append(item)
 	emit_signal("item_dropped", item)
+	
+func add_items_from_array(arr):
+	for slot in slots:
+		if len(arr):
+			var inst = arr.pop_front()
+			slot.set_item(inst)
+		else:
+			break
+	for item in arr:
+		items_dropped.append(item)
+		emit_signal("item_dropped", item)
+		
+func remove_all_items():
+	var temp_items = items.duplicate()
+	items.clear()
+	return temp_items
 			
 func set_custom_slot(value):
+	var temp_items = items.duplicate()
 	_remove_slots()
 	custom_slot = value
 	_add_slots()
 	_update_slots()
 			
 func set_slots_amount(value):
+	var temp_items = remove_all_items()
 	_remove_slots()
 	slots_amount = value
 	_add_slots()
+	add_items_from_array(temp_items)
 	_update_slots()
 	
 func set_slots_offset(value):
@@ -236,11 +261,3 @@ func set_dragging(value):
 		_drag_start()
 	else:
 		emit_signal("drag_stop")
-		
-func set_child_script(value):
-	if child_script_instance:
-		remove_child(child_script_instance)
-	child_script = value
-	if child_script:
-		child_script_instance = child_script.new()
-		add_child(child_script_instance)

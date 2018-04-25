@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://addons/inventory/assets/background.png" type="Texture" id=1]
 [ext_resource path="res://addons/inventory/types/inventory.gd" type="Script" id=2]
@@ -8,6 +8,23 @@
 [ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=6]
 [ext_resource path="res://addons/inventory/assets/item.svg" type="Texture" id=7]
 [ext_resource path="res://addons/inventory/assets/sword.png" type="Texture" id=8]
+
+[sub_resource type="GDScript" id=1]
+
+script/source = "extends Button
+
+func _pressed():
+	var inv = get_parent().get_node(\"Inventory\")
+	inv.slots_amount = inv.slots_amount + Vector2(1,1)"
+
+[sub_resource type="GDScript" id=2]
+
+script/source = "extends Button
+
+func _pressed():
+	var inv = get_parent().get_node(\"Inventory\")
+	inv.slots_amount = inv.slots_amount - Vector2(1,1)
+	print(inv.slots_amount)"
 
 [node name="Node2D" type="Node2D" index="0"]
 
@@ -22,7 +39,6 @@ __meta__ = {
 "_editor_icon": ExtResource( 3 )
 }
 custom_slot = ExtResource( 4 )
-child_script = null
 slots_amount = Vector2( 3, 3 )
 slots_spacing = Vector2( 48, 48 )
 slots_offset = Vector2( 32, 32 )
@@ -32,6 +48,7 @@ drag_rect_show = true
 drag_rect = Rect2( 0, -16, 160, 16 )
 drag_rect_color = Color( 1, 1, 1, 0.392157 )
 items_drop_remove = true
+items_ignore_background = false
 
 [node name="Inventory2" type="Sprite" parent="." index="1"]
 
@@ -41,7 +58,6 @@ __meta__ = {
 "_editor_icon": ExtResource( 3 )
 }
 custom_slot = ExtResource( 4 )
-child_script = null
 slots_amount = Vector2( 2, 2 )
 slots_spacing = Vector2( 32, 32 )
 slots_offset = Vector2( 0, 0 )
@@ -51,6 +67,7 @@ drag_rect_show = true
 drag_rect = Rect2( -16, -32, 64, 16 )
 drag_rect_color = Color( 1, 1, 1, 1 )
 items_drop_remove = false
+items_ignore_background = false
 
 [node name="Backpack" type="Sprite" parent="." index="2"]
 
@@ -87,5 +104,57 @@ stackable = true
 stack = 1
 max_stack = 99
 remove_if_empty = true
+
+[node name="Button" type="Button" parent="." index="4"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 65.0
+margin_top = 276.0
+margin_right = 77.0
+margin_bottom = 296.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "foo+"
+flat = false
+align = 1
+script = SubResource( 1 )
+
+[node name="Button2" type="Button" parent="." index="5"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 63.0
+margin_top = 302.0
+margin_right = 103.0
+margin_bottom = 322.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "foo-"
+flat = false
+align = 1
+script = SubResource( 2 )
 
 

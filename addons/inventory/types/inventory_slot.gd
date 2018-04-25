@@ -1,18 +1,29 @@
+"""
+	* Caution * 
+	
+	Changing this file will change the file for all custom nodes. 
+	
+	It is recommended to either...
+	a) Edit this instance from another script.
+	b) Extend this script by making a new Sprite and adding a script with the following code.
+	
+		tool
+		extends "res://addons/inventory/types/inventory_slot.gd"
+		
+"""
 tool
 extends "res://addons/inventory/types/inventory_base.gd"
 	
 signal item_added
 signal item_removed
+signal item_outside_slot  # Called when this item is dragged outside of its slot and dropped
 signal item_stack_changed
-signal item_outside_slot
-signal mouse_over
 	
 export(bool) var hover_modulate = true
 export(bool) var item_drag_return = true
 export(Color) var modulate_color = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 export(Texture) var overlay = null setget set_overlay
 	
-var mouse_over = false
 var _default_modulate
 var _default_texture = load("res://addons/inventory/assets/slot.png")
 var dragging = false
@@ -35,11 +46,14 @@ func _draw():
 		draw_texture(overlay, Vector2(0,0))
 	
 func _input(event):
-	if event is InputEventMouseMotion:
-		if texture:
-			mouse_over = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale, centered)
-		if mouse_over:
-			emit_signal("mouse_over", self)
+	if event is InputEventMouseMotion and texture:
+		var last_mouse_over = mouse_over
+		mouse_over = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale, centered)
+		if not last_mouse_over and mouse_over:
+			emit_signal("mouse_enter", self)
+		elif last_mouse_over and not mouse_over:
+			emit_signal("mouse_exit", self)
+		# Set modulate
 		modulate = modulate_color if mouse_over and hover_modulate else _default_modulate
 	if event is InputEventMouseButton: 
 		if event.button_index == BUTTON_LEFT:

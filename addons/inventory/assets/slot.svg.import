@@ -7,7 +7,7 @@ path="res://.import/slot.svg-8e92f47d9957aca182c8973df57b9be8.stex"
 [deps]
 
 source_file="res://addons/inventory/assets/slot.svg"
-source_md5="d998edee88beac2c20141309244a3787"
+source_md5="aabace7a124a3b399be7d5c7c3292715"
 
 dest_files=[ "res://.import/slot.svg-8e92f47d9957aca182c8973df57b9be8.stex" ]
 dest_md5="ff48081f401dfb80f25cc33a2c2aeb33"
