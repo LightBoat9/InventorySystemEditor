@@ -114,7 +114,7 @@ hold_to_drag = false
 drag_rect = Rect2( -16, -32, 64, 16 )
 items_drop_remove = false
 
-[node name="InventoryItem" type="Sprite" parent="." index="4"]
+[node name="Bag1" type="Sprite" parent="." index="4"]
 
 position = Vector2( 372.834, 115.433 )
 scale = Vector2( 0.5, 0.5 )
@@ -130,10 +130,10 @@ hold_to_drag = false
 stackable = true
 stack = 1
 max_stack = 99
-remove_if_empty = true
+remove_if_empty = false
 drag_rect = Rect2( -32, -32, 64, 64 )
 
-[node name="InventoryItem3" type="Sprite" parent="." index="5"]
+[node name="Bag2" type="Sprite" parent="." index="5"]
 
 position = Vector2( 336.182, 157.786 )
 scale = Vector2( 0.5, 0.5 )
@@ -149,10 +149,10 @@ hold_to_drag = false
 stackable = true
 stack = 1
 max_stack = 99
-remove_if_empty = true
+remove_if_empty = false
 drag_rect = Rect2( -32, -32, 64, 64 )
 
-[node name="InventoryItem2" type="Sprite" parent="." index="6"]
+[node name="Pot1" type="Sprite" parent="." index="6"]
 
 position = Vector2( 439.481, 155.227 )
 scale = Vector2( 0.5, 0.5 )
@@ -168,7 +168,7 @@ hold_to_drag = false
 stackable = true
 stack = 1
 max_stack = 99
-remove_if_empty = true
+remove_if_empty = false
 drag_rect = Rect2( -32, -32, 64, 64 )
 
 

@@ -108,3 +108,10 @@ func set_drop_rect(value):
 	drop_rect = value
 	_area_rect2.rect = drop_rect
 	_area_rect2.update()
+	
+func swap_items(slot):
+	if not (self.item and slot.item):
+		return
+	var temp = slot.remove_item()
+	slot.set_item(remove_item())
+	set_item(temp)

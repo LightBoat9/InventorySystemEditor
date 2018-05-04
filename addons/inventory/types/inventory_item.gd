@@ -97,14 +97,15 @@ func _rect_drag_stopped(x):
 	var top = top()
 	if top:
 		if top.is_in_group("inventory_slots"):
-			if top.item and top.item != self:
-				var rm_item = top.remove_item()
-				if slot:
-					slot.set_item(rm_item)
-				rm_item.set_dragging(true)
-				rm_item._drag_rect2._mouse_relative = _drag_rect2._mouse_relative
-				rm_item._drag_rect2.dragging_update()
-			top.set_item(self)
+			if top.item:
+				if top.item != self and self.slot:
+					var temp_item = top.item
+					top.swap_items(self.slot)
+					temp_item.set_dragging(true)
+					temp_item._drag_rect2._mouse_relative = _drag_rect2._mouse_relative
+					temp_item._drag_rect2.dragging_update()
+			else:
+				top.set_item(self)
 		elif top.is_in_group("inventory_items"):
 			if top != self and not top.slot:
 				pass
