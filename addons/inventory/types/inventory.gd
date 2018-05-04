@@ -20,45 +20,46 @@ signal item_removed
 signal item_dropped
 signal item_stack_changed
 
-signal slot_mouse_enter
-signal slot_mouse_exit
+signal slot_mouse_entered
+signal slot_mouse_exited
 
-signal drag_start
-signal drag_stop
+signal drag_rect_mouse_entered
+signal drag_rect_mouse_exited
 
 # Slots
-export(GDScript) var custom_slot = load("res://addons/inventory/types/inventory_slot.gd") setget set_custom_slot
+export(GDScript) var custom_slot = preload("res://addons/inventory/types/inventory_slot.gd") setget set_custom_slot
 export(Vector2) var slots_amount = Vector2(2, 2) setget set_slots_amount
 export(Vector2) var slots_spacing = Vector2(32, 32) setget set_slots_spacing
 export(Vector2) var slots_offset = Vector2(0, 0) setget set_slots_offset
 # Drag
 export(bool) var draggable = true setget set_draggable
 export(bool) var hold_to_drag = false
-export(bool) var drag_rect_show = true setget set_drag_rect_show
 export(Rect2) var drag_rect = Rect2(Vector2(-16,-32), Vector2(64,16)) setget set_drag_rect
-export(Color) var drag_rect_color = Color(1,1,1) setget set_drag_rect_color
 # Items
 # Remove the item from the inventory if dragged outside of it and dropped
 export(bool) var items_drop_remove = false
-# Whether to ignore this Sprites texture when dragging and dropping this item from the inventory
-export(bool) var items_ignore_background = false
+
+var _drag_rect2 = preload("res://addons/inventory/helpers/drag_rect2.gd").new()
 
 var slots = []
 
 var items = []
 var items_dropped = [] # Contains any items that were forced out of the inventory
 
-var _mouse_relative = Vector2()  # Relative position of mouse for dragging relative
-var mouse_over_bgr = false
-
 var drag_region
-var dragging = false
+var dragging
 
 var child_script_instance
 var _default_z_index
 
+var slot_mouse_over = false
+
 func _enter_tree():
-	add_to_group("inventory_nodes")
+	if not _drag_rect2.get_parent():
+		add_child(_drag_rect2)
+	set_drag_rect(drag_rect)
+	_drag_rect2.color = RECT_COLOR_DRAG
+	_drag_rect2.filled = RECT_FILLED
 	add_to_group("inventories")
 	_default_z_index = z_index
 	_remove_slots()
@@ -66,30 +67,21 @@ func _enter_tree():
 	update()
 	_update_slots()
 	
-func _input(event):
-	if event is InputEventMouseMotion:
-		mouse_over = _mouse_in_rect(event.global_position, global_position + drag_rect.position, drag_rect.size, scale)
-		if texture:
-			mouse_over_bgr = _mouse_in_rect(event.global_position, global_position, texture.get_size(), scale, centered)
-	elif event is InputEventMouseButton:
-		if event.button_index == BUTTON_LEFT:
-			if draggable:
-				if dragging:
-					if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
-						set_dragging(false)
-				elif event.pressed and mouse_over and _is_top_z():
-					set_dragging(true)
-			
-func _physics_process(delta):
-	if dragging:
-		position = get_global_mouse_position() + _mouse_relative
+func _ready():
+	_drag_rect2.connect("mouse_entered", self, "_rect_mouse_entered")
+	_drag_rect2.connect("mouse_exited", self, "_rect_mouse_exited")
 	
-func _draw():
-	if drag_rect_show:
-		draw_rect(drag_rect, drag_rect_color)
+func _not_custom_slot():
+	if not custom_slot:
+		printerr("Custom slot is null on %s (%s)" % [str(self), self.name])
+		return true
+	else:
+		return false
 	
 ## Private Methods
 func _add_slots():
+	if _not_custom_slot():
+		return
 	for y in range(slots_amount.y):
 		for x in range(slots_amount.x):
 			var inst = custom_slot.new()
@@ -99,8 +91,8 @@ func _add_slots():
 			inst.connect("item_removed", self, "_item_removed")
 			inst.connect("item_stack_changed", self, "_item_stack_changed")
 			inst.connect("item_outside_slot", self, "_item_outside_slot")
-			inst.connect("mouse_enter", self, "_slot_mouse_enter")
-			inst.connect("mouse_exit", self, "_slot_mouse_exit")
+			inst.connect("mouse_entered", self, "_slot_mouse_entered")
+			inst.connect("mouse_exited", self, "_slot_mouse_exited")
 			slots.append(inst)
 			add_child(inst)
 			
@@ -114,8 +106,18 @@ func _remove_slots():
 				inst.item.get_parent().remove_child(inst.item)
 		if inst.get_parent():
 			inst.get_parent().remove_child(inst)
+			
+func _rect_mouse_entered(inst):
+	mouse_over = true
+	emit_signal("drag_rect_mouse_entered", self)
+	
+func _rect_mouse_exited(inst):
+	mouse_over = false
+	emit_signal("drag_rect_mouse_exited", self)
 		
 func _update_slots():
+	if _not_custom_slot():
+		return
 	for y in range(slots_amount.y):
 		for x in range(slots_amount.x):
 			var slot = slots[x+(y*slots_amount.x)]
@@ -140,49 +142,20 @@ func _item_stack_changed(item):
 	emit_signal("item_stack_changed", item)
 	
 func _item_outside_slot(item):
-	if items_drop_remove and item.slot and (not mouse_over_bgr or items_ignore_background):
+	if items_drop_remove and item.slot:
 		if item in items:
 			items.erase(item)
 		item.remove_from_tree()
 		items_dropped.append(item)
 		emit_signal("item_dropped", item)
 	
-func _slot_mouse_enter(inst):
-	emit_signal("slot_mouse_enter", inst)
+func _slot_mouse_entered(inst):
+	slot_mouse_over = true
+	emit_signal("slot_mouse_entered", inst)
 	
-func _slot_mouse_exit(inst):
-	emit_signal("slot_mouse_exit", inst)
-	
-	
-func _mouse_in_rect(mouse_pos, rect_pos, size, scale=Vector2(1,1), is_centered=false):
-	var ofs = Vector2()
-	if is_centered:
-		ofs = size*scale/2
-	return (
-		mouse_pos.x >= rect_pos.x - ofs.x and 
-		mouse_pos.x <= rect_pos.x - ofs.x + size.x * scale.x and
-		mouse_pos.y >= rect_pos.y - ofs.y and 
-		mouse_pos.y <= rect_pos.y - ofs.y + size.y * scale.y
-		)
-		
-func _is_top_z():
-	for inst in get_tree().get_nodes_in_group("inventory_nodes"):
-		if inst.mouse_over and inst.z_index > z_index:
-			return false
-	return true
-	
-func _drag_start():
-	for inst in get_tree().get_nodes_in_group("inventory_nodes"):
-		if inst != self and inst.dragging:
-			if inst.z_index <= z_index:
-				inst.set_dragging(false)
-			else:
-				set_dragging(false)
-				return
-	for inst in get_tree().get_nodes_in_group("inventory_nodes"):
-		z_index = max(z_index, inst.z_index)
-	z_index += 1
-	emit_signal("drag_start")
+func _slot_mouse_exited(inst):
+	slot_mouse_over = false
+	emit_signal("slot_mouse_exited", inst)
 	
 ## Public Methods
 func add_item(item):
@@ -241,23 +214,8 @@ func set_slots_spacing(value):
 	
 func set_drag_rect(value):
 	drag_rect = value
-	update()
-	
-func set_drag_rect_color(value):
-	drag_rect_color = value
-	update()
-	
-func set_drag_rect_show(value):
-	drag_rect_show = value
-	update()
+	_drag_rect2.rect = drag_rect
+	_drag_rect2.update()
 	
 func set_draggable(value):
 	draggable = value
-		
-func set_dragging(value):
-	dragging = value
-	if dragging:
-		_mouse_relative = position - get_global_mouse_position()
-		_drag_start()
-	else:
-		emit_signal("drag_stop")

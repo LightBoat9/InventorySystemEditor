@@ -2,7 +2,7 @@
 
 [ext_resource path="res://addons/inventory/testing/test_inventory.gd" type="Script" id=1]
 
-[node name="Testing" type="Node"]
+[node name="Testing" type="Node" index="0"]
 
 [node name="Inventory" type="Node" parent="." index="0"]
 
