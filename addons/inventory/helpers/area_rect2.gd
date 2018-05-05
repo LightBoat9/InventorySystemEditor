@@ -10,7 +10,7 @@ var rect = Rect2(Vector2(), Vector2())
 var color = Color(1,1,1)
 var filled = false
 
-var debug_mode = true
+var debug_mode = true setget set_debug_mode
 var mouse_over = false
 
 func _enter_tree():
@@ -49,3 +49,7 @@ func global_z_index():
 func _mouse_in_rect(mouse_pos, rect_pos, rect_size):
 	return (mouse_pos.x >= rect_pos.x and mouse_pos.x <= rect_pos.x + rect_size.x and
 			mouse_pos.y >= rect_pos.y and mouse_pos.y <= rect_pos.y + rect_size.y)
+			
+func set_debug_mode(value):
+	debug_mode = value
+	update()

@@ -3,7 +3,7 @@
 [ext_resource path="res://addons/inventory/assets/background.png" type="Texture" id=1]
 [ext_resource path="res://addons/inventory/types/inventory.gd" type="Script" id=2]
 [ext_resource path="res://addons/inventory/assets/inventory.svg" type="Texture" id=3]
-[ext_resource path="res://addons/inventory/types/inventory_slot.gd" type="Script" id=4]
+[ext_resource path="res://addons/inventory/testing/CustomSlot.tscn" type="PackedScene" id=4]
 [ext_resource path="res://addons/inventory/assets/backpack.png" type="Texture" id=5]
 [ext_resource path="res://addons/inventory/types/inventory_item.gd" type="Script" id=6]
 [ext_resource path="res://addons/inventory/assets/item.svg" type="Texture" id=7]
@@ -44,7 +44,8 @@ slots_offset = Vector2( 32, 32 )
 draggable = true
 hold_to_drag = false
 drag_rect = Rect2( 0, -16, 160, 16 )
-items_drop_remove = false
+drop_outside_slot = false
+debug_mode = true
 
 [node name="Button" type="Button" parent="." index="1"]
 
@@ -112,30 +113,31 @@ slots_offset = Vector2( 0, 0 )
 draggable = true
 hold_to_drag = false
 drag_rect = Rect2( -16, -32, 64, 16 )
-items_drop_remove = false
+drop_outside_slot = false
+debug_mode = true
 
 [node name="Bag1" type="Sprite" parent="." index="4"]
 
-position = Vector2( 372.834, 115.433 )
+position = Vector2( 370.834, 96.4334 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 5 )
 script = ExtResource( 6 )
-_sections_unfolded = [ "Transform" ]
+_sections_unfolded = [ "Offset", "Transform" ]
 __meta__ = {
 "_editor_icon": ExtResource( 7 )
 }
 id = 0
 draggable = true
 hold_to_drag = false
+drag_rect = Rect2( -32, -32, 64, 64 )
 stackable = true
 stack = 1
 max_stack = 99
-remove_if_empty = false
-drag_rect = Rect2( -32, -32, 64, 64 )
+remove_if_empty = true
 
 [node name="Bag2" type="Sprite" parent="." index="5"]
 
-position = Vector2( 336.182, 157.786 )
+position = Vector2( 348.123, 168.4 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 5 )
 script = ExtResource( 6 )
@@ -146,15 +148,15 @@ __meta__ = {
 id = 0
 draggable = true
 hold_to_drag = false
+drag_rect = Rect2( -32, -32, 64, 64 )
 stackable = true
 stack = 1
 max_stack = 99
-remove_if_empty = false
-drag_rect = Rect2( -32, -32, 64, 64 )
+remove_if_empty = true
 
 [node name="Pot1" type="Sprite" parent="." index="6"]
 
-position = Vector2( 439.481, 155.227 )
+position = Vector2( 342.921, 250.095 )
 scale = Vector2( 0.5, 0.5 )
 texture = ExtResource( 8 )
 script = ExtResource( 6 )
@@ -165,10 +167,10 @@ __meta__ = {
 id = 0
 draggable = true
 hold_to_drag = false
+drag_rect = Rect2( -32, -32, 64, 64 )
 stackable = true
 stack = 1
 max_stack = 99
-remove_if_empty = false
-drag_rect = Rect2( -32, -32, 64, 64 )
+remove_if_empty = true
 
 

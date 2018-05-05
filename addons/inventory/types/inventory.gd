@@ -7,8 +7,8 @@
 	a) Edit this instance from another script.
 	b) Extend this script by making a new Sprite and adding a script with the following code.
 	
-		tool
-		extends "res://addons/inventory/types/inventory.gd"
+tool
+extends "res://addons/inventory/types/inventory.gd"
 		
 """
 tool
@@ -27,19 +27,20 @@ signal drag_rect_mouse_entered
 signal drag_rect_mouse_exited
 
 # Slots
-export(GDScript) var custom_slot = preload("res://addons/inventory/types/inventory_slot.gd") setget set_custom_slot
+export(PackedScene) var custom_slot = preload("res://addons/inventory/testing/CustomSlot.tscn") setget set_custom_slot
 export(Vector2) var slots_amount = Vector2(2, 2) setget set_slots_amount
 export(Vector2) var slots_spacing = Vector2(32, 32) setget set_slots_spacing
 export(Vector2) var slots_offset = Vector2(0, 0) setget set_slots_offset
 # Drag
-export(bool) var draggable = true setget set_draggable
+export(bool) var draggable = true
 export(bool) var hold_to_drag = false
 export(Rect2) var drag_rect = Rect2(Vector2(-16,-32), Vector2(64,16)) setget set_drag_rect
 # Items
-# Remove the item from the inventory if dragged outside of it and dropped
-export(bool) var items_drop_remove = false
+export(bool) var drop_outside_slot = false
+# Debugging
+export(bool) var debug_mode = true setget set_debug_mode
 
-var _drag_rect2 = preload("res://addons/inventory/helpers/drag_rect2.gd").new()
+var _drag_rect2 = DragRect2.new()
 
 var slots = []
 
@@ -84,13 +85,12 @@ func _add_slots():
 		return
 	for y in range(slots_amount.y):
 		for x in range(slots_amount.x):
-			var inst = custom_slot.new()
+			var inst = custom_slot.instance()
 			inst.inventory = self
 			inst.position = Vector2(offset.x + x * slots_spacing.x,offset.y + y * slots_spacing.y)
 			inst.connect("item_added", self, "_item_added")
 			inst.connect("item_removed", self, "_item_removed")
 			inst.connect("item_stack_changed", self, "_item_stack_changed")
-			inst.connect("item_outside_slot", self, "_item_outside_slot")
 			inst.connect("mouse_entered", self, "_slot_mouse_entered")
 			inst.connect("mouse_exited", self, "_slot_mouse_exited")
 			slots.append(inst)
@@ -122,6 +122,7 @@ func _update_slots():
 		for x in range(slots_amount.x):
 			var slot = slots[x+(y*slots_amount.x)]
 			slot.position = Vector2(slots_offset.x + x * slots_spacing.x, slots_offset.y + y * slots_spacing.y)
+			slot.debug_mode = debug_mode
 			
 func _item_added(item):
 	if not items.has(item):
@@ -142,7 +143,7 @@ func _item_stack_changed(item):
 	emit_signal("item_stack_changed", item)
 	
 func _item_outside_slot(item):
-	if items_drop_remove and item.slot:
+	if drop_outside_slot and item.slot:
 		if item in items:
 			items.erase(item)
 		item.remove_from_tree()
@@ -190,10 +191,11 @@ func remove_all_items():
 	return temp_items
 			
 func set_custom_slot(value):
-	var temp_items = items.duplicate()
+	var temp_items = remove_all_items()
 	_remove_slots()
 	custom_slot = value
 	_add_slots()
+	add_items_from_array(temp_items)
 	_update_slots()
 			
 func set_slots_amount(value):
@@ -217,5 +219,7 @@ func set_drag_rect(value):
 	_drag_rect2.rect = drag_rect
 	_drag_rect2.update()
 	
-func set_draggable(value):
-	draggable = value
+func set_debug_mode(value):
+	debug_mode = value
+	_drag_rect2.debug_mode = value
+	_update_slots()

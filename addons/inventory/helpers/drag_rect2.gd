@@ -41,4 +41,3 @@ func set_dragging(value):
 		get_parent().make_top()
 	else:
 		emit_signal("drag_stopped", self)
-		
