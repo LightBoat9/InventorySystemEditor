@@ -3,7 +3,7 @@ extends "res://addons/inventory/types/inventory_slot.gd"
 
 var modulate_color = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 
-func _enter_tree():
+func _ready():
 	connect("mouse_entered", self, "mouse_entered")
 	connect("mouse_exited", self, "mouse_exited")
 	

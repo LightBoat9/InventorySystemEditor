@@ -10,14 +10,15 @@ var rect = Rect2(Vector2(), Vector2())
 var color = Color(1,1,1)
 var filled = false
 
-var debug_mode = true setget set_debug_mode
+var debug_in_game = true setget set_debug_in_game
+var debug_in_editor = true setget set_debug_in_editor
 var mouse_over = false
 
 func _enter_tree():
 	add_to_group("area_rects")
 
 func _draw():
-	if Engine.editor_hint or debug_mode:
+	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
 		draw_rect(rect, color, filled)
 
 func _input(event):
@@ -50,6 +51,10 @@ func _mouse_in_rect(mouse_pos, rect_pos, rect_size):
 	return (mouse_pos.x >= rect_pos.x and mouse_pos.x <= rect_pos.x + rect_size.x and
 			mouse_pos.y >= rect_pos.y and mouse_pos.y <= rect_pos.y + rect_size.y)
 			
-func set_debug_mode(value):
-	debug_mode = value
+func set_debug_in_game(value):
+	debug_in_game = value
+	update()
+	
+func set_debug_in_editor(value):
+	debug_in_editor = value
 	update()
