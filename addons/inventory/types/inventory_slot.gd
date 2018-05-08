@@ -12,50 +12,46 @@ extends "res://addons/inventory/types/inventory_slot.gd"
 		
 """
 tool
-extends "res://addons/inventory/types/inventory_base.gd"
+extends TextureRect
 	
 signal item_added
 signal item_removed
 signal item_stack_changed
-signal mouse_entered
-signal mouse_exited
-	
-export(bool) var debug_in_game = false setget set_debug_in_game
+signal global_mouse_entered
+signal global_mouse_exited
+
+export(bool) var debug_in_game = true setget set_debug_in_game
 export(bool) var debug_in_editor = true setget set_debug_in_editor
 export(bool) var item_drag_return = true
-export(Rect2) var area_rect_transform = Rect2(Vector2(-16,-16), Vector2(32, 32)) setget set_area_rect_transform
 	
-var area_rect = preload("res://addons/inventory/helpers/area_rect2.gd").new()
-var _default_texture = preload("res://addons/inventory/assets/slot.png")
 var dragging = false
 var inventory = null
 var item = null
-	
 var mouse_over = false
-
-const RECT_COLOR_AREA = Color("3FC380")
-const RECT_FILLED = false
 	
-func _enter_tree():
-	if not area_rect.get_parent():
-		add_child(area_rect)
-	area_rect.color = RECT_COLOR_AREA
-	area_rect.filled = RECT_FILLED
-	set_area_rect_transform(area_rect_transform)
+const RECT_COLOR = Color("3FC380")
+const RECT_FILLED = false
 	
 func _ready():
 	add_to_group("inventory_nodes")
 	add_to_group("inventory_slots")
-	area_rect.connect("mouse_entered", self, "__rect_mouse_entered")
-	area_rect.connect("mouse_exited", self, "__rect_mouse_exited")
-		
-func __rect_mouse_entered(inst):
-	mouse_over = true
-	emit_signal("mouse_entered", self)
 	
-func __rect_mouse_exited(inst):
-	mouse_over = false
-	emit_signal("mouse_exited", self)
+func _input(event):
+	if event is InputEventMouseMotion:
+		var last_mouse_over = mouse_over
+		mouse_over = _mouse_in_rect(event.global_position, rect_global_position * rect_scale, rect_size * rect_scale)
+		if not last_mouse_over and mouse_over:
+			emit_signal("global_mouse_entered")
+		elif last_mouse_over and not mouse_over:
+			emit_signal("global_mouse_exited")
+	
+func _draw():
+	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
+		draw_rect(Rect2(Vector2(), get_rect().size), RECT_COLOR, RECT_FILLED)
+		
+func _mouse_in_rect(mouse_pos, rect_pos, rect_size):
+	return (mouse_pos.x >= rect_pos.x and mouse_pos.x <= rect_pos.x + rect_size.x and
+			mouse_pos.y >= rect_pos.y and mouse_pos.y <= rect_pos.y + rect_size.y)
 	
 func __stack_changed(item):
 	emit_signal("item_stack_changed", item)
@@ -93,14 +89,9 @@ func set_item(item):
 		item.connect("stack_changed", self, "__stack_changed")
 	if item.is_connected("drop_outside_slot", self, "__item_outside_slot"):
 		item.connect("drop_outside_slot", self, "__item_outside_slot")
-	
-	if item.get_parent():
-		item.get_parent().remove_child(item)
 		
-	item.position = -item.drag_rect.rect.position * item.scale + area_rect.rect.position * scale
-	item.z_index = 0
+	item.rect_global_position = rect_global_position
 	
-	add_child(item)
 	emit_signal("item_added", item)
 	
 func remove_item():
@@ -114,11 +105,6 @@ func remove_item():
 	item = null
 	return inst
 	
-func set_area_rect_transform(value):
-	area_rect_transform = value
-	area_rect.rect = area_rect_transform
-	area_rect.update()
-	
 func swap_items(slot):
 	if not (self.item and slot.item):
 		return
@@ -128,37 +114,8 @@ func swap_items(slot):
 	
 func set_debug_in_game(value):
 	debug_in_game = value
-	area_rect.debug_in_game = value
+	update()
 	
 func set_debug_in_editor(value):
 	debug_in_editor = value
-	area_rect.debug_in_editor = value
-	
-func global_z_index():
-	"""Return the total z_index of this instance and all of its ancestors combined"""
-	var node = self
-	var main = get_tree().root.get_child(get_tree().root.get_child_count() - 1)
-	var total = 0
-	while node != main:
-		total += node.z_index
-		node = node.get_parent()
-	return total
-	
-func make_top():
-	"""Orders all inventory_nodes by their z_index and makes self the top z_index"""
-	var all_nodes = get_tree().get_nodes_in_group("inventories") + items_no_slot()
-	var nodes = []
-	for inst in all_nodes:
-		if inst != self:
-			var index = len(nodes)-1
-			while not inst in nodes:
-				if not len(nodes):
-					nodes.append(inst)
-				elif inst.z_index < nodes[index].z_index:
-					nodes.insert(index, inst)
-				elif inst.z_index >= nodes[index].z_index:
-					nodes.insert(index+1, inst)
-				index += 1
-	nodes.append(self)
-	for i in len(nodes):
-		nodes[i].z_index = i
+	update()

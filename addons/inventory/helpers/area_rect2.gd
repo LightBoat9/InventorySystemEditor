@@ -1,21 +1,25 @@
 tool
-extends Node2D
+extends TextureRect
 
-signal mouse_entered
-signal mouse_exited
 signal mouse_over_input
+signal rect_mouse_entered
+signal rect_mouse_exited
 
 var rect = Rect2(Vector2(), Vector2())
 
 var color = Color(1,1,1)
 var filled = false
 
-var debug_in_game = true setget set_debug_in_game
-var debug_in_editor = true setget set_debug_in_editor
+export(bool) var debug_in_game = true setget set_debug_in_game
+export(bool) var debug_in_editor = true setget set_debug_in_editor
 var mouse_over = false
 
 func _enter_tree():
 	add_to_group("area_rects")
+	
+func _ready():
+	connect("mouse_entered", self, "__mouse_entered")
+	connect("mouse_exited", self, "__mouse_exited")
 
 func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
@@ -24,13 +28,12 @@ func _draw():
 func _input(event):
 	if mouse_over:
 		emit_signal("mouse_over_input", event)
-	if event is InputEventMouseMotion:
-		var last_mouse_over = mouse_over
-		mouse_over = _mouse_in_rect(event.position, global_position + rect.position * get_parent().scale, rect.size * get_parent().scale)
-		if not last_mouse_over and mouse_over:
-			emit_signal("mouse_entered", self)
-		elif last_mouse_over and not mouse_over:
-			emit_signal("mouse_exited", self)
+		
+func __mouse_entered():
+	mouse_over = true
+	
+func __mouse_exited():
+	mouse_over = false
 			
 func is_top(group="area_rects"):
 	for inst in get_tree().get_nodes_in_group(group):

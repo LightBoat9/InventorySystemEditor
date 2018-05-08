@@ -4,11 +4,12 @@ extends "res://addons/inventory/types/inventory_slot.gd"
 var modulate_color = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 
 func _ready():
-	connect("mouse_entered", self, "mouse_entered")
-	connect("mouse_exited", self, "mouse_exited")
+	connect("global_mouse_entered", self, "mouse_entered")
+	connect("global_mouse_exited", self, "mouse_exited")
 	
-func mouse_entered(test):
+func mouse_entered():
+	print("TEST")
 	modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 	
-func mouse_exited(test):
+func mouse_exited():
 	modulate = Color(1,1,1)
