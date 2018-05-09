@@ -14,13 +14,13 @@ extends "res://addons/inventory/types/inventory.gd"
 tool
 extends GridContainer
 
-signal item_added
-signal item_moved
-signal item_removed
-signal item_dropped
-signal item_stack_changed
-signal slot_mouse_entered
-signal slot_mouse_exited
+signal item_added(item)
+signal item_moved(item)
+signal item_removed(item)
+signal item_dropped(item)
+signal item_stack_changed(item)
+signal slot_mouse_entered(slot)
+signal slot_mouse_exited(slot)
 
 export(bool) var debug_in_game = false setget set_debug_in_game
 export(bool) var debug_in_editor = true setget set_debug_in_editor
@@ -60,11 +60,13 @@ func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
 		draw_rect(Rect2(Vector2(), get_rect().size), RECT_COLOR, RECT_FILLED)
 	
-func __slot_mouse_entered():
+func __slot_mouse_entered(slot):
 	slot_mouse_over = true
+	emit_signal("slot_mouse_entered", slot)
 	
-func __slot_mouse_exited():
+func __slot_mouse_exited(slot):
 	slot_mouse_over = false
+	emit_signal("slot_mouse_exited", slot)
 	
 func __not_custom_slot():
 	if not custom_slot:
@@ -84,8 +86,8 @@ func __add_slots():
 		inst.connect("item_added", self, "__item_added")
 		inst.connect("item_removed", self, "__item_removed")
 		inst.connect("item_stack_changed", self, "__item_stack_changed")
-		inst.connect("mouse_entered", self, "__slot_mouse_entered")
-		inst.connect("mouse_exited", self, "__slot_mouse_exited")
+		inst.connect("global_mouse_entered", self, "__slot_mouse_entered", [inst])
+		inst.connect("global_mouse_exited", self, "__slot_mouse_exited", [inst])
 		slots.append(inst)
 		add_child(inst)
 	
@@ -110,6 +112,7 @@ func __item_added(item):
 	
 func __item_removed(item):
 	items.erase(item)
+	print("TEST")
 	emit_signal("item_removed", item)
 	
 func __item_stack_changed(item):
@@ -176,22 +179,3 @@ func set_debug_in_editor(value):
 	debug_in_editor = value
 	_update_slots()
 	update()
-	
-func make_top():
-	"""Orders all inventory_nodes by their z_index and makes self the top z_index"""
-	var all_nodes = get_tree().get_nodes_in_group("inventories") + items_no_slot()
-	var nodes = []
-	for inst in all_nodes:
-		if inst != self:
-			var index = len(nodes)-1
-			while not inst in nodes:
-				if not len(nodes):
-					nodes.append(inst)
-				elif inst.z_index < nodes[index].z_index:
-					nodes.insert(index, inst)
-				elif inst.z_index >= nodes[index].z_index:
-					nodes.insert(index+1, inst)
-				index += 1
-	nodes.append(self)
-	for i in len(nodes):
-		nodes[i].z_index = i

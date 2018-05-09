@@ -17,7 +17,7 @@ extends TextureRect
 signal drag_started
 signal drag_stopped
 signal drop_outside_slot
-signal stack_changed
+signal stack_changed(amount)
 signal global_mouse_entered
 signal global_mouse_exited
 	
@@ -27,7 +27,7 @@ export(bool) var debug_in_editor = true setget set_debug_in_editor
 export var id = 0
 # Drag
 export(bool) var draggable = true setget set_draggable
-export(int, "Relative", "Center", "Position") var drag_mode = 0
+export(int, "Center", "Relative", "Position") var drag_mode = 0
 export(Vector2) var drag_position = Vector2()
 export(bool) var hold_to_drag = false setget set_hold_to_drag
 export(int) var dead_zone_radius = 0
@@ -37,6 +37,7 @@ export(int) var stack = 1 setget set_stack
 export(int) var max_stack = 99 setget set_max_stack
 export(bool) var remove_if_empty = true
 	
+var InventoryController = preload("res://addons/inventory/types/inventory_controller.gd").new()
 var dragging = false setget set_dragging
 var slot = null
 var _mouse_relative = Vector2()  # Relative position of mouse for dragging relative
@@ -49,6 +50,7 @@ const RECT_COLOR = Color("22A7F0")
 const RECT_FILLED = false
 	
 func _ready():
+	add_child(InventoryController)
 	add_to_group("inventory_nodes")
 	add_to_group("inventory_items")
 	connect("global_mouse_entered", self, "__mouse_entered")
@@ -57,7 +59,7 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion:
 		var last_mouse_over = mouse_over
-		mouse_over = _mouse_in_rect(event.position, rect_position * rect_scale, rect_size * rect_scale)
+		mouse_over = InventoryController.point_in_node(event.global_position, self)
 		if not last_mouse_over and mouse_over:
 			emit_signal("global_mouse_entered")
 		elif last_mouse_over and not mouse_over:
@@ -73,7 +75,7 @@ func _input(event):
 				if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
 					set_dragging(false)
 					get_tree().set_input_as_handled()
-			elif draggable and event.pressed and mouse_over and is_top() and not current_dragging():
+			elif draggable and event.pressed and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging():
 				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_drag:
 					set_dragging(true)
 					get_tree().set_input_as_handled()
@@ -84,10 +86,6 @@ func _input(event):
 			if _dead_zone_drag and not event.pressed:
 				_dead_zone_drag = false
 				update()
-				
-func _mouse_in_rect(mouse_pos, rect_pos, rect_size):
-	return (mouse_pos.x >= rect_pos.x and mouse_pos.x <= rect_pos.x + rect_size.x and
-			mouse_pos.y >= rect_pos.y and mouse_pos.y <= rect_pos.y + rect_size.y)
 		
 func draw_circle_arc(center, radius, angle_from, angle_to, color):
     var nb_points = 32
@@ -112,39 +110,29 @@ func __mouse_entered():
 func __mouse_exited():
 	mouse_over = false
 	
-func __drag_started(x):
-	dragging = true
-	make_top()
-	emit_signal("drag_started", self)
-	
-func __drag_stopped(x):
-	dragging = false
-	__drop()
-	
 func __drop():
-	var top = top_node()
+	var top = InventoryController.get_top([self])
 	if top:
-		print(top)
 		if top.is_in_group("inventory_slots"):
-			if top.item and top.item != self:
-				if top.item.id == self.id:
-					set_stack(top.item.add_stack(stack))
-				elif self.slot:
-					__drop_swap(top)
-			else:
-				top.set_item(self)
+			if top.item != self:
+				if top.item:
+					if top.item.id == self.id and stackable and top.item.stackable:
+						set_stack(top.item.add_stack(stack))
+					elif self.slot:
+						__drop_swap(top)
+				else:
+					top.set_item(self)
 		elif top.is_in_group("inventory_items"):
-			if top.id == self.id:
+			if top.id == self.id and stackable and top.stackable:
 				set_stack(top.add_stack(stack))
 			elif top.slot and top != self and self.slot:
 				__drop_swap(top.slot)
-				
 	if slot:
 		if not top or not top.is_in_group("inventory_slots"):
-			emit_signal("drop_outside_slot", self)
+			emit_signal("drop_outside_slot")
 		#rect_position = rect_position * rect_scale + slot.rect_position * slot.rect_scale
 		rect_global_position = slot.rect_global_position
-	emit_signal("drag_stopped", self)
+	emit_signal("drag_stopped")
 	
 func __drop_swap(slot):
 	if slot.item != self and self.slot:
@@ -158,18 +146,18 @@ func __drop_swap(slot):
 func free():
 	"""Overides Object.free to ensure references to the item are removed"""
 	if slot:
-		slot.remove_item()
+		slot.clear_item()
 	.free()
 	
 func queue_free():
 	"""Overides Node.queue_free to ensure references to the item are removed"""
 	if slot:
-		slot.remove_item()
+		slot.clear_item()
 	.queue_free()
 	
 func remove_from_tree():
 	if slot:
-		slot.remove_item()
+		slot.clear_item()
 	if get_parent():
 		get_parent().remove_child(self)
 		
@@ -202,7 +190,7 @@ func set_stack(value):
 		stack = max_stack
 	if stack <= 0 and remove_if_empty:
 		queue_free()
-	emit_signal("stack_changed", self)
+	emit_signal("stack_changed", stack)
 	return overflow
 	
 func set_max_stack(value):
@@ -214,11 +202,12 @@ func set_dragging(value):
 	dragging = value
 	if dragging:
 		_mouse_relative = get_local_mouse_position() * rect_scale
-		emit_signal("drag_started", self)
-		make_top()
+		emit_signal("drag_started")
+		InventoryController.make_top(self)
+		dragging_update()
 	else:
 		__drop()
-		emit_signal("drag_stopped", self)
+		emit_signal("drag_stopped")
 	
 func set_debug_in_game(value):
 	debug_in_game = value
@@ -228,68 +217,12 @@ func set_debug_in_editor(value):
 	debug_in_editor = value
 	update()
 	
-func items_no_slot():
-	var items = get_tree().get_nodes_in_group("inventory_items")
-	var arr = []
-	for item in items:
-		if not item.slot:
-			arr.append(item)
-	return arr
-		
-	
-func make_top():
-	"""Orders all inventory_nodes by their z_index and makes self the top z_index"""
-	var all_nodes = get_tree().get_nodes_in_group("inventory_nodes")
-	var nodes = []
-	for inst in all_nodes:
-		if inst != self:
-			var index = len(nodes)-1
-			while not inst in nodes:
-				if not len(nodes):
-					nodes.append(inst)
-				elif not inst.is_greater_than(nodes[index]):
-					nodes.insert(index, inst)
-				elif inst.is_greater_than(nodes[index]):
-					nodes.insert(index+1, inst)
-				index += 1
-	nodes.append(self)
-	for i in len(nodes):
-		nodes[i].raise()
-		
-func is_top():
-	var nodes = get_tree().get_nodes_in_group("inventory_nodes")
-	for node in nodes:
-		if node.mouse_over and node.is_greater_than(self):
-			return false
-	return true
-	
-func current_dragging():
-	var nodes = get_tree().get_nodes_in_group("inventory_nodes")
-	for node in nodes:
-		if node.dragging:
-			return node
-	
-func top_node(group="inventory_nodes", mouse_over=true, not_self=true):
-	"""Return the top (highest z_index) node in the group (default "inventory_nodes").
-	
-		(bool) mouse_over : only check items with mouse_over.
-		(bool) not_self : only check items that are not self.
-	"""
-	var top = null
-	for node in get_tree().get_nodes_in_group(group):
-		if (node.mouse_over or not mouse_over) and (node != self or not not_self):
-			if not top:
-				top = node
-			elif node.is_greater_than(top):
-				top = node
-	return top
-	
 func dragging_update():
 	if dragging:
 		match drag_mode:
 			0:
-				rect_global_position = get_global_mouse_position() - _mouse_relative
-			1:
 				rect_global_position = get_global_mouse_position() - (rect_size * rect_scale / 2.0)
+			1:
+				rect_global_position = get_global_mouse_position() - _mouse_relative
 			2:
 				rect_global_position = get_global_mouse_position() - drag_position

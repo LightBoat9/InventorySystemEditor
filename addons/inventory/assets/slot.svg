@@ -40,8 +40,8 @@
      id="namedview3735"
      showgrid="false"
      inkscape:zoom="53"
-     inkscape:cx="4.9339623"
-     inkscape:cy="8"
+     inkscape:cx="2.5471698"
+     inkscape:cy="9.1320755"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
@@ -56,21 +56,21 @@
        width="2"
        y="2"
        x="2"
-       style="fill:#a5b7f3;stroke-width:2.04124141;fill-opacity:1" />
+       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1" />
     <rect
        id="svg_6-5"
        height="12"
        width="2"
        y="2"
        x="12"
-       style="fill:#a5b7f3;stroke-width:2.04124141;fill-opacity:1" />
+       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1" />
     <rect
        id="svg_6-5-8"
        height="12"
        width="2"
        y="2"
        x="-4"
-       style="fill:#a5b7f3;stroke-width:2.04124141;fill-opacity:1"
+       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1"
        transform="rotate(-90)" />
     <rect
        id="svg_6-5-8-5"
@@ -78,7 +78,7 @@
        width="2"
        y="2"
        x="-14"
-       style="fill:#a5b7f3;stroke-width:2.04124141;fill-opacity:1"
+       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1"
        transform="rotate(-90)" />
   </g>
 </svg>

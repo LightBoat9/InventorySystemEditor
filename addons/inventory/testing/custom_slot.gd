@@ -8,7 +8,6 @@ func _ready():
 	connect("global_mouse_exited", self, "mouse_exited")
 	
 func mouse_entered():
-	print("TEST")
 	modulate = Color(230.0/255.0,230.0/255.0,230.0/255.0,1)
 	
 func mouse_exited():
