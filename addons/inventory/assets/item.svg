@@ -39,24 +39,31 @@
      inkscape:window-height="1017"
      id="namedview3735"
      showgrid="false"
-     inkscape:zoom="26.5"
-     inkscape:cx="-0.38792777"
-     inkscape:cy="5.4348498"
+     inkscape:zoom="45.353532"
+     inkscape:cx="6.0595181"
+     inkscape:cy="5.8515987"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g3731" />
+     inkscape:current-layer="g3731"
+     inkscape:measure-start="4.33962,14"
+     inkscape:measure-end="1.84906,14.566"
+     showguides="false" />
   <g
      id="g3731">
     <title
        id="title3727">Layer 1</title>
-    <rect
-       id="svg_6-5-8-4"
-       height="8"
-       width="8"
-       y="4"
-       x="-12"
-       style="fill:#a5efac;stroke-width:3.33333325;fill-opacity:1"
-       transform="rotate(-90)" />
+    <path
+       style="fill:none;fill-opacity:0;stroke:#a5efac;stroke-width:0.97403574px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 1.9870179,11.552503 8.2529213,5.1552608 6.324951,3.1868785 7.2889362,2.2026873 9.939895,4.909213 12.83185,2.2026873 13.795836,3.1868785 10.90388,5.8934042 13.55484,8.5999298 12.590855,9.5841201 10.662884,7.6157386 4.3969807,14.012982 H 1.9870179 Z"
+       id="path4527"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccccccc" />
+    <path
+       style="fill:none;fill-opacity:0;stroke:#a5efac;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="M -0.43837254,10.009073 5.8275309,3.6118308 3.8995606,1.6434485 4.8635458,0.65925734 7.5145041,3.365783 10.40646,0.65925734 11.370446,1.6434485 8.4784901,4.3499742 11.12945,7.0564998 10.165465,8.0406901 8.2374941,6.0723086 1.9715903,12.469552 h -2.40996284 z"
+       id="path4527-0"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccccccccccccc" />
   </g>
 </svg>

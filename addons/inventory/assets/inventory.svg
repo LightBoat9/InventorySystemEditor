@@ -40,61 +40,77 @@
      inkscape:window-height="1017"
      id="namedview3735"
      showgrid="false"
-     inkscape:zoom="26.5"
-     inkscape:cx="4.4509012"
-     inkscape:cy="6.604638"
+     inkscape:zoom="37.476659"
+     inkscape:cx="10.138862"
+     inkscape:cy="8.3196467"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="g3731" />
+     inkscape:current-layer="g3731"
+     showguides="false" />
   <g
      id="g3731">
     <title
        id="title3727">Layer 1</title>
     <rect
        id="svg_6"
-       height="12"
-       width="2"
-       y="2"
-       x="2"
-       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1" />
+       height="11.5"
+       width="1"
+       y="2.25"
+       x="2.25"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41298532" />
     <rect
        id="svg_6-5"
-       height="12"
-       width="2"
-       y="2"
-       x="12"
-       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1" />
+       height="11.5"
+       width="1"
+       y="2.25"
+       x="12.75"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41298532" />
     <rect
        id="svg_6-5-8"
-       height="12"
-       width="2"
-       y="2"
-       x="-4"
-       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1"
+       height="11.5"
+       width="1"
+       y="2.25"
+       x="-3.25"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41298521"
        transform="rotate(-90)" />
     <rect
        id="svg_6-5-8-5"
-       height="12"
-       width="2"
-       y="2"
-       x="-14"
-       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1"
+       height="11.5"
+       width="1"
+       y="2.25"
+       x="-13.75"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41298532"
        transform="rotate(-90)" />
     <rect
        id="svg_6-5-8-5-0"
-       height="12"
-       width="2"
-       y="2"
-       x="-9"
-       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1"
+       height="11.5"
+       width="1"
+       y="2.25"
+       x="-6.75"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41298532"
        transform="rotate(-90)" />
     <rect
        id="svg_6-5-3"
-       height="12"
-       width="2"
-       y="2"
-       x="7"
-       style="fill:#a5efac;stroke-width:2.04124141;fill-opacity:1" />
+       height="11.493018"
+       width="1"
+       y="2.25"
+       x="5.75"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41255629" />
+    <rect
+       transform="rotate(-90)"
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41298532"
+       x="-10.25"
+       y="2.25"
+       width="1"
+       height="11.5"
+       id="rect833" />
+    <rect
+       style="fill:#a5efac;fill-opacity:1;stroke-width:1.41091561"
+       x="9.25"
+       y="2.25"
+       width="1"
+       height="11.466334"
+       id="rect835" />
   </g>
 </svg>

@@ -5,7 +5,7 @@
 	
 	It is recommended to either...
 	a) Edit this instance from another script.
-	b) Extend this script by making a new Sprite and adding a script with the following code.
+	b) Extend this script by making a new TextureRect and adding a script with the following code.
 	
 tool
 extends "res://addons/inventory/types/inventory_slot.gd"
@@ -41,7 +41,7 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion:
 		var last_mouse_over = mouse_over
-		mouse_over = InventoryController.point_in_node(event.global_position, self)
+		mouse_over = Rect2(rect_global_position, get_rect().size).has_point(event.global_position)
 		if not last_mouse_over and mouse_over:
 			emit_signal("global_mouse_entered")
 		elif last_mouse_over and not mouse_over:
@@ -50,10 +50,6 @@ func _input(event):
 func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
 		draw_rect(Rect2(Vector2(), get_rect().size), RECT_COLOR, RECT_FILLED)
-		
-func _mouse_in_rect(mouse_pos, rect_pos, rect_size):
-	return (mouse_pos.x >= rect_pos.x and mouse_pos.x <= rect_pos.x + rect_size.x and
-			mouse_pos.y >= rect_pos.y and mouse_pos.y <= rect_pos.y + rect_size.y)
 	
 func __stack_changed(item):
 	emit_signal("item_stack_changed", item)
@@ -86,7 +82,7 @@ func set_item(inst):
 		return
 	item = inst
 	if inst.slot:
-		inst.slot.item = null
+		inst.slot.clear_item()
 	inst.slot = self
 	
 	if inst.is_connected("stack_changed", self, "__stack_changed"):
@@ -107,6 +103,7 @@ func move_item(slot):
 		swap_items(slot)
 		return
 	slot.item = item
+	item.slot = slot
 	item = null
 	
 func clear_item():
@@ -121,8 +118,8 @@ func remove_item():
 		return
 	item.slot = null
 	var inst = item
-	item = null
 	emit_signal("item_removed", item)
+	item = null
 	return inst
 	
 func swap_items(slot):

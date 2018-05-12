@@ -1,10 +1,4 @@
 extends Node
-	
-func point_in_node(point, node):
-	var rect_size = node.rect_size * node.rect_scale
-	var rect_pos = node.rect_global_position * node.rect_scale
-	return (point.x >= rect_pos.x and point.x <= rect_pos.x + rect_size.x and
-			point.y >= rect_pos.y and point.y <= rect_pos.y + rect_size.y)
 
 func get_top(ignore_nodes=[], group="inventory_nodes", mouse_over=true):
 	"""

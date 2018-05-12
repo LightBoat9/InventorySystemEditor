@@ -5,7 +5,7 @@
 	
 	It is recommended to either...
 	a) Edit this instance from another script.
-	b) Extend this script by making a new Sprite and adding a script with the following code.
+	b) Extend this script by making a new TextureRect and adding a script with the following code.
 	
 tool
 extends "res://addons/inventory/types/inventory_item.gd"
@@ -16,7 +16,7 @@ extends TextureRect
 	
 signal drag_started
 signal drag_stopped
-signal drop_outside_slot
+signal drop_outside_slot(drop_point)
 signal stack_changed(amount)
 signal global_mouse_entered
 signal global_mouse_exited
@@ -59,7 +59,7 @@ func _ready():
 func _input(event):
 	if event is InputEventMouseMotion:
 		var last_mouse_over = mouse_over
-		mouse_over = InventoryController.point_in_node(event.global_position, self)
+		mouse_over = Rect2(rect_global_position, get_rect().size).has_point(event.global_position)
 		if not last_mouse_over and mouse_over:
 			emit_signal("global_mouse_entered")
 		elif last_mouse_over and not mouse_over:
@@ -74,11 +74,13 @@ func _input(event):
 			if dragging:
 				if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
 					set_dragging(false)
-					get_tree().set_input_as_handled()
+					if is_inside_tree():
+						get_tree().set_input_as_handled()
 			elif draggable and event.pressed and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging():
 				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_drag:
 					set_dragging(true)
-					get_tree().set_input_as_handled()
+					if is_inside_tree():
+						get_tree().set_input_as_handled()
 				else:
 					_dead_zone_drag = true
 					_dead_zone_center = get_local_mouse_position()
@@ -114,23 +116,28 @@ func __drop():
 	var top = InventoryController.get_top([self])
 	if top:
 		if top.is_in_group("inventory_slots"):
-			if top.item != self:
-				if top.item:
-					if top.item.id == self.id and stackable and top.item.stackable:
-						set_stack(top.item.add_stack(stack))
-					elif self.slot:
-						__drop_swap(top)
-				else:
-					top.set_item(self)
+			if not top.item:
+				top.set_item(self)
 		elif top.is_in_group("inventory_items"):
 			if top.id == self.id and stackable and top.stackable:
-				set_stack(top.add_stack(stack))
+				if not top.is_full():
+					set_stack(top.add_stack(stack))
+				else:
+					top.set_stack(add_stack(top.stack))
+				if not top.stack == 0 or not top.remove_if_empty:
+					set_dragging(true)
+					dragging_update()
 			elif top.slot and top != self and self.slot:
 				__drop_swap(top.slot)
+			elif not hold_to_drag and top.slot:
+				var temp_slot = top.slot
+				var temp_item = top.slot.remove_item()
+				temp_item.dragging = true
+				temp_slot.set_item(self)
 	if slot:
-		if not top or not top.is_in_group("inventory_slots"):
-			emit_signal("drop_outside_slot")
-		#rect_position = rect_position * rect_scale + slot.rect_position * slot.rect_scale
+		if not top:
+			emit_signal("drop_outside_slot", rect_global_position)
+	if slot and not dragging:  # Check again because it the signal might remove the slot
 		rect_global_position = slot.rect_global_position
 	emit_signal("drag_stopped")
 	
@@ -154,6 +161,18 @@ func queue_free():
 	if slot:
 		slot.clear_item()
 	.queue_free()
+	
+func is_full():
+	return stack >= max_stack
+	
+func split():
+	if stack > 1:
+		var item = self.duplicate()
+		get_parent().add_child(item)
+		var temp = stack
+		set_stack(stack / 2)
+		item.stack = temp - stack
+		return item
 	
 func remove_from_tree():
 	if slot:
@@ -190,7 +209,8 @@ func set_stack(value):
 		stack = max_stack
 	if stack <= 0 and remove_if_empty:
 		queue_free()
-	emit_signal("stack_changed", stack)
+	else:
+		emit_signal("stack_changed", stack)
 	return overflow
 	
 func set_max_stack(value):
