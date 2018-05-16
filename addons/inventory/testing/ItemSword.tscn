@@ -5,7 +5,7 @@
 [ext_resource path="res://addons/inventory/assets/item.svg" type="Texture" id=3]
 [ext_resource path="res://addons/inventory/testing/ItemCount.tscn" type="PackedScene" id=4]
 
-[node name="Sword" type="TextureRect"]
+[node name="Sword" type="TextureRect" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -41,6 +41,9 @@ stackable = true
 stack = 1
 max_stack = 99
 remove_if_empty = true
+right_click_split = false
+slot_drop_return = true
+allow_outside_slot = false
 
 [node name="Label" parent="." index="0" instance=ExtResource( 4 )]
 

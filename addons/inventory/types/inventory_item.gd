@@ -30,24 +30,34 @@ export(bool) var draggable = true setget set_draggable
 export(int, "Center", "Relative", "Position") var drag_mode = 0
 export(Vector2) var drag_position = Vector2()
 export(bool) var hold_to_drag = false setget set_hold_to_drag
-export(int) var dead_zone_radius = 0
+export(float) var dead_zone_radius = 0.0 setget set_dead_zone_radius
 # Stack
 export(bool) var stackable = true
 export(int) var stack = 1 setget set_stack
 export(int) var max_stack = 99 setget set_max_stack
 export(bool) var remove_if_empty = true
+export(bool) var right_click_split = false
+# Slot
+export(bool) var slot_drop_return = true
+export(bool) var allow_outside_slot = false
 	
-var InventoryController = preload("res://addons/inventory/types/inventory_controller.gd").new()
-var dragging = false setget set_dragging
-var slot = null
 var _mouse_relative = Vector2()  # Relative position of mouse for dragging relative
 var _dead_zone_drag = false
 var _dead_zone_center = Vector2()
-
+var InventoryController = preload("res://addons/inventory/types/inventory_controller.gd").new()
+var dragging = false setget set_dragging
+var slot = null
 var mouse_over = false
+var split_item
 
 const RECT_COLOR = Color("22A7F0")
 const RECT_FILLED = false
+	
+enum DRAG_MODE {
+	Center,
+	Relative,
+	Position,
+}
 	
 func _ready():
 	add_child(InventoryController)
@@ -73,7 +83,10 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT:
 			if dragging:
 				if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
-					set_dragging(false)
+					var top = InventoryController.get_top([self])
+					if (hold_to_drag or allow_outside_slot or split_item or (slot and slot_drop_return) or top and ((top.is_in_group("inventory_items") and top.id == id) or top.is_in_group("inventory_slots"))):
+						set_dragging(false)
+						__drop(top)
 					if is_inside_tree():
 						get_tree().set_input_as_handled()
 			elif draggable and event.pressed and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging():
@@ -88,23 +101,29 @@ func _input(event):
 			if _dead_zone_drag and not event.pressed:
 				_dead_zone_drag = false
 				update()
+		elif event.button_index == BUTTON_RIGHT:
+			if not hold_to_drag and right_click_split and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging():
+				if can_split():
+					split_and_drag()
 		
 func draw_circle_arc(center, radius, angle_from, angle_to, color):
     var nb_points = 32
     var points_arc = PoolVector2Array()
-
+	
     for i in range(nb_points+1):
         var angle_point = deg2rad(angle_from + i * (angle_to-angle_from) / nb_points - 90)
         points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
-
+	
     for index_point in range(nb_points):
         draw_line(points_arc[index_point], points_arc[index_point + 1], color)
 	
 func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
 		draw_rect(Rect2(Vector2(), get_rect().size), RECT_COLOR, RECT_FILLED)
-		if _dead_zone_drag and dead_zone_radius > 0:
-	    	draw_circle_arc(_dead_zone_center, dead_zone_radius, 0, 360, RECT_COLOR)
+		if hold_to_drag and (_dead_zone_drag or Engine.editor_hint) and dead_zone_radius > 0:
+			if Engine.editor_hint: 
+				_dead_zone_center = rect_size * rect_scale / 2.0
+			draw_circle_arc(_dead_zone_center, dead_zone_radius, 0, 360, RECT_COLOR)
 	
 func __mouse_entered():
 	mouse_over = true
@@ -112,8 +131,7 @@ func __mouse_entered():
 func __mouse_exited():
 	mouse_over = false
 	
-func __drop():
-	var top = InventoryController.get_top([self])
+func __drop(top):
 	if top:
 		if top.is_in_group("inventory_slots"):
 			if not top.item:
@@ -131,15 +149,21 @@ func __drop():
 				__drop_swap(top.slot)
 			elif not hold_to_drag and top.slot:
 				var temp_slot = top.slot
-				var temp_item = top.slot.remove_item()
+				var temp_item = top.slot.item
+				top.slot.clear_item()
 				temp_item.dragging = true
 				temp_slot.set_item(self)
+	if split_item:
+		if not slot and split_item.slot and slot_drop_return and (stack != 0 or not remove_if_empty):
+			set_stack(split_item.add_stack(stack))
+		split_item = null
 	if slot:
 		if not top:
 			emit_signal("drop_outside_slot", rect_global_position)
+			if allow_outside_slot:
+				slot.remove_item()
 	if slot and not dragging:  # Check again because it the signal might remove the slot
 		rect_global_position = slot.rect_global_position
-	emit_signal("drag_stopped")
 	
 func __drop_swap(slot):
 	if slot.item != self and self.slot:
@@ -161,30 +185,13 @@ func queue_free():
 	if slot:
 		slot.clear_item()
 	.queue_free()
-	
-func is_full():
-	return stack >= max_stack
-	
-func split():
-	if stack > 1:
-		var item = self.duplicate()
-		get_parent().add_child(item)
-		var temp = stack
-		set_stack(stack / 2)
-		item.stack = temp - stack
-		return item
-	
-func remove_from_tree():
-	if slot:
-		slot.clear_item()
-	if get_parent():
-		get_parent().remove_child(self)
 		
 func set_draggable(value):
 	draggable = value
 	
 func set_hold_to_drag(value):
 	hold_to_drag = value
+	update()
 	
 func add_stack(value):
 	"""
@@ -226,7 +233,6 @@ func set_dragging(value):
 		InventoryController.make_top(self)
 		dragging_update()
 	else:
-		__drop()
 		emit_signal("drag_stopped")
 	
 func set_debug_in_game(value):
@@ -237,12 +243,48 @@ func set_debug_in_editor(value):
 	debug_in_editor = value
 	update()
 	
+func set_dead_zone_radius(value):
+	dead_zone_radius = value
+	update()
+	
 func dragging_update():
 	if dragging:
 		match drag_mode:
-			0:
+			DRAG_MODE.Center:
 				rect_global_position = get_global_mouse_position() - (rect_size * rect_scale / 2.0)
-			1:
+			DRAG_MODE.Relative:
 				rect_global_position = get_global_mouse_position() - _mouse_relative
-			2:
+			DRAG_MODE.Position:
 				rect_global_position = get_global_mouse_position() - drag_position
+
+func is_full():
+	return stack >= max_stack
+	
+func can_split():
+	return stack > 1
+	
+func split(smaller_stack=false):
+	if can_split():
+		var item = self.duplicate()
+		get_parent().add_child(item)
+		var temp = stack
+		if smaller_stack:
+			item.stack = stack / 2
+			set_stack(temp - item.stack)
+		else:
+			set_stack(stack / 2)
+			item.stack = temp - stack
+		return item
+	
+func split_and_drag(smaller_stack=false):
+	if can_split():
+		var inst = split(smaller_stack)
+		inst.dragging = true
+		inst.split_item = self
+	
+func remove_from_tree():
+	if slot:
+		slot.clear_item()
+	if get_parent():
+		get_parent().remove_child(self)
+	

@@ -29,11 +29,8 @@ export(bool) var debug_in_editor = true setget set_debug_in_editor
 # Slots
 export(PackedScene) var custom_slot = preload("res://addons/inventory/testing/CustomSlot.tscn") setget set_custom_slot
 export(int) var slots_amount = 1 setget set_slots_amount
-# Drag
-export(bool) var draggable = true
-export(bool) var hold_to_drag = false
 # Items
-export(bool) var drop_outside_inventory = true
+export(bool) var drop_outside_remove = false
 
 const RECT_COLOR_DRAG = Color("22A7F0")
 const RECT_FILLED = false
@@ -132,9 +129,7 @@ func __item_stack_changed(item):
 	emit_signal("item_stack_changed", item)
 	
 func __item_outside_slot(position, item):
-	if item.slot and drop_outside_inventory:
-		if item in items:
-			items.erase(item)
+	if item.slot and drop_outside_remove:
 		if item.slot:
 			item.slot.remove_item()
 		emit_signal("item_dropped", item)

@@ -2,17 +2,20 @@
 
 [sub_resource type="GDScript" id=1]
 
-script/source = "extends Label
+script/source = "tool
+extends Label
 
-func _ready():
-	get_parent().connect(\"stack_changed\", self, \"stack_changed\")
+func _enter_tree():
+	stack_changed(get_parent().stack)
+	if not get_parent().is_connected(\"stack_changed\", self, \"stack_changed\"):
+		get_parent().connect(\"stack_changed\", self, \"stack_changed\")
 	
 func stack_changed(amount):
 	text = str(amount)
 	
 "
 
-[node name="Label" type="Label" index="0"]
+[node name="Label" type="Label"]
 
 anchor_left = 0.0
 anchor_top = 0.0

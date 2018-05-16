@@ -37,6 +37,7 @@ func _pressed():
 	var item = items[i].instance()
 	get_node(\"/root/Node2D\").add_child(item)
 	item.stack = 13
+	item.right_click_split = true
 	inventory.add_item(item)"
 
 [sub_resource type="GDScript" id=3]
@@ -77,9 +78,7 @@ debug_in_game = false
 debug_in_editor = true
 custom_slot = ExtResource( 3 )
 slots_amount = 9
-draggable = true
-hold_to_drag = false
-drop_outside_inventory = true
+drop_outside_remove = false
 
 [node name="CheckBox" type="CheckBox" parent="." index="1"]
 
@@ -155,23 +154,26 @@ debug_in_game = false
 debug_in_editor = true
 custom_slot = ExtResource( 3 )
 slots_amount = 9
-draggable = true
-hold_to_drag = false
-drop_outside_inventory = false
+drop_outside_remove = false
 
 [node name="Sword" parent="." index="4" instance=ExtResource( 4 )]
 
-margin_left = 319.0
-margin_top = 68.0
-margin_right = 351.0
-margin_bottom = 100.0
+margin_left = 320.0
+margin_top = 82.0
+margin_right = 352.0
+margin_bottom = 114.0
+hold_to_drag = true
+dead_zone_radius = 5.0
 
 [node name="Bag" parent="." index="5" instance=ExtResource( 5 )]
 
-margin_left = 362.0
-margin_top = 160.0
-margin_right = 394.0
-margin_bottom = 192.0
+margin_left = 373.0
+margin_top = 84.0
+margin_right = 405.0
+margin_bottom = 116.0
+right_click_split = false
+slot_drop_return = true
+allow_outside_slot = false
 
 [node name="Pot" parent="." index="6" instance=ExtResource( 6 )]
 
@@ -179,6 +181,9 @@ margin_left = 492.0
 margin_top = 151.0
 margin_right = 524.0
 margin_bottom = 183.0
+right_click_split = false
+slot_drop_return = true
+allow_outside_slot = false
 
 [node name="Pot2" parent="." index="7" instance=ExtResource( 6 )]
 
@@ -186,6 +191,8 @@ margin_left = 434.0
 margin_top = 265.0
 margin_right = 466.0
 margin_bottom = 297.0
-stack = 99
+right_click_split = false
+slot_drop_return = true
+allow_outside_slot = false
 
 

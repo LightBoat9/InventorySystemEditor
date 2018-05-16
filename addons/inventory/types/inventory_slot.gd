@@ -112,10 +112,6 @@ func clear_item():
 	
 func remove_item():
 	"""Removes the item from the slot and returns it"""
-	if not item:
-		print_stack()
-		printerr("Cannot remove item does not contain item")
-		return
 	item.slot = null
 	var inst = item
 	emit_signal("item_removed", item)
