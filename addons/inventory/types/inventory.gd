@@ -18,7 +18,7 @@ signal item_added(item)
 signal item_moved(item)
 signal item_removed(item)
 signal item_dropped(item)
-signal item_stack_changed(item)
+signal item_stack_changed(item, amount)
 signal slot_mouse_entered(slot)
 signal slot_mouse_exited(slot)
 signal global_mouse_entered
@@ -112,6 +112,7 @@ func __item_added(item):
 	if not items.has(item):
 		items.append(item)
 		item.connect("drop_outside_slot", self, "__item_outside_slot", [item])
+		item.connect("stack_changed", self, "__item_stack_changed", [item])
 		emit_signal("item_added", item)
 	else:
 		emit_signal("item_moved", item)
@@ -119,14 +120,14 @@ func __item_added(item):
 func __item_removed(item):
 	items.erase(item)
 	item.disconnect("drop_outside_slot", self, "__item_outside_slot")
+	item.disconnect("stack_changed", self, "__item_stack_changed")
 	emit_signal("item_removed", item)
 	
-func __item_stack_changed(item):
-	# Remove deleted items
-	for i in items:
-		if i == item and item.stack == 0:
+func __item_stack_changed(amount, item):
+	for i in items:  # Remove deleted items
+		if i == item and item.stack == 0 and item.remove_if_empty:
 			items.remove(items.find(item))
-	emit_signal("item_stack_changed", item)
+	emit_signal("item_stack_changed", item, amount)
 	
 func __item_outside_slot(position, item):
 	if item.slot and drop_outside_remove:
@@ -161,6 +162,40 @@ func add_items(arr):
 	for item in arr:
 		add_item(item)
 		
+func first_item():
+	for slot in slots:
+		if slot.item:
+			return slot.item
+			
+func last_item():
+	for i in range(len(slots)-1, -1, -1):
+		print(i)
+		if slots[i].item:
+			return slots[i].item
+	
+func get_item(index):
+	if index < 0 or index >= len(slots):
+		print_stack()
+		printerr("Index outside of bounds on inventory.slots")
+		return
+	return slots[index].item
+	
+func is_empty():
+	return len(items) == 0
+	
+func has_item(id):
+	for slot in slots:
+		if slot.item and slot.item.id == id:
+			return true
+	return false
+				
+func remove_item(index):
+	if index < 0 or index >= len(slots):
+		print_stack()
+		printerr("Index outside of bounds on inventory.slots")
+		return
+	return slots[index].remove_item()
+		
 func remove_all_items():
 	var arr = []
 	for slot in slots:
@@ -168,6 +203,11 @@ func remove_all_items():
 			arr.append(slot.item)
 			slot.clear_item()
 	return arr
+	
+func find_item(id):
+	for i in range(len(slots)-1):
+		if slots[i].item and slots[i].item.id == id:
+			return i
 			
 func set_custom_slot(value):
 	custom_slot = value

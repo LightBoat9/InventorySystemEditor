@@ -48,7 +48,7 @@ var InventoryController = preload("res://addons/inventory/types/inventory_contro
 var dragging = false setget set_dragging
 var slot = null
 var mouse_over = false
-var split_item
+var split_origin
 
 const RECT_COLOR = Color("22A7F0")
 const RECT_FILLED = false
@@ -83,13 +83,8 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT:
 			if dragging:
 				if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
-					var top = InventoryController.get_top([self])
-					if (hold_to_drag or allow_outside_slot or split_item or (slot and slot_drop_return) or top and ((top.is_in_group("inventory_items") and top.id == id) or top.is_in_group("inventory_slots"))):
-						set_dragging(false)
-						__drop(top)
-					if is_inside_tree():
-						get_tree().set_input_as_handled()
-			elif draggable and event.pressed and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging():
+					__handle_drop()
+			elif event.pressed and is_target():
 				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_drag:
 					set_dragging(true)
 					if is_inside_tree():
@@ -102,9 +97,24 @@ func _input(event):
 				_dead_zone_drag = false
 				update()
 		elif event.button_index == BUTTON_RIGHT:
-			if not hold_to_drag and right_click_split and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging():
+			if dragging:
+				if hold_to_drag and not event.pressed:
+					__handle_drop()
+			if event.pressed and right_click_split and is_target():
 				if can_split():
 					split_and_drag()
+					
+func __handle_drop():
+	var top = InventoryController.get_top([self])
+	if __can_drop(top):
+		set_dragging(false)
+		__drop(top)
+	if is_inside_tree():
+		get_tree().set_input_as_handled()
+					
+func __can_drop(top):
+	return (hold_to_drag or allow_outside_slot or split_origin or (slot and slot_drop_return) or top and 
+			((top.is_in_group("inventory_items") and top.id == id) or top.is_in_group("inventory_slots")))
 		
 func draw_circle_arc(center, radius, angle_from, angle_to, color):
     var nb_points = 32
@@ -153,10 +163,10 @@ func __drop(top):
 				top.slot.clear_item()
 				temp_item.dragging = true
 				temp_slot.set_item(self)
-	if split_item:
-		if not slot and split_item.slot and slot_drop_return and (stack != 0 or not remove_if_empty):
-			set_stack(split_item.add_stack(stack))
-		split_item = null
+	if split_origin:
+		if not slot and split_origin.slot and slot_drop_return and (stack != 0 or not remove_if_empty):
+			set_stack(split_origin.add_stack(stack))
+		split_origin = null
 	if slot:
 		if not top:
 			emit_signal("drop_outside_slot", rect_global_position)
@@ -214,10 +224,9 @@ func set_stack(value):
 	if stack > max_stack:
 		overflow = stack - max_stack
 		stack = max_stack
+	emit_signal("stack_changed", stack)
 	if stack <= 0 and remove_if_empty:
 		queue_free()
-	else:
-		emit_signal("stack_changed", stack)
 	return overflow
 	
 func set_max_stack(value):
@@ -260,6 +269,9 @@ func dragging_update():
 func is_full():
 	return stack >= max_stack
 	
+func is_target():
+	return draggable and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging()
+	
 func can_split():
 	return stack > 1
 	
@@ -280,7 +292,7 @@ func split_and_drag(smaller_stack=false):
 	if can_split():
 		var inst = split(smaller_stack)
 		inst.dragging = true
-		inst.split_item = self
+		inst.split_origin = self
 	
 func remove_from_tree():
 	if slot:

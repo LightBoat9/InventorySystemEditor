@@ -20,7 +20,7 @@ signal item_stack_changed(item, amount)
 signal global_mouse_entered
 signal global_mouse_exited
 
-export(bool) var debug_in_game = true setget set_debug_in_game
+export(bool) var debug_in_game = false setget set_debug_in_game
 export(bool) var debug_in_editor = true setget set_debug_in_editor
 export(bool) var item_drag_return = true
 	
@@ -82,7 +82,7 @@ func set_item(inst):
 		return
 	item = inst
 	if inst.slot:
-		inst.slot.clear_item()
+		inst.slot.remove_item()
 	inst.slot = self
 	
 	if inst.is_connected("stack_changed", self, "__stack_changed"):
