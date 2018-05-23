@@ -169,7 +169,6 @@ func first_item():
 			
 func last_item():
 	for i in range(len(slots)-1, -1, -1):
-		print(i)
 		if slots[i].item:
 			return slots[i].item
 	

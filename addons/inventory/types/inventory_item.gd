@@ -43,6 +43,7 @@ export(bool) var allow_outside_slot = false
 	
 var _mouse_relative = Vector2()  # Relative position of mouse for dragging relative
 var _dead_zone_drag = false
+var _dead_zone_split = false
 var _dead_zone_center = Vector2()
 var InventoryController = preload("res://addons/inventory/types/inventory_controller.gd").new()
 var dragging = false setget set_dragging
@@ -75,10 +76,16 @@ func _input(event):
 		elif last_mouse_over and not mouse_over:
 			emit_signal("global_mouse_exited")
 		dragging_update()
-		if _dead_zone_drag:
+		if _dead_zone_drag or _dead_zone_split:
 			if (rect_global_position + _dead_zone_center).distance_to(get_global_mouse_position()) > dead_zone_radius:
+				if _dead_zone_drag:
+					set_dragging(true)
+				elif _dead_zone_split:
+					if can_split():
+						split_and_drag()
 				_dead_zone_drag = false
-				set_dragging(true)
+				_dead_zone_split = false
+				update()
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			if dragging:
@@ -101,20 +108,28 @@ func _input(event):
 				if hold_to_drag and not event.pressed:
 					__handle_drop()
 			if event.pressed and right_click_split and is_target():
-				if can_split():
-					split_and_drag()
+				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_split:
+					if can_split():
+						split_and_drag()
+				else:
+					_dead_zone_split = true
+					_dead_zone_center = get_local_mouse_position()
+					update()
+			if _dead_zone_split and not event.pressed:
+				_dead_zone_split = false
+				update()
 					
 func __handle_drop():
 	var top = InventoryController.get_top([self])
 	if __can_drop(top):
 		set_dragging(false)
 		__drop(top)
-	if is_inside_tree():
+	if is_inside_tree() and not hold_to_drag:
 		get_tree().set_input_as_handled()
 					
 func __can_drop(top):
 	return (hold_to_drag or allow_outside_slot or split_origin or (slot and slot_drop_return) or top and 
-			((top.is_in_group("inventory_items") and top.id == id) or top.is_in_group("inventory_slots")))
+			(top.is_in_group("inventory_items") or top.is_in_group("inventory_slots")))
 		
 func draw_circle_arc(center, radius, angle_from, angle_to, color):
     var nb_points = 32
@@ -130,7 +145,7 @@ func draw_circle_arc(center, radius, angle_from, angle_to, color):
 func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
 		draw_rect(Rect2(Vector2(), get_rect().size), RECT_COLOR, RECT_FILLED)
-		if hold_to_drag and (_dead_zone_drag or Engine.editor_hint) and dead_zone_radius > 0:
+		if hold_to_drag and (_dead_zone_split or _dead_zone_drag or Engine.editor_hint) and dead_zone_radius > 0:
 			if Engine.editor_hint: 
 				_dead_zone_center = rect_size * rect_scale / 2.0
 			draw_circle_arc(_dead_zone_center, dead_zone_radius, 0, 360, RECT_COLOR)
@@ -147,12 +162,12 @@ func __drop(top):
 			if not top.item:
 				top.set_item(self)
 		elif top.is_in_group("inventory_items"):
-			if top.id == self.id and stackable and top.stackable:
+			if top.id == self.id and stackable and top.stackable and (top.slot or allow_outside_slot):
 				if not top.is_full():
 					set_stack(top.add_stack(stack))
 				else:
 					top.set_stack(add_stack(top.stack))
-				if not top.stack == 0 or not top.remove_if_empty:
+				if not top.stack == 0 and not top.remove_if_empty:
 					set_dragging(true)
 					dragging_update()
 			elif top.slot and top != self and self.slot:
@@ -163,15 +178,14 @@ func __drop(top):
 				top.slot.clear_item()
 				temp_item.dragging = true
 				temp_slot.set_item(self)
-	if split_origin:
+	if split_origin and not allow_outside_slot:
 		if not slot and split_origin.slot and slot_drop_return and (stack != 0 or not remove_if_empty):
 			set_stack(split_origin.add_stack(stack))
 		split_origin = null
-	if slot:
-		if not top:
-			emit_signal("drop_outside_slot", rect_global_position)
-			if allow_outside_slot:
-				slot.remove_item()
+	if slot and not top:
+		emit_signal("drop_outside_slot", rect_global_position)
+		if allow_outside_slot:
+			slot.remove_item()
 	if slot and not dragging:  # Check again because it the signal might remove the slot
 		rect_global_position = slot.rect_global_position
 	
@@ -187,13 +201,13 @@ func __drop_swap(slot):
 func free():
 	"""Overides Object.free to ensure references to the item are removed"""
 	if slot:
-		slot.clear_item()
+		slot.remove_item()
 	.free()
 	
 func queue_free():
 	"""Overides Node.queue_free to ensure references to the item are removed"""
 	if slot:
-		slot.clear_item()
+		slot.remove_item()
 	.queue_free()
 		
 func set_draggable(value):

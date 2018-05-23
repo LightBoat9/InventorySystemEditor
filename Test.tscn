@@ -9,12 +9,8 @@
 script/source = "extends CheckBox
 
 func _toggled(button_pressed):
-	if button_pressed:
-		for x in get_tree().get_nodes_in_group(\"inventory_nodes\"):
-			x.debug_in_game = true
-	else:
-		for x in get_tree().get_nodes_in_group(\"inventory_nodes\"):
-			x.debug_in_game = false"
+	for x in get_tree().get_nodes_in_group(\"inventory_nodes\"):
+		x.debug_in_game = button_pressed"
 
 [sub_resource type="GDScript" id=2]
 
@@ -33,7 +29,9 @@ func _pressed():
 	var i = randi() % len(items)
 	var item = items[i].instance()
 	get_node(\"/root/Node2D\").add_child(item)
-	item.stack = 13
+	item.stack = 10
+	item.hold_to_drag = true
+	item.debug_in_game = true
 	item.right_click_split = true
 	inventory.add_item(item)"
 
@@ -51,8 +49,8 @@ onready var inventory = get_parent().get_node(\"Inventory\")
 onready var drop_inv = get_parent().get_node(\"GridContainer\")
 
 func _pressed():
-	if inventory.has_item(0):
-		drop_inv.add_item(inventory.remove_item(inventory.find_item(0)))"
+	if inventory.has_item(1):
+		drop_inv.add_item(inventory.remove_item(inventory.find_item(1)))"
 
 [sub_resource type="GDScript" id=4]
 
@@ -64,14 +62,16 @@ func _ready():
 
 [node name="Node2D" type="Node" index="0"]
 
-[node name="Inventory" type="GridContainer" parent="." index="0"]
+[node name="Node" type="Node" parent="." index="0"]
+
+[node name="Inventory" type="GridContainer" parent="Node" index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 46.0
-margin_top = 63.0
+margin_left = 34.0
+margin_top = 56.0
 margin_right = 172.0
 margin_bottom = 189.0
 rect_pivot_offset = Vector2( 0, 0 )
@@ -84,7 +84,6 @@ custom_constants/vseparation = 15
 custom_constants/hseparation = 15
 columns = 3
 script = ExtResource( 1 )
-_sections_unfolded = [ "custom_constants" ]
 __meta__ = {
 "_editor_icon": ExtResource( 2 )
 }
@@ -94,7 +93,7 @@ custom_slot = ExtResource( 3 )
 slots_amount = 9
 drop_outside_remove = false
 
-[node name="CheckBox" type="CheckBox" parent="." index="1"]
+[node name="CheckBox" type="CheckBox" parent="Node" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -120,7 +119,7 @@ flat = false
 align = 0
 script = SubResource( 1 )
 
-[node name="Add" type="Button" parent="." index="2"]
+[node name="Add" type="Button" parent="Node" index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -146,7 +145,7 @@ flat = false
 align = 1
 script = SubResource( 2 )
 
-[node name="Remove" type="Button" parent="." index="3"]
+[node name="Remove" type="Button" parent="Node" index="3"]
 
 anchor_left = 0.0
 anchor_top = 0.0
@@ -154,7 +153,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 162.0
 margin_top = 210.0
-margin_right = 290.0
+margin_right = 293.0
 margin_bottom = 230.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -167,12 +166,12 @@ toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 group = null
-text = "Remove First Item"
+text = "Remove Potion"
 flat = false
 align = 1
 script = SubResource( 3 )
 
-[node name="GridContainer" type="GridContainer" parent="." index="4"]
+[node name="GridContainer" type="GridContainer" parent="Node" index="4"]
 
 anchor_left = 0.0
 anchor_top = 0.0

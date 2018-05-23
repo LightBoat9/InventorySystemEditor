@@ -25,7 +25,7 @@ func is_top(node):
 	return true
 	
 func make_top(node):
-	"""Orders all inventory_nodes by their z_index and makes self the top z_index"""
+	"""Orders all inventory_nodes by their current position and makes self the top"""
 	var all_nodes = get_tree().get_nodes_in_group("inventory_nodes")
 	var nodes = []
 	for inst in all_nodes:
