@@ -5,14 +5,14 @@
 	
 	It is recommended to either...
 	a) Edit this instance from another script.
-	b) Extend this script by making a new GridContainer and adding a script with the following code.
+	b) Extend this script by making a new Container and adding a script with the following code.
 	
 tool
 extends "res://addons/inventory/types/inventory.gd"
 		
 """
 tool
-extends GridContainer
+extends Container
 
 signal item_added(item)
 signal item_moved(item)
@@ -29,8 +29,12 @@ export(bool) var debug_in_editor = true setget set_debug_in_editor
 # Slots
 export(PackedScene) var custom_slot = preload("res://addons/inventory/testing/CustomSlot.tscn") setget set_custom_slot
 export(int) var slots_amount = 1 setget set_slots_amount
+export(int) var columns = 1 setget set_columns
+export(Vector2) var separation = Vector2() setget set_separation
+export(Vector2) var offset = Vector2() setget set_offset
 # Items
 export(bool) var drop_outside_remove = false
+export(bool) var drop_ignore_rect = false
 
 const RECT_COLOR_DRAG = Color("22A7F0")
 const RECT_FILLED = false
@@ -48,6 +52,7 @@ func _ready():
 	__redo_slots()
 	add_to_group("inventory_nodes")
 	add_to_group("inventories")
+	connect("sort_children", self, "__sort_slots")
 	connect("global_mouse_entered", self, "__mouse_entered")
 	connect("global_mouse_exited", self, "__mouse_exited")
 	
@@ -79,8 +84,6 @@ func __slot_mouse_exited(slot):
 	emit_signal("slot_mouse_exited", slot)
 	
 func __add_slots():
-	if not custom_slot:
-		printerr("Custom slot is null on %s (%s)" % [str(self), self.name])
 	for x in range(slots_amount):
 		var inst = custom_slot.instance()
 		inst.inventory = self
@@ -91,6 +94,7 @@ func __add_slots():
 		inst.connect("global_mouse_exited", self, "__slot_mouse_exited", [inst])
 		slots.append(inst)
 		add_child(inst)
+	queue_sort()
 	
 func __remove_slots():
 	items.clear()
@@ -139,6 +143,18 @@ func _update_slots():
 	for slot in slots:
 		slot.debug_in_game = debug_in_game
 		slot.debug_in_editor = debug_in_editor
+		
+func __sort_slots():
+	var children = get_children()
+	var pos = Vector2()
+	for child in children:
+		if child.is_in_group("inventory_slots"):
+			child.rect_position = offset + Vector2(pos.x * (separation.x + child.rect_size.x), 
+				pos.y * (separation.y + child.rect_size.y))
+			pos.x += 1
+			if int(pos.x) % columns == 0:
+				pos.y += 1
+				pos.x = 0
 	
 func add_item(item, stack_first=true):
 	if stack_first:
@@ -204,17 +220,33 @@ func remove_all_items():
 	return arr
 	
 func find_item(id):
-	for i in range(len(slots)-1):
-		if slots[i].item and slots[i].item.id == id:
-			return i
+	var index = 0
+	for slot in slots:
+		if slot.item and slot.item.id == id:
+			return index
+		index += 1
+	return -1
 			
 func set_custom_slot(value):
-	custom_slot = value
-	__redo_slots()
+	if value:
+		custom_slot = value
+		__redo_slots()
 			
 func set_slots_amount(value):
 	slots_amount = value
 	__redo_slots()
+	
+func set_columns(value):
+	columns = value
+	queue_sort()
+	
+func set_separation(value):
+	separation = value
+	queue_sort()
+	
+func set_offset(value):
+	offset = value
+	queue_sort()
 	
 func set_debug_in_game(value):
 	debug_in_game = value

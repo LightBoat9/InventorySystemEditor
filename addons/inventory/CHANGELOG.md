@@ -2,6 +2,26 @@
 
 ## [TODO]
 ### Add
+- Start planning public methods and add more testing
+
+## [Unreleased]
+
+# [Pre-Release]
+
+## [0.2.0] - 2018/5/24
+### Added
+- Add __sort_children method to inventory that sorts the child slots of the inventory
+- Add columns variable for sorting the slots into columns
+- Add separation variable for spacing the slots out
+- Add offset variable for offseting the slots from the rect_position
+- Add drop_ignore_rect to inventory for ignoring the inventory rect when dropping items from inventory
+- Add method to set debug mode of all inventory nodes to inventory_controller
+### Changed
+- Change inventory to inherit Container instead of GridContainer due to lack of customization such as slots offset
+### Fixed
+- Fix find_item edge case not handled correctly
+- Fix moving slot in inventory sends removed_item signal
+- Fix setting CustomSlot to an incorrect type
 
 ## [0.1.1] - 2018/5/22
 ### Fixed

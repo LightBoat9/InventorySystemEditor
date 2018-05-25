@@ -182,7 +182,7 @@ func __drop(top):
 		if not slot and split_origin.slot and slot_drop_return and (stack != 0 or not remove_if_empty):
 			set_stack(split_origin.add_stack(stack))
 		split_origin = null
-	if slot and not top:
+	if slot and not top or top.is_in_group("inventories") and top.drop_ignore_rect:
 		emit_signal("drop_outside_slot", rect_global_position)
 		if allow_outside_slot:
 			slot.remove_item()

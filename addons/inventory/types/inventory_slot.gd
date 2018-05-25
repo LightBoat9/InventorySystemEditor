@@ -82,7 +82,10 @@ func set_item(inst):
 		return
 	item = inst
 	if inst.slot:
-		inst.slot.remove_item()
+		if inst.slot.inventory == inventory:
+			inst.slot.clear_item()  # Don't emit item removed signal if the item is just moved in the same inventory
+		else:
+			inst.slot.remove_item()
 	inst.slot = self
 	
 	if inst.is_connected("stack_changed", self, "__stack_changed"):

@@ -48,3 +48,24 @@ func current_dragging():
 	for node in nodes:
 		if node.dragging:
 			return node
+			
+func set_debug_mode(in_game, in_editor, ignore_groups=[], ignore_nodes=[]):
+	"""
+		Set the debug_in_editor and debug_in_game of all inventory_nodes.
+	
+		(bool) in_game : value to set for debug_in_game.
+		(bool) in_editor : value to set for debug_in_editor.
+		(Array) ignore_groups : list of groups to ignore
+		(Array) ignore_nodes : list of nodes to ignore
+	"""
+	var nodes = get_tree().get_nodes_in_group("inventory_nodes")
+	var ignore = false
+	for node in nodes:
+		for group in ignore_groups:
+			if node.is_in_group(group):
+				ignore = true
+				continue
+		if not node in ignore_nodes and not ignore:
+			node.debug_in_game = in_game
+			node.debug_in_editor = in_editor
+	
