@@ -26,7 +26,7 @@ const ItemSword = preload(\"res://addons/inventory/testing/ItemSword.tscn\")
 
 var items = [ItemBag, ItemPotion, ItemSword]
 
-onready var inventory = get_parent().get_node(\"Inventory\")
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
 
 func _pressed():
 	randomize()
@@ -35,7 +35,6 @@ func _pressed():
 	get_node(\"/root/Node2D\").add_child(item)
 	item.stack = 10
 	item.hold_to_drag = true
-	item.debug_in_game = true
 	item.right_click_split = true
 	inventory.add_item(item)"
 
@@ -49,8 +48,8 @@ const ItemSword = preload(\"res://addons/inventory/testing/ItemSword.tscn\")
 
 var items = [ItemBag, ItemPotion, ItemSword]
 
-onready var inventory = get_parent().get_node(\"Inventory\")
-onready var drop_inv = get_parent().get_node(\"Drop\")
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
+onready var drop_inv = get_node(\"/root/Node2D/GUI/Drop\")
 
 func _pressed():
 	if inventory.has_item(1):
@@ -58,18 +57,33 @@ func _pressed():
 
 [node name="Node2D" type="Node" index="0"]
 
-[node name="Node" type="Node" parent="." index="0"]
-
-[node name="Inventory" type="Container" parent="Node" index="0"]
+[node name="GUI" type="Container" parent="." index="0"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 23.0
-margin_top = 49.0
-margin_right = 171.0
-margin_bottom = 197.0
+margin_left = 2.0
+margin_top = 1.0
+margin_right = 894.0
+margin_bottom = 505.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 1
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+
+[node name="Inventory" type="Container" parent="GUI" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 256.0
+margin_top = 21.0
+margin_right = 436.0
+margin_bottom = 201.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -84,23 +98,68 @@ __meta__ = {
 debug_in_game = false
 debug_in_editor = true
 custom_slot = ExtResource( 3 )
-slots_amount = 9
-columns = 3
-separation = Vector2( 15, 15 )
-offset = Vector2( 10, 10 )
+slots_amount = 25
+slots_columns = 5
+slots_separation = Vector2( 5, 5 )
+slots_offset = Vector2( 0, 0 )
 drop_outside_remove = false
 drop_ignore_rect = false
 
-[node name="CheckBox" type="CheckBox" parent="Node" index="1"]
+[node name="Drop" type="Container" parent="GUI" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 13.0
-margin_top = 11.0
-margin_right = 122.0
-margin_bottom = 35.0
+margin_left = 775.0
+margin_top = 21.0
+margin_right = 871.0
+margin_bottom = 117.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+script = ExtResource( 1 )
+__meta__ = {
+"_editor_icon": ExtResource( 2 )
+}
+debug_in_game = false
+debug_in_editor = true
+custom_slot = ExtResource( 3 )
+slots_amount = 9
+slots_columns = 3
+slots_separation = Vector2( 0, 0 )
+slots_offset = Vector2( 0, 0 )
+drop_outside_remove = false
+drop_ignore_rect = false
+
+[node name="Panel" type="Panel" parent="GUI" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 212.0
+margin_bottom = 501.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+
+[node name="Debug" type="CheckBox" parent="GUI/Panel" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 5.0
+margin_top = 5.0
+margin_right = 133.0
+margin_bottom = 29.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -117,16 +176,16 @@ flat = false
 align = 0
 script = SubResource( 1 )
 
-[node name="Add" type="Button" parent="Node" index="2"]
+[node name="Add" type="Button" parent="GUI/Panel" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 16.0
-margin_top = 211.0
-margin_right = 144.0
-margin_bottom = 231.0
+margin_left = 8.0
+margin_top = 36.0
+margin_right = 136.0
+margin_bottom = 56.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -143,16 +202,16 @@ flat = false
 align = 1
 script = SubResource( 2 )
 
-[node name="Remove" type="Button" parent="Node" index="3"]
+[node name="Remove" type="Button" parent="GUI/Panel" index="2"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 162.0
-margin_top = 210.0
-margin_right = 293.0
-margin_bottom = 230.0
+margin_left = 9.0
+margin_top = 67.0
+margin_right = 137.0
+margin_bottom = 87.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -168,35 +227,5 @@ text = "Remove Potion"
 flat = false
 align = 1
 script = SubResource( 3 )
-
-[node name="Drop" type="Container" parent="Node" index="4"]
-
-anchor_left = 0.0
-anchor_top = 0.0
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 23.0
-margin_top = 268.0
-margin_right = 123.0
-margin_bottom = 367.0
-rect_pivot_offset = Vector2( 0, 0 )
-rect_clip_content = false
-mouse_filter = 0
-mouse_default_cursor_shape = 0
-size_flags_horizontal = 1
-size_flags_vertical = 1
-script = ExtResource( 1 )
-__meta__ = {
-"_editor_icon": ExtResource( 2 )
-}
-debug_in_game = false
-debug_in_editor = true
-custom_slot = ExtResource( 3 )
-slots_amount = 9
-columns = 3
-separation = Vector2( 0, 0 )
-offset = Vector2( 0, 0 )
-drop_outside_remove = false
-drop_ignore_rect = false
 
 

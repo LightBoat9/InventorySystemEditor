@@ -29,9 +29,9 @@ export(bool) var debug_in_editor = true setget set_debug_in_editor
 # Slots
 export(PackedScene) var custom_slot = preload("res://addons/inventory/testing/CustomSlot.tscn") setget set_custom_slot
 export(int) var slots_amount = 1 setget set_slots_amount
-export(int) var columns = 1 setget set_columns
-export(Vector2) var separation = Vector2() setget set_separation
-export(Vector2) var offset = Vector2() setget set_offset
+export(int) var slots_columns = 1 setget set_slots_columns
+export(Vector2) var slots_separation = Vector2() setget set_slots_separation
+export(Vector2) var slots_offset = Vector2() setget set_slots_offset
 # Items
 export(bool) var drop_outside_remove = false
 export(bool) var drop_ignore_rect = false
@@ -55,6 +55,7 @@ func _ready():
 	connect("sort_children", self, "__sort_slots")
 	connect("global_mouse_entered", self, "__mouse_entered")
 	connect("global_mouse_exited", self, "__mouse_exited")
+	connect("item_rect_changed", self, "__item_rect_changed")
 	
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -111,6 +112,7 @@ func __redo_slots():
 	__add_slots()
 	add_items(temp_items)
 	_update_slots()
+	_update_rect()
 			
 func __item_added(item):
 	if not items.has(item):
@@ -138,6 +140,18 @@ func __item_outside_slot(position, item):
 		if item.slot:
 			item.slot.remove_item()
 		emit_signal("item_dropped", item)
+		
+func __item_rect_changed():
+	_update_rect()
+	
+func _update_rect():
+	var max_size = Vector2()
+	if slots:
+		max_size = slots[-1].rect_position + slots[-1].rect_size
+	if rect_size.x < max_size.x:
+		rect_size.x = max_size.x
+	if rect_size.y < max_size.y:
+		rect_size.y = max_size.y
 	
 func _update_slots():
 	for slot in slots:
@@ -149,12 +163,13 @@ func __sort_slots():
 	var pos = Vector2()
 	for child in children:
 		if child.is_in_group("inventory_slots"):
-			child.rect_position = offset + Vector2(pos.x * (separation.x + child.rect_size.x), 
-				pos.y * (separation.y + child.rect_size.y))
+			child.rect_position = slots_offset + Vector2(pos.x * (slots_separation.x + child.rect_size.x), 
+				pos.y * (slots_separation.y + child.rect_size.y))
 			pos.x += 1
-			if int(pos.x) % columns == 0:
+			if int(pos.x) % slots_columns == 0:
 				pos.y += 1
 				pos.x = 0
+	_update_rect()
 	
 func add_item(item, stack_first=true):
 	if stack_first:
@@ -236,16 +251,18 @@ func set_slots_amount(value):
 	slots_amount = value
 	__redo_slots()
 	
-func set_columns(value):
-	columns = value
+func set_slots_columns(value):
+	if value <= 0:
+		value = 1
+	slots_columns = value
 	queue_sort()
 	
-func set_separation(value):
-	separation = value
+func set_slots_separation(value):
+	slots_separation = value
 	queue_sort()
 	
-func set_offset(value):
-	offset = value
+func set_slots_offset(value):
+	slots_offset = value
 	queue_sort()
 	
 func set_debug_in_game(value):

@@ -8,6 +8,15 @@
 
 # [Pre-Release]
 
+## [0.2.1] - 2018/5/27
+### Added
+- Add _update_rect method to inventory for prevent the rect from being smaller than its child slots
+### Changed
+- Change offset, separation, and columns variables in inventory to start with slots_ for consistency and update their set methods
+### Fixed
+- Fix slots_columns allowed to be negative or 0
+- Fix error when dragging item out of slot onto an inventory rect that is not overlapping a slot rect
+
 ## [0.2.0] - 2018/5/24
 ### Added
 - Add __sort_children method to inventory that sorts the child slots of the inventory
