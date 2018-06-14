@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://addons/inventory/types/inventory.gd" type="Script" id=1]
 [ext_resource path="res://addons/inventory/assets/inventory.svg" type="Texture" id=2]
 [ext_resource path="res://addons/inventory/testing/CustomSlot.tscn" type="PackedScene" id=3]
+[ext_resource path="res://addons/inventory/assets/background.png" type="Texture" id=4]
 
 [sub_resource type="GDScript" id=1]
 
@@ -18,28 +19,33 @@ func _toggled(button_pressed):
 
 [sub_resource type="GDScript" id=2]
 
-script/source = "extends Button
-
-const ItemBag = preload(\"res://addons/inventory/testing/ItemBag.tscn\")
-const ItemPotion = preload(\"res://addons/inventory/testing/ItemPotion.tscn\")
-const ItemSword = preload(\"res://addons/inventory/testing/ItemSword.tscn\")
-
-var items = [ItemBag, ItemPotion, ItemSword]
+script/source = "extends CheckBox
 
 onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
 
-func _pressed():
-	randomize()
-	var i = randi() % len(items)
-	var item = items[i].instance()
-	get_node(\"/root/Node2D\").add_child(item)
-	item.stack = 10
-	item.hold_to_drag = true
-	item.right_click_split = true
-	inventory.add_item(item)"
+func _toggled(button_pressed):
+	inventory.visible = button_pressed"
 
 [sub_resource type="GDScript" id=3]
 
+script/source = "extends CheckBox
+
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
+
+func _toggled(button_pressed):
+	inventory.disabled = button_pressed"
+
+[sub_resource type="GDScript" id=4]
+
+script/source = "extends CheckBox
+
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
+
+func _toggled(button_pressed):
+	inventory.items_locked = button_pressed"
+
+[sub_resource type="GDScript" id=5]
+
 script/source = "extends Button
 
 const ItemBag = preload(\"res://addons/inventory/testing/ItemBag.tscn\")
@@ -49,11 +55,90 @@ const ItemSword = preload(\"res://addons/inventory/testing/ItemSword.tscn\")
 var items = [ItemBag, ItemPotion, ItemSword]
 
 onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
-onready var drop_inv = get_node(\"/root/Node2D/GUI/Drop\")
+onready var id = get_node(\"ID\")
+onready var amount = get_node(\"Amount\")
+onready var sf = get_node(\"SF\")
+
+func _ready():
+	for item in items:
+		var temp = item.instance()
+		id.add_item(temp.name)
+		temp.free()
 
 func _pressed():
-	if inventory.has_item(1):
-		drop_inv.add_item(inventory.remove_item(inventory.find_item(1)))"
+	if id.selected < len(items) and id.selected >= 0:
+		var i = id.selected
+		var item = items[i].instance()
+		get_node(\"/root/Node2D\").add_child(item)
+		item.right_click_split = true
+		item.right_click_drop_single = true
+		item.stack = int(amount.value)
+		if item.stack:
+			inventory.add_item(item, sf.pressed)"
+
+[sub_resource type="GDScript" id=6]
+
+script/source = "extends Button
+
+const ItemBag = preload(\"res://addons/inventory/testing/ItemBag.tscn\")
+const ItemPotion = preload(\"res://addons/inventory/testing/ItemPotion.tscn\")
+const ItemSword = preload(\"res://addons/inventory/testing/ItemSword.tscn\")
+
+var items = [ItemBag, ItemPotion, ItemSword]
+
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
+onready var id = get_node(\"ID\")
+onready var rev = get_node(\"Reversed\")
+onready var amount = get_node(\"Amount\")
+onready var drop_inv = get_node(\"/root/Node2D/GUI/Drop\")
+
+func _ready():
+	for item in items:
+		var temp = item.instance()
+		id.add_item(temp.name)
+		temp.free()
+
+func _pressed():
+	if inventory.has_item(id.selected) and amount.value > 0 or amount.value < 0:
+		drop_inv.add_item(inventory.remove_item(inventory.find_item(id.selected, rev.pressed), amount.value))"
+
+[sub_resource type="GDScript" id=7]
+
+script/source = "extends Button
+
+const ItemBag = preload(\"res://addons/inventory/testing/ItemBag.tscn\")
+const ItemPotion = preload(\"res://addons/inventory/testing/ItemPotion.tscn\")
+const ItemSword = preload(\"res://addons/inventory/testing/ItemSword.tscn\")
+
+var items = [ItemBag, ItemPotion, ItemSword]
+
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
+onready var id = get_node(\"ID\")
+onready var drop_inv = get_node(\"/root/Node2D/GUI/Drop\")
+
+func _ready():
+	id.add_item(\"None\")
+	for item in items:
+		var temp = item.instance()
+		id.add_item(temp.name)
+		temp.free()
+
+func _pressed():
+	var rem = inventory.remove_all_items(id.selected-1)
+	for item in rem:
+		drop_inv.add_item(item)"
+
+[sub_resource type="GDScript" id=8]
+
+script/source = "extends Button
+
+onready var inventory = get_node(\"/root/Node2D/GUI/Inventory\")
+
+onready var h = get_node(\"H\")
+onready var v = get_node(\"V\")
+
+func _pressed():
+	inventory.rect_position += Vector2(h.value, v.value)"
 
 [node name="Node2D" type="Node" index="0"]
 
@@ -63,10 +148,9 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 2.0
 margin_top = 1.0
-margin_right = 894.0
-margin_bottom = 505.0
+margin_right = 897.0
+margin_bottom = 506.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 1
@@ -80,10 +164,10 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 256.0
-margin_top = 21.0
-margin_right = 436.0
-margin_bottom = 201.0
+margin_left = 259.0
+margin_top = 60.0
+margin_right = 439.0
+margin_bottom = 240.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -97,6 +181,7 @@ __meta__ = {
 }
 debug_in_game = false
 debug_in_editor = true
+disabled = false
 custom_slot = ExtResource( 3 )
 slots_amount = 25
 slots_columns = 5
@@ -104,17 +189,61 @@ slots_separation = Vector2( 5, 5 )
 slots_offset = Vector2( 0, 0 )
 drop_outside_remove = false
 drop_ignore_rect = false
+items_locked = false
 
-[node name="Drop" type="Container" parent="GUI" index="1"]
+[node name="NinePatchRect" type="NinePatchRect" parent="GUI/Inventory" index="0"]
+
+show_behind_parent = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -8.0
+margin_top = -24.0
+margin_right = 188.0
+margin_bottom = 188.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 4 )
+_sections_unfolded = [ "Rect", "Visibility" ]
+
+[node name="Label2" type="Label" parent="GUI/Inventory" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 775.0
-margin_top = 21.0
-margin_right = 871.0
-margin_bottom = 117.0
+margin_left = 9.0
+margin_top = -17.0
+margin_right = 168.0
+margin_bottom = -3.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Testing Inventory"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Drop" type="Container" parent="GUI" index="1"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 696.0
+margin_top = 324.0
+margin_right = 856.0
+margin_bottom = 484.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 mouse_filter = 0
@@ -127,13 +256,56 @@ __meta__ = {
 }
 debug_in_game = false
 debug_in_editor = true
+disabled = false
 custom_slot = ExtResource( 3 )
-slots_amount = 9
-slots_columns = 3
+slots_amount = 25
+slots_columns = 5
 slots_separation = Vector2( 0, 0 )
 slots_offset = Vector2( 0, 0 )
 drop_outside_remove = false
 drop_ignore_rect = false
+items_locked = false
+
+[node name="Label" type="Label" parent="GUI/Drop" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_top = -19.0
+margin_right = 159.0
+margin_bottom = -5.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Dropped Inventory"
+align = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="NinePatchRect2" type="NinePatchRect" parent="GUI/Drop" index="1"]
+
+show_behind_parent = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -8.0
+margin_top = -28.0
+margin_right = 167.0
+margin_bottom = 168.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+texture = ExtResource( 4 )
+_sections_unfolded = [ "Rect", "Visibility" ]
 
 [node name="Panel" type="Panel" parent="GUI" index="2"]
 
@@ -158,7 +330,7 @@ anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 133.0
+margin_right = 114.0
 margin_bottom = 29.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
@@ -176,16 +348,16 @@ flat = false
 align = 0
 script = SubResource( 1 )
 
-[node name="Add" type="Button" parent="GUI/Panel" index="1"]
+[node name="Visible" type="CheckBox" parent="GUI/Panel" index="1"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-margin_left = 8.0
-margin_top = 36.0
-margin_right = 136.0
-margin_bottom = 56.0
+margin_left = 120.0
+margin_top = 4.0
+margin_right = 193.0
+margin_bottom = 28.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -193,25 +365,78 @@ mouse_filter = 0
 mouse_default_cursor_shape = 0
 size_flags_horizontal = 1
 size_flags_vertical = 1
-toggle_mode = false
+toggle_mode = true
+pressed = true
 enabled_focus_mode = 2
 shortcut = null
 group = null
-text = "Add Random Item"
+text = "Visible"
 flat = false
-align = 1
+align = 0
 script = SubResource( 2 )
 
-[node name="Remove" type="Button" parent="GUI/Panel" index="2"]
+[node name="Disabled" type="CheckBox" parent="GUI/Panel" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 6.0
+margin_top = 27.0
+margin_right = 90.0
+margin_bottom = 51.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = true
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Disabled"
+flat = false
+align = 0
+script = SubResource( 3 )
+
+[node name="Lock" type="CheckBox" parent="GUI/Panel" index="3"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 120.0
+margin_top = 25.0
+margin_right = 203.0
+margin_bottom = 49.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = true
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Lock"
+flat = false
+align = 0
+script = SubResource( 4 )
+
+[node name="Add" type="Button" parent="GUI/Panel" index="4"]
 
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
 margin_left = 9.0
-margin_top = 67.0
-margin_right = 137.0
-margin_bottom = 87.0
+margin_top = 52.0
+margin_right = 128.0
+margin_bottom = 72.0
 rect_pivot_offset = Vector2( 0, 0 )
 rect_clip_content = false
 focus_mode = 2
@@ -223,9 +448,488 @@ toggle_mode = false
 enabled_focus_mode = 2
 shortcut = null
 group = null
-text = "Remove Potion"
+text = "Add"
 flat = false
 align = 1
-script = SubResource( 3 )
+script = SubResource( 5 )
+
+[node name="ID" type="OptionButton" parent="GUI/Panel/Add" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 64.0
+margin_top = 35.0
+margin_right = 177.0
+margin_bottom = 55.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+action_mode = 0
+enabled_focus_mode = 2
+shortcut = null
+group = null
+flat = false
+align = 0
+items = [  ]
+selected = -1
+
+[node name="Label" type="Label" parent="GUI/Panel/Add/ID" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -45.0
+margin_top = 3.0
+margin_right = -10.0
+margin_bottom = 20.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Item"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Amount" type="SpinBox" parent="GUI/Panel/Add" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 65.0
+margin_top = 61.0
+margin_right = 175.0
+margin_bottom = 85.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+page = 0.0
+value = 1.0
+exp_edit = false
+rounded = false
+editable = true
+prefix = ""
+suffix = ""
+
+[node name="Amount" type="Label" parent="GUI/Panel/Add/Amount" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -56.0
+margin_top = 5.0
+margin_right = -5.0
+margin_bottom = 22.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Amount"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="SF" type="CheckBox" parent="GUI/Panel/Add" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 20.0
+margin_top = 92.0
+margin_right = 113.0
+margin_bottom = 116.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = true
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Stack First"
+flat = false
+align = 0
+
+[node name="Remove" type="Button" parent="GUI/Panel" index="5"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 12.0
+margin_top = 177.0
+margin_right = 130.0
+margin_bottom = 197.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Remove"
+flat = false
+align = 1
+script = SubResource( 6 )
+
+[node name="ID" type="OptionButton" parent="GUI/Panel/Remove" index="0"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 65.0
+margin_top = 29.0
+margin_right = 175.0
+margin_bottom = 53.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+action_mode = 0
+enabled_focus_mode = 2
+shortcut = null
+group = null
+flat = false
+align = 0
+items = [  ]
+selected = -1
+
+[node name="Label" type="Label" parent="GUI/Panel/Remove/ID" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -44.0
+margin_top = 7.0
+margin_right = -7.0
+margin_bottom = 21.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Item"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Amount" type="SpinBox" parent="GUI/Panel/Remove" index="1"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 65.0
+margin_top = 58.0
+margin_right = 173.0
+margin_bottom = 82.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+page = 0.0
+value = 0.0
+exp_edit = false
+rounded = false
+editable = true
+prefix = ""
+suffix = ""
+
+[node name="Label" type="Label" parent="GUI/Panel/Remove/Amount" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -55.0
+margin_top = 5.0
+margin_right = -4.0
+margin_bottom = 19.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Amount"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Reversed" type="CheckBox" parent="GUI/Panel/Remove" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 20.0
+margin_top = 87.0
+margin_right = 113.0
+margin_bottom = 111.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = true
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Reversed"
+flat = false
+align = 0
+
+[node name="RemoveAll" type="Button" parent="GUI/Panel" index="6"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 11.0
+margin_top = 294.0
+margin_right = 130.0
+margin_bottom = 314.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Remove All"
+flat = false
+align = 1
+script = SubResource( 7 )
+_sections_unfolded = [ "Pause" ]
+
+[node name="ID" type="OptionButton" parent="GUI/Panel/RemoveAll" index="0"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 65.0
+margin_top = 30.0
+margin_right = 175.0
+margin_bottom = 54.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+action_mode = 0
+enabled_focus_mode = 2
+shortcut = null
+group = null
+flat = false
+align = 0
+items = [  ]
+selected = -1
+
+[node name="Label" type="Label" parent="GUI/Panel/RemoveAll/ID" index="1"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -54.0
+margin_right = -4.0
+margin_bottom = 23.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Item"
+align = 1
+valign = 1
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="Move" type="Button" parent="GUI/Panel" index="7"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 12.0
+margin_top = 355.0
+margin_right = 131.0
+margin_bottom = 375.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 1
+toggle_mode = false
+enabled_focus_mode = 2
+shortcut = null
+group = null
+text = "Move"
+flat = false
+align = 1
+script = SubResource( 8 )
+
+[node name="H" type="SpinBox" parent="GUI/Panel/Move" index="0"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 85.0
+margin_top = 26.0
+margin_right = 143.0
+margin_bottom = 50.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 1
+size_flags_horizontal = 1
+size_flags_vertical = 1
+min_value = -100.0
+max_value = 100.0
+step = 1.0
+page = 0.0
+value = 0.0
+exp_edit = false
+rounded = false
+editable = true
+prefix = ""
+suffix = ""
+_sections_unfolded = [ "Caret", "Placeholder" ]
+
+[node name="Label" type="Label" parent="GUI/Panel/Move/H" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -70.0
+margin_top = 5.0
+margin_right = -4.0
+margin_bottom = 21.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Horizontal"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
+
+[node name="V" type="SpinBox" parent="GUI/Panel/Move" index="1"]
+
+editor/display_folded = true
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = 85.0
+margin_top = 56.0
+margin_right = 159.0
+margin_bottom = 80.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+focus_mode = 2
+mouse_filter = 0
+mouse_default_cursor_shape = 1
+size_flags_horizontal = 1
+size_flags_vertical = 1
+min_value = -100.0
+max_value = 100.0
+step = 1.0
+page = 0.0
+value = 0.0
+exp_edit = false
+rounded = false
+editable = true
+prefix = ""
+suffix = ""
+_sections_unfolded = [ "Caret", "Placeholder" ]
+
+[node name="Label" type="Label" parent="GUI/Panel/Move/V" index="2"]
+
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_left = -69.0
+margin_top = 5.0
+margin_right = -3.0
+margin_bottom = 21.0
+rect_pivot_offset = Vector2( 0, 0 )
+rect_clip_content = false
+mouse_filter = 2
+mouse_default_cursor_shape = 0
+size_flags_horizontal = 1
+size_flags_vertical = 4
+text = "Vertical"
+percent_visible = 1.0
+lines_skipped = 0
+max_lines_visible = -1
 
 

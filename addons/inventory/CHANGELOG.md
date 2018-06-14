@@ -2,11 +2,35 @@
 
 ## [TODO]
 ### Add
-- Start planning public methods and add more testing
+- Add feature to slot allowing better control of item position
+- Export item properties when next godot supports dictionary exports
+- Start save systems
+- Add property to slot only allowing certain items by id or category
+### On Next Godot Release
+- Use add_autoload_singleton and remove_autoload_singleton with InventoryController
+- Add variables to InventoryController to optomize gui inputs such as items with mouse_over
 
 ## [Unreleased]
 
 # [Pre-Release]
+
+## [0.3.0] - 2018/6/14
+### Added
+- Add amount parameter to inventory.remove_item and slot.remove_item for removing only a certain amount of the item
+- Add export item.lock_inventory and inventory.items_locked to prevent item from swapping inventories
+- Add right_click_drop_single to inventory.item for dropping one item while dragging
+- Add property "disabled" to inventory nodes preventing item from recieving input
+- Add overide methods for hide and show to also hide the inventory items
+- Add reversed optional parameter to inventory.find_item() to search backwards
+- Add optional id parameter to inventory.remove_all_items() to remove all items of a certain id
+### Changed
+- Change item.id to only allow positive integers
+- Change inventory.add_items to add_items_array to set apart from inventory.add_item
+- Change inventory.add_item "stack_first" parameter to default false
+### Fixed
+- Fix items not moving when the inventory or slot is moved
+- Fix slot.visible and item.visible not changed when inventory.visible is changed
+- Fix item with null item.slot swapped with an item with a slot stopping the item from dragging
 
 ## [0.2.1] - 2018/5/27
 ### Added

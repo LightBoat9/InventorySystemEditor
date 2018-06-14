@@ -20,6 +20,7 @@ signal item_stack_changed(item, amount)
 signal global_mouse_entered
 signal global_mouse_exited
 
+export(bool) var disabled = false setget set_disabled
 export(bool) var debug_in_game = false setget set_debug_in_game
 export(bool) var debug_in_editor = true setget set_debug_in_editor
 export(bool) var item_drag_return = true
@@ -37,6 +38,7 @@ func _ready():
 	add_child(InventoryController)
 	add_to_group("inventory_nodes")
 	add_to_group("inventory_slots")
+	connect("item_rect_changed", self, "__item_rect_changed")
 	
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -56,6 +58,9 @@ func __stack_changed(item):
 	
 func __item_outside_slot(item):
 	emit_signal("item_outside_slot", item)
+	
+func __item_rect_changed():
+	align_item()
 	
 func free():
 	if item:
@@ -81,6 +86,7 @@ func set_item(inst):
 		printerr("Cannot set item when slot already contains an item")
 		return
 	item = inst
+	item.disabled = disabled
 	if inst.slot:
 		if inst.slot.inventory == inventory:
 			inst.slot.clear_item()  # Don't emit item removed signal if the item is just moved in the same inventory
@@ -96,6 +102,13 @@ func set_item(inst):
 	inst.rect_global_position = rect_global_position
 	
 	emit_signal("item_added", inst)
+	
+func align_item():
+	if item:
+		item.rect_global_position = rect_global_position
+	
+func can_merge(id):
+	return item and item.id == id or not item
 	
 func move_item(slot):
 	if not item:
@@ -113,14 +126,18 @@ func clear_item():
 	item.slot = null
 	item = null
 	
-func remove_item():
+func remove_item(amount=-1):
 	"""Removes the item from the slot and returns it"""
-	item.slot = null
-	var inst = item
-	emit_signal("item_removed", item)
-	item = null
-	return inst
-	
+	var return_item
+	if amount < 0 or amount >= item.stack:
+		return_item = item
+		item.slot = null
+		emit_signal("item_removed", item)
+		item = null
+	elif amount > 0 or not item.remove_if_empty:
+		return_item = item.remove(int(amount))
+	return return_item
+		
 func swap_items(slot):
 	if not (self.item and slot.item):
 		print_stack()
@@ -140,3 +157,8 @@ func set_debug_in_game(value):
 func set_debug_in_editor(value):
 	debug_in_editor = value
 	update()
+	
+func set_disabled(value):
+	disabled = value
+	if item:
+		item.disabled = value

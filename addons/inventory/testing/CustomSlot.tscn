@@ -20,6 +20,7 @@ size_flags_vertical = 1
 texture = ExtResource( 1 )
 stretch_mode = 4
 script = ExtResource( 2 )
+disabled = false
 debug_in_game = true
 debug_in_editor = true
 item_drag_return = true

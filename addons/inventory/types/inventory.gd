@@ -27,6 +27,7 @@ signal global_mouse_exited
 export(bool) var debug_in_game = false setget set_debug_in_game
 export(bool) var debug_in_editor = true setget set_debug_in_editor
 # Slots
+export(bool) var disabled = false setget set_disabled
 export(PackedScene) var custom_slot = preload("res://addons/inventory/testing/CustomSlot.tscn") setget set_custom_slot
 export(int) var slots_amount = 1 setget set_slots_amount
 export(int) var slots_columns = 1 setget set_slots_columns
@@ -35,6 +36,7 @@ export(Vector2) var slots_offset = Vector2() setget set_slots_offset
 # Items
 export(bool) var drop_outside_remove = false
 export(bool) var drop_ignore_rect = false
+export(bool) var items_locked = false setget set_items_locked
 
 const RECT_COLOR_DRAG = Color("22A7F0")
 const RECT_FILLED = false
@@ -56,6 +58,7 @@ func _ready():
 	connect("global_mouse_entered", self, "__mouse_entered")
 	connect("global_mouse_exited", self, "__mouse_exited")
 	connect("item_rect_changed", self, "__item_rect_changed")
+	connect("visibility_changed", self, "__visibility_changed")
 	
 func _input(event):
 	if event is InputEventMouseMotion:
@@ -110,13 +113,15 @@ func __redo_slots():
 	var temp_items = remove_all_items()
 	__remove_slots()
 	__add_slots()
-	add_items(temp_items)
+	add_items_array(temp_items)
 	_update_slots()
 	_update_rect()
 			
 func __item_added(item):
 	if not items.has(item):
 		items.append(item)
+		item.visible = visible
+		item.lock_inventory = items_locked
 		item.connect("drop_outside_slot", self, "__item_outside_slot", [item])
 		item.connect("stack_changed", self, "__item_stack_changed", [item])
 		emit_signal("item_added", item)
@@ -143,21 +148,8 @@ func __item_outside_slot(position, item):
 		
 func __item_rect_changed():
 	_update_rect()
+	call_deferred("_align_slots")
 	
-func _update_rect():
-	var max_size = Vector2()
-	if slots:
-		max_size = slots[-1].rect_position + slots[-1].rect_size
-	if rect_size.x < max_size.x:
-		rect_size.x = max_size.x
-	if rect_size.y < max_size.y:
-		rect_size.y = max_size.y
-	
-func _update_slots():
-	for slot in slots:
-		slot.debug_in_game = debug_in_game
-		slot.debug_in_editor = debug_in_editor
-		
 func __sort_slots():
 	var children = get_children()
 	var pos = Vector2()
@@ -171,7 +163,33 @@ func __sort_slots():
 				pos.x = 0
 	_update_rect()
 	
-func add_item(item, stack_first=true):
+func __visibility_changed():
+	for item in items:
+		item.visible = visible
+	
+func _align_slots():
+	for slot in slots:
+		slot.align_item()
+	
+func _update_rect():
+	var max_size = Vector2()
+	if slots:
+		max_size = slots[-1].rect_position + slots[-1].rect_size
+	if rect_size.x < max_size.x:
+		rect_size.x = max_size.x
+	if rect_size.y < max_size.y:
+		rect_size.y = max_size.y
+	
+func _update_slots():
+	for slot in slots:
+		if slot.item:
+			var temp_item = slot.item # Workaround to the setget calling setter bug
+			temp_item.lock_inventory = items_locked
+		slot.disabled = disabled
+		slot.debug_in_game = debug_in_game
+		slot.debug_in_editor = debug_in_editor
+	
+func add_item(item, stack_first=false):
 	if stack_first:
 		for slot in slots:
 			if slot.item and slot.item.id == item.id:
@@ -189,7 +207,7 @@ func add_item(item, stack_first=true):
 	if not item in items:
 		return item
 	
-func add_items(arr):
+func add_items_array(arr):
 	for item in arr:
 		add_item(item)
 		
@@ -219,28 +237,31 @@ func has_item(id):
 			return true
 	return false
 				
-func remove_item(index):
+func remove_item(index, amount):
 	if index < 0 or index >= len(slots):
 		print_stack()
 		printerr("Index outside of bounds on inventory.slots")
 		return
-	return slots[index].remove_item()
+	return slots[index].remove_item(int(amount))
 		
-func remove_all_items():
+func remove_all_items(id=-1):
 	var arr = []
 	for slot in slots:
-		if slot.item:
+		if slot.item and (id == -1 or slot.item.id == id):
 			arr.append(slot.item)
 			slot.clear_item()
 	return arr
 	
-func find_item(id):
-	var index = 0
-	for slot in slots:
-		if slot.item and slot.item.id == id:
-			return index
-		index += 1
-	return -1
+func find_item(id, reversed=false):
+	for i in range(len(slots)):
+		if reversed:
+			i = len(slots) - 1 - i
+		if slots[i].item and slots[i].item.id == id:
+			return i
+			
+func set_disabled(value):
+	disabled = value
+	_update_slots()
 			
 func set_custom_slot(value):
 	if value:
@@ -274,3 +295,7 @@ func set_debug_in_editor(value):
 	debug_in_editor = value
 	_update_slots()
 	update()
+	
+func set_items_locked(value):
+	items_locked = value
+	_update_slots()

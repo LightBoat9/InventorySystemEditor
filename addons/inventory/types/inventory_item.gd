@@ -24,28 +24,31 @@ signal global_mouse_exited
 export(bool) var debug_in_game = false setget set_debug_in_game
 export(bool) var debug_in_editor = true setget set_debug_in_editor
 # Properties
-export var id = 0
+export(int) var id = 0 setget set_id
+export(bool) var disabled = false setget set_disabled
 # Drag
 export(bool) var draggable = true setget set_draggable
 export(int, "Center", "Relative", "Position") var drag_mode = 0
 export(Vector2) var drag_position = Vector2()
 export(bool) var hold_to_drag = false setget set_hold_to_drag
 export(float) var dead_zone_radius = 0.0 setget set_dead_zone_radius
+export(bool) var lock_inventory = false
 # Stack
 export(bool) var stackable = true
 export(int) var stack = 1 setget set_stack
 export(int) var max_stack = 99 setget set_max_stack
 export(bool) var remove_if_empty = true
 export(bool) var right_click_split = false
+export(bool) var right_click_drop_single = false
 # Slot
 export(bool) var slot_drop_return = true
 export(bool) var allow_outside_slot = false
 	
+var InventoryController = load("res://addons/inventory/types/inventory_controller.gd").new()
 var _mouse_relative = Vector2()  # Relative position of mouse for dragging relative
 var _dead_zone_drag = false
 var _dead_zone_split = false
 var _dead_zone_center = Vector2()
-var InventoryController = preload("res://addons/inventory/types/inventory_controller.gd").new()
 var dragging = false setget set_dragging
 var slot = null
 var mouse_over = false
@@ -68,6 +71,8 @@ func _ready():
 	connect("global_mouse_exited", self, "__mouse_exited")
 	
 func _input(event):
+	if disabled:
+		return
 	if event is InputEventMouseMotion:
 		var last_mouse_over = mouse_over
 		mouse_over = Rect2(rect_global_position, get_rect().size).has_point(event.global_position)
@@ -90,7 +95,7 @@ func _input(event):
 		if event.button_index == BUTTON_LEFT:
 			if dragging:
 				if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
-					__handle_drop()
+					_handle_drop()
 			elif event.pressed and is_target():
 				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_drag:
 					set_dragging(true)
@@ -106,11 +111,16 @@ func _input(event):
 		elif event.button_index == BUTTON_RIGHT:
 			if dragging:
 				if hold_to_drag and not event.pressed:
-					__handle_drop()
-			if event.pressed and right_click_split and is_target():
+					_handle_drop()
+				if right_click_drop_single and not hold_to_drag:
+					if event.pressed:
+						__drop_single()
+			elif event.pressed and right_click_split and is_target():
 				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_split:
 					if can_split():
 						split_and_drag()
+					else:
+						set_dragging(true)
 				else:
 					_dead_zone_split = true
 					_dead_zone_center = get_local_mouse_position()
@@ -119,28 +129,52 @@ func _input(event):
 				_dead_zone_split = false
 				update()
 					
-func __handle_drop():
+func __drop_single():
+	var top = InventoryController.get_top([self])
+	if top and (top.is_in_group("inventory_slots") and top.can_merge(id) and ((slot and top.inventory == slot.inventory) or not lock_inventory or not slot) 
+		or (top.is_in_group("inventory_items") and top.id == id)):
+		var inst = remove(1)
+		if top.is_in_group("inventory_slots") and top == slot and inst != self:
+			split_origin = inst
+			slot.clear_item()
+		inst.set_dragging(false)
+		inst.__drop(top)
+		InventoryController.make_top(self)
+					
+func _handle_drop():
 	var top = InventoryController.get_top([self])
 	if __can_drop(top):
 		set_dragging(false)
 		__drop(top)
 	if is_inside_tree() and not hold_to_drag:
 		get_tree().set_input_as_handled()
+		
+func __should_return():
+	"""Return true if conditions for dropping are met for returning item to somewhere"""
+	return hold_to_drag or allow_outside_slot or split_origin or (slot and slot_drop_return)
+					
+func __can_drop_item(inst):
+	"""Return true if inst is an item and can recieve this item"""
+	return inst.is_in_group("inventory_items")
+					
+func __can_drop_slot(inst):
+	"""Return true if inst is a slot and can recieve this item"""
+	return inst.is_in_group("inventory_slots")
 					
 func __can_drop(top):
-	return (hold_to_drag or allow_outside_slot or split_origin or (slot and slot_drop_return) or top and 
-			(top.is_in_group("inventory_items") or top.is_in_group("inventory_slots")))
+	return (__should_return() or top and (__can_drop_item(top) or __can_drop_slot(top)))
 		
 func draw_circle_arc(center, radius, angle_from, angle_to, color):
-    var nb_points = 32
-    var points_arc = PoolVector2Array()
+	"""Copied from godot docs"""
+	var nb_points = 32
+	var points_arc = PoolVector2Array()
 	
-    for i in range(nb_points+1):
-        var angle_point = deg2rad(angle_from + i * (angle_to-angle_from) / nb_points - 90)
-        points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
+	for i in range(nb_points+1):
+		var angle_point = deg2rad(angle_from + i * (angle_to-angle_from) / nb_points - 90)
+		points_arc.push_back(center + Vector2(cos(angle_point), sin(angle_point)) * radius)
 	
-    for index_point in range(nb_points):
-        draw_line(points_arc[index_point], points_arc[index_point + 1], color)
+	for index_point in range(nb_points):
+		draw_line(points_arc[index_point], points_arc[index_point + 1], color)
 	
 func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
@@ -156,17 +190,21 @@ func __mouse_entered():
 func __mouse_exited():
 	mouse_over = false
 	
-func __drop(top):
+func __drop(top=null):
 	if top:
 		if top.is_in_group("inventory_slots"):
-			if not top.item:
+			if not top.item and (not lock_inventory or (not slot and (not split_origin or split_origin and split_origin.slot and split_origin.slot.inventory == top.inventory)) or (slot and top.inventory == slot.inventory)):
 				top.set_item(self)
 		elif top.is_in_group("inventory_items"):
-			if top.id == self.id and stackable and top.stackable and (top.slot or allow_outside_slot):
+			if not (not lock_inventory or (not slot and (not split_origin or split_origin and split_origin.slot and top.slot and split_origin.slot.inventory == top.slot.inventory)) or (slot and top.slot and top.slot.inventory == slot.inventory)):
+				set_dragging(false)
+			elif (top.id == self.id and stackable and top.stackable and (top.slot or allow_outside_slot)):
 				if not top.is_full():
 					set_stack(top.add_stack(stack))
 				else:
 					top.set_stack(add_stack(top.stack))
+				if not hold_to_drag:
+					set_dragging(true)
 				if not top.stack == 0 and not top.remove_if_empty:
 					set_dragging(true)
 					dragging_update()
@@ -209,6 +247,10 @@ func queue_free():
 	if slot:
 		slot.remove_item()
 	.queue_free()
+		
+func set_id(value):
+	if value >= 0:
+		id = int(value)
 		
 func set_draggable(value):
 	draggable = value
@@ -270,6 +312,12 @@ func set_dead_zone_radius(value):
 	dead_zone_radius = value
 	update()
 	
+func set_disabled(value):
+	disabled = value
+	if dragging:
+		set_dragging(false)
+		__drop()
+	
 func dragging_update():
 	if dragging:
 		match drag_mode:
@@ -288,6 +336,16 @@ func is_target():
 	
 func can_split():
 	return stack > 1
+	
+func remove(amount):
+	if amount >= stack or amount < 0:
+		return self
+	var item = self.duplicate()
+	get_parent().add_child(item)
+	var temp = stack
+	item.stack = int(amount)
+	set_stack(temp - item.stack)
+	return item
 	
 func split(smaller_stack=false):
 	if can_split():
