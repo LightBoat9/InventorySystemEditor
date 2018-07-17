@@ -27,10 +27,10 @@ export(bool) var debug_in_editor = true setget set_debug_in_editor
 export(int) var id = 0 setget set_id
 export(bool) var disabled = false setget set_disabled
 # Drag
-export(bool) var draggable = true setget set_draggable
-export(int, "Center", "Relative", "Position") var drag_mode = 0
+export(bool) var left_click_drag = false setget set_left_click_drag
+export(bool) var mouse_down_drop = true setget set_mouse_down_drop
+export(int, "Center", "Relative", "Offset", "Position") var drag_mode = 0
 export(Vector2) var drag_position = Vector2()
-export(bool) var hold_to_drag = false setget set_hold_to_drag
 export(float) var dead_zone_radius = 0.0 setget set_dead_zone_radius
 export(bool) var lock_inventory = false
 # Stack
@@ -60,6 +60,7 @@ const RECT_FILLED = false
 enum DRAG_MODE {
 	Center,
 	Relative,
+	Offset,
 	Position,
 }
 	
@@ -94,10 +95,10 @@ func _input(event):
 	elif event is InputEventMouseButton:
 		if event.button_index == BUTTON_LEFT:
 			if dragging:
-				if hold_to_drag and not event.pressed or not hold_to_drag and event.pressed:
+				if not mouse_down_drop and not event.pressed or mouse_down_drop and event.pressed:
 					_handle_drop()
-			elif event.pressed and is_target():
-				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_drag:
+			elif event.pressed and left_click_drag and is_target():
+				if mouse_down_drop or dead_zone_radius == 0 or _dead_zone_drag:
 					set_dragging(true)
 					if is_inside_tree():
 						get_tree().set_input_as_handled()
@@ -110,13 +111,13 @@ func _input(event):
 				update()
 		elif event.button_index == BUTTON_RIGHT:
 			if dragging:
-				if hold_to_drag and not event.pressed:
+				if not mouse_down_drop and not event.pressed:
 					_handle_drop()
-				if right_click_drop_single and not hold_to_drag:
+				if right_click_drop_single and mouse_down_drop:
 					if event.pressed:
 						__drop_single()
 			elif event.pressed and right_click_split and is_target():
-				if not hold_to_drag or dead_zone_radius == 0 or _dead_zone_split:
+				if mouse_down_drop or dead_zone_radius == 0 or _dead_zone_split:
 					if can_split():
 						split_and_drag()
 					else:
@@ -146,12 +147,12 @@ func _handle_drop():
 	if __can_drop(top):
 		set_dragging(false)
 		__drop(top)
-	if is_inside_tree() and not hold_to_drag:
+	if is_inside_tree() and mouse_down_drop:
 		get_tree().set_input_as_handled()
 		
 func __should_return():
 	"""Return true if conditions for dropping are met for returning item to somewhere"""
-	return hold_to_drag or allow_outside_slot or split_origin or (slot and slot_drop_return)
+	return not mouse_down_drop or allow_outside_slot or split_origin or (slot and slot_drop_return)
 					
 func __can_drop_item(inst):
 	"""Return true if inst is an item and can recieve this item"""
@@ -179,7 +180,7 @@ func draw_circle_arc(center, radius, angle_from, angle_to, color):
 func _draw():
 	if (debug_in_editor and Engine.editor_hint) or debug_in_game:
 		draw_rect(Rect2(Vector2(), get_rect().size), RECT_COLOR, RECT_FILLED)
-		if hold_to_drag and (_dead_zone_split or _dead_zone_drag or Engine.editor_hint) and dead_zone_radius > 0:
+		if not mouse_down_drop and (_dead_zone_split or _dead_zone_drag or Engine.editor_hint) and dead_zone_radius > 0:
 			if Engine.editor_hint: 
 				_dead_zone_center = rect_size * rect_scale / 2.0
 			draw_circle_arc(_dead_zone_center, dead_zone_radius, 0, 360, RECT_COLOR)
@@ -203,14 +204,14 @@ func __drop(top=null):
 					set_stack(top.add_stack(stack))
 				else:
 					top.set_stack(add_stack(top.stack))
-				if not hold_to_drag:
+				if mouse_down_drop:
 					set_dragging(true)
 				if not top.stack == 0 and not top.remove_if_empty:
 					set_dragging(true)
 					dragging_update()
 			elif top.slot and top != self and self.slot:
 				__drop_swap(top.slot)
-			elif not hold_to_drag and top.slot:
+			elif mouse_down_drop and top.slot:
 				var temp_slot = top.slot
 				var temp_item = top.slot.item
 				top.slot.clear_item()
@@ -231,7 +232,7 @@ func __drop_swap(slot):
 	if slot.item != self and self.slot:
 		var temp_item = slot.item
 		slot.swap_items(self.slot)
-		if not hold_to_drag:
+		if mouse_down_drop:
 			temp_item.set_dragging(true)
 		temp_item._mouse_relative = _mouse_relative
 		temp_item.dragging_update()
@@ -252,11 +253,11 @@ func set_id(value):
 	if value >= 0:
 		id = int(value)
 		
-func set_draggable(value):
-	draggable = value
+func set_left_click_drag(value):
+	left_click_drag = value
 	
-func set_hold_to_drag(value):
-	hold_to_drag = value
+func set_mouse_down_drop(value):
+	mouse_down_drop = value
 	update()
 	
 func add_stack(value):
@@ -325,14 +326,16 @@ func dragging_update():
 				rect_global_position = get_global_mouse_position() - (rect_size * rect_scale / 2.0)
 			DRAG_MODE.Relative:
 				rect_global_position = get_global_mouse_position() - _mouse_relative
-			DRAG_MODE.Position:
+			DRAG_MODE.Offset:
 				rect_global_position = get_global_mouse_position() - drag_position
+			DRAG_MODE.Position:
+				rect_global_position = drag_position
 
 func is_full():
 	return stack >= max_stack
 	
 func is_target():
-	return draggable and mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging()
+	return mouse_over and InventoryController.is_top(self) and not InventoryController.current_dragging()
 	
 func can_split():
 	return stack > 1
@@ -346,6 +349,12 @@ func remove(amount):
 	item.stack = int(amount)
 	set_stack(temp - item.stack)
 	return item
+	
+func move_to_slot(target):
+	if slot:
+		slot.move_item(target)
+	else:
+		target.set_item(self)
 	
 func split(smaller_stack=false):
 	if can_split():

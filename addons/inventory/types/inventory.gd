@@ -259,6 +259,15 @@ func find_item(id, reversed=false):
 		if slots[i].item and slots[i].item.id == id:
 			return i
 			
+func sort_items_by_id(priorities=[]):
+	for i in range(0, len(items)):
+		while i > 0 and items[i].id < items[i-1].id:  # Sort the items array
+			var temp = items[i-1]
+			items[i-1] = items[i]
+			items[i] = temp
+		if items[i].slot:  # Set items to the correct slot
+			items[i].slot.move_item(slots[i])
+			
 func set_disabled(value):
 	disabled = value
 	_update_slots()

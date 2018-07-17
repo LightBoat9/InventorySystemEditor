@@ -2,6 +2,7 @@
 
 ## [TODO]
 ### Add
+- Add parameter "priorities" to inventory.sort_items_by_id
 - Add feature to slot allowing better control of item position
 - Export item properties when next godot supports dictionary exports
 - Start save systems
@@ -10,9 +11,19 @@
 - Use add_autoload_singleton and remove_autoload_singleton with InventoryController
 - Add variables to InventoryController to optomize gui inputs such as items with mouse_over
 
-## [Unreleased]
-
 # [Pre-Release]
+
+### Add
+- Add left_click_drag to item
+- Add mouse_down_drop in favor of hold_to_drag for setting the items to drop when mouse is released or mouse_down
+- Add "Offset" mode to item.drag_mode where it drags at an offset to the mouse
+- Add sort_items_by_id to inventory
+### Remove
+- Remove draggable in favor of left_click_drag
+### Change
+- Change "Position" mode in item.drag_mode to a set position on the screen
+### Fix
+- Fix bug where item is moved to the same slot in slot.move_item and slot.swap_items causes error in slot.set_item
 
 ## [0.3.0] - 2018/6/14
 ### Added

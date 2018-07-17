@@ -7,10 +7,7 @@ path="res://.import/backpack.png-7ba0aed3fd04daf0e118bc2a656566fd.stex"
 [deps]
 
 source_file="res://addons/inventory/assets/backpack.png"
-source_md5="3e3369befd4cb2559588cd5e463dc036"
-
 dest_files=[ "res://.import/backpack.png-7ba0aed3fd04daf0e118bc2a656566fd.stex" ]
-dest_md5="b27356143bcc789f2c92e88aa6c95a30"
 
 [params]
 

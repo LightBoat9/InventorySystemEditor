@@ -7,10 +7,7 @@ path="res://.import/background.png-daac9b6928f5d734bbe2c782c6d2be32.stex"
 [deps]
 
 source_file="res://addons/inventory/assets/background.png"
-source_md5="8a46345bf4a2bcd6d55c1bd6e080fdfe"
-
 dest_files=[ "res://.import/background.png-daac9b6928f5d734bbe2c782c6d2be32.stex" ]
-dest_md5="698ed1d844c7a8feda8b3fc6b818a95a"
 
 [params]
 

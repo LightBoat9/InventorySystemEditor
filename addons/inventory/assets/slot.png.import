@@ -7,10 +7,7 @@ path="res://.import/slot.png-2587ebfc222b157504c472129073f13e.stex"
 [deps]
 
 source_file="res://addons/inventory/assets/slot.png"
-source_md5="d71ac5fa3a9d1832736fd702ffd0db50"
-
 dest_files=[ "res://.import/slot.png-2587ebfc222b157504c472129073f13e.stex" ]
-dest_md5="15a4f8ac5a9fa2ed44182083b1447bbe"
 
 [params]
 

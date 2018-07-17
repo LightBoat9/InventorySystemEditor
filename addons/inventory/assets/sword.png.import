@@ -7,10 +7,7 @@ path="res://.import/sword.png-2a6755cae2a2b5ca8aa9bd44791141a1.stex"
 [deps]
 
 source_file="res://addons/inventory/assets/sword.png"
-source_md5="dccb16cc303c8d8488871cbeac05a417"
-
 dest_files=[ "res://.import/sword.png-2a6755cae2a2b5ca8aa9bd44791141a1.stex" ]
-dest_md5="6d4248de1cd85c71c0a43fd826ac378f"
 
 [params]
 

@@ -28,7 +28,7 @@ export(bool) var item_drag_return = true
 var InventoryController = preload("res://addons/inventory/types/inventory_controller.gd").new()
 var dragging = false
 var inventory = null
-var item = null setget set_item
+var item = null setget set_item, get_item
 var mouse_over = false
 	
 const RECT_COLOR = Color("3FC380")
@@ -85,13 +85,14 @@ func set_item(inst):
 		print_stack()
 		printerr("Cannot set item when slot already contains an item")
 		return
-	item = inst
-	item.disabled = disabled
-	if inst.slot:
+	if inst.slot and inst != item:
 		if inst.slot.inventory == inventory:
 			inst.slot.clear_item()  # Don't emit item removed signal if the item is just moved in the same inventory
 		else:
 			inst.slot.remove_item()
+			
+	item = inst
+	item.disabled = disabled
 	inst.slot = self
 	
 	if inst.is_connected("stack_changed", self, "__stack_changed"):
@@ -102,6 +103,9 @@ func set_item(inst):
 	inst.rect_global_position = rect_global_position
 	
 	emit_signal("item_added", inst)
+	
+func get_item():
+	return item
 	
 func align_item():
 	if item:
@@ -115,12 +119,13 @@ func move_item(slot):
 		print_stack()
 		printerr("Cannot move item when item is null")
 		return
+	if slot == self:
+		return
 	if slot.item:
 		swap_items(slot)
-		return
-	slot.item = item
-	item.slot = slot
-	item = null
+	else:
+		slot.set_item(item)
+		item = null
 	
 func clear_item():
 	item.slot = null
@@ -143,8 +148,11 @@ func swap_items(slot):
 		print_stack()
 		printerr("Cannot swap items with slot one slot does not contain an item")
 		return
+	if slot == self:
+		return
 	var temp_self = item
-	var temp_other = slot.item
+	var temp_slot = slot.item  # Workaround to the setget calling setter bug
+	var temp_other = temp_slot
 	slot.clear_item()
 	clear_item()
 	slot.set_item(temp_self)
