@@ -13,6 +13,7 @@
 
 # [Pre-Release]
 
+## [0.3.1] - 2018/7/16
 ### Add
 - Add left_click_drag to item
 - Add mouse_down_drop in favor of hold_to_drag for setting the items to drop when mouse is released or mouse_down
