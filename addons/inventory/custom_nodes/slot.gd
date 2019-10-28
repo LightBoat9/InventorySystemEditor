@@ -10,7 +10,7 @@ signal item_removed
 export var confine_categories: PoolStringArray = PoolStringArray()
 
 # warning-ignore:unused_class_variable
-export var slot_group: String = ""
+export var slot_group: String = "" setget set_slot_group
 
 var item: Item = null setget set_item
 
@@ -43,3 +43,12 @@ func remove_confine_category(cat: String) -> void:
 		if confine_categories[i] == cat:
 			confine_categories.remove(i)
 			return
+			
+func set_slot_group(to: String) -> void:
+	if to and is_in_group(to):
+		remove_from_group(to)
+		
+	slot_group = to
+	
+	if slot_group and not is_in_group(slot_group):
+		add_to_group(slot_group)

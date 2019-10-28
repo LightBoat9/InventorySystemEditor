@@ -27,6 +27,22 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="DragSlot4" type="PanelContainer" parent="."]
+margin_left = 608.149
+margin_top = 433.258
+margin_right = 672.149
+margin_bottom = 497.258
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+confine_categories = PoolStringArray( "tool" )
+drag_disabled = true
+
 [node name="InventoryContainer" type="GridContainer" parent="."]
 margin_left = 102.0
 margin_top = 81.0
@@ -51,7 +67,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot2" type="PanelContainer" parent="InventoryContainer"]
@@ -68,7 +84,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot3" type="PanelContainer" parent="InventoryContainer"]
@@ -85,7 +101,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot4" type="PanelContainer" parent="InventoryContainer"]
@@ -102,7 +118,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot5" type="PanelContainer" parent="InventoryContainer"]
@@ -119,7 +135,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot6" type="PanelContainer" parent="InventoryContainer"]
@@ -136,7 +152,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot7" type="PanelContainer" parent="InventoryContainer"]
@@ -153,7 +169,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot8" type="PanelContainer" parent="InventoryContainer"]
@@ -170,7 +186,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="DragSlot9" type="PanelContainer" parent="InventoryContainer"]
@@ -187,7 +203,170 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_group = "toolbar"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="InventoryContainer3" type="GridContainer" parent="."]
+margin_left = 485.0
+margin_top = 82.0
+margin_right = 767.0
+margin_bottom = 347.0
+columns = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DragSlot" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 13.0
+margin_top = 10.0
+margin_right = 77.0
+margin_bottom = 74.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot2" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 108.0
+margin_top = 10.0
+margin_right = 172.0
+margin_bottom = 74.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot3" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 203.0
+margin_top = 10.0
+margin_right = 267.0
+margin_bottom = 74.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot4" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 13.0
+margin_top = 99.0
+margin_right = 77.0
+margin_bottom = 163.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot5" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 108.0
+margin_top = 99.0
+margin_right = 172.0
+margin_bottom = 163.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot6" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 203.0
+margin_top = 99.0
+margin_right = 267.0
+margin_bottom = 163.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot7" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 13.0
+margin_top = 188.0
+margin_right = 77.0
+margin_bottom = 252.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot8" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 108.0
+margin_top = 188.0
+margin_right = 172.0
+margin_bottom = 252.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
+drag_disabled = true
+
+[node name="DragSlot9" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 203.0
+margin_top = 188.0
+margin_right = 267.0
+margin_bottom = 252.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "main2"
+next_groups = PoolStringArray( "toolbar" )
 drag_disabled = true
 
 [node name="InventoryContainer2" type="GridContainer" parent="."]
@@ -214,7 +393,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "toolbar"
-next_group = "main"
+next_groups = PoolStringArray( "main", "main2" )
 drag_disabled = true
 
 [node name="DragSlot2" type="PanelContainer" parent="InventoryContainer2"]
@@ -231,7 +410,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "toolbar"
-next_group = "main"
+next_groups = PoolStringArray( "main", "main2" )
 drag_disabled = true
 
 [node name="DragSlot3" type="PanelContainer" parent="InventoryContainer2"]
@@ -248,5 +427,5 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "toolbar"
-next_group = "main"
+next_groups = PoolStringArray( "main", "main2" )
 drag_disabled = true
