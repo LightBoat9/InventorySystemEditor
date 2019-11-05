@@ -10,7 +10,7 @@ var item_name: String = "item_name"
 var categories: PoolStringArray = PoolStringArray()
 
 var stack: int = 1 setget set_stack
-var max_stack: int = 99 setget set_stack
+var max_stack: int = 99 setget set_max_stack
 
 func get_item_texture() -> Texture:
 	""" Return the texture used to represent this item
@@ -38,3 +38,6 @@ func set_max_stack(to: int) -> void:
 	max_stack = to
 	if stack > max_stack:
 		self.stack = max_stack
+		
+func is_full() -> bool:
+	return max_stack == stack

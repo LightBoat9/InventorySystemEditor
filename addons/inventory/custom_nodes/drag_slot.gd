@@ -15,6 +15,10 @@ export var drag_toggle: bool = true
 export(DragOrigin) var drag_origin = DragOrigin.CENTER
 export var custom_drag_origin: Vector2 = Vector2()
 
+# This will repeat the quick move function until either
+# the item cannot be moved or the item is fully moved
+export var repeat_group_move: bool = true
+
 var _is_dragging: bool = false setget _set_is_dragging
 var _relative_pos: Vector2 = Vector2()
 var _drag_texture_rect: TextureRect = TextureRect.new()
@@ -36,15 +40,17 @@ func _gui_input(event: InputEvent) -> void:
 				if event.button_index == BUTTON_LEFT and event.pressed:
 					if event.shift and next_groups.size() > 0:
 						var next_slot = _find_valid_slot(item, next_groups)
-						if next_slot:
-							if next_slot.item:
-								if next_slot.item.item_name == self.item.item_name:
-									next_slot.item.stack += item.stack
-									item.queue_free()
-									self.item = null
-							else:
-								next_slot.item = item
-								self.item = null
+						# Continue as long as slots are valid
+						while next_slot:
+							move_item_to_slot(next_slot)
+							# If set to not repeat only loop once
+							if not repeat_group_move:
+								break
+							# If the item is fully moved we're done
+							if not item:
+								break
+							# Grab the next slot
+							next_slot = _find_valid_slot(item, next_groups)
 					else:
 						self._drag_item = item
 						self.item = null
@@ -90,11 +96,11 @@ func _set_is_dragging(to: bool) -> void:
 	
 	if _is_dragging:
 		_relative_pos = get_texture_rect().get_local_mouse_position()
-		emit_signal("drag_started")
+		#emit_signal("drag_started")
 	else:
 		get_texture_rect().visible = true
 		queue_sort()
-		emit_signal("drag_ended")
+		#emit_signal("drag_ended")
 		
 func _drop():
 	if not _drag_item:
@@ -112,9 +118,14 @@ func _drop():
 			self._drag_item = null
 			self._is_dragging = false
 		elif item.item_name == _drag_item.item_name:
-			self.item.stack += _drag_item.stack
-			self._drag_item = null
-			self._is_dragging = false
+			if _drag_item.stack + item.stack <= item.max_stack:
+				self.item.stack += _drag_item.stack
+				self._drag_item = null
+				self._is_dragging = false
+			else:
+				var diff: int = item.max_stack - item.stack
+				self.item.stack += diff
+				self._drag_item.stack -= diff
 		# Otherwise cannot return because item and _drag_item
 		# are different types
 			
@@ -128,12 +139,13 @@ func _drop_single() -> void:
 				if slot.item:
 					if confine_categories.size() == 0 or slot.item.has_category_overlap(confine_categories):
 						if _drag_item.item_name == slot.item.item_name:
-							slot.item.stack += 1
-							_drag_item.stack -= 1
-							if _drag_item.stack <= 0:
-								_drag_item.queue_free()
-								_drag_item = null
-								self._is_dragging = false
+							if slot.item.stack + 1 <= slot.item.max_stack:
+								slot.item.stack += 1
+								_drag_item.stack -= 1
+								if _drag_item.stack <= 0:
+									_drag_item.queue_free()
+									_drag_item = null
+									self._is_dragging = false
 				else:
 					slot.item = _drag_item.duplicate()
 					slot.item.stack = 1
@@ -148,7 +160,7 @@ func _find_valid_slot(for_item: Item, groups: PoolStringArray) -> PanelContainer
 		for gr in groups:
 			for slot in get_tree().get_nodes_in_group(gr):
 				if slot.confine_categories.size() == 0 or item.has_category_overlap(slot.confine_categories):
-					if not slot.item or slot.item.item_name == for_item.item_name:
+					if not slot.item or (slot.item.item_name == for_item.item_name and not slot.item.is_full()):
 						return slot
 	
 	return null
@@ -163,8 +175,10 @@ func set_drag_item(to: Item) -> void:
 	_drag_item = to
 	
 	if to:
+		emit_signal("drag_started")
 		get_drag_texture_rect().texture = to.get_item_texture()
 	else:
+		emit_signal("drag_ended")
 		get_drag_texture_rect().texture = null
 		
 func move_item_to_slot(slot) -> void:
@@ -176,7 +190,26 @@ func move_item_to_slot(slot) -> void:
 		
 		Otherwise the item will be moved to the other slot
 	"""
-	pass
+	# Assume that since this item is in this slot it matches the category
+	# If the slot to move to has an item
+	if slot.item:
+		# Both slots must support the items that will swap
+		if confine_categories.size() == 0 or slot.item.has_category_overlap(confine_categories):
+			# If the full item stack can be added
+			if item.stack + slot.item.stack <= slot.item.max_stack:
+				item.queue_free()
+				slot.item.stack += item.stack
+				self.item = null
+			# Otherwise either the stack is full or only partial can be added
+			else:
+				# Add partial
+				if slot.item.stack != slot.item.max_stack:
+					var diff: int = slot.item.max_stack - slot.item.stack
+					slot.item.stack += diff
+					self.item.stack -= diff
+	else:
+		slot.item = item
+		self.item = null
 	
 func move_dragging_item_to_slot(slot) -> void:
 	if slot.confine_categories.size() == 0 or _drag_item.has_category_overlap(slot.confine_categories):
@@ -184,30 +217,51 @@ func move_dragging_item_to_slot(slot) -> void:
 		if slot.item:
 			# Both slots must support the items that will swap
 			if confine_categories.size() == 0 or slot.item.has_category_overlap(confine_categories):
+				# If moving to a slot with the same item
 				if _drag_item.item_name == slot.item.item_name:
-					# If dragging the full stack merge the items
-					if item == null:
+					# If the full drag item stack can be added
+					if _drag_item.stack + slot.item.stack <= slot.item.max_stack:
 						_drag_item.queue_free()
 						slot.item.stack += _drag_item.stack
-					# Otherwise remove the amount from this item and add to other
+						self._is_dragging = false
+						self._drag_item = null
+					# Otherwise either the stack is full or only partial can be added
 					else:
-						slot.item.stack += _drag_item.stack
-						_drag_item.queue_free()
+						# If it is full
+						if slot.item.stack == slot.item.max_stack:
+							var temp = slot.item
+							slot.item = _drag_item
+							slot._is_dragging = true
+							slot._drag_item = temp
+							# If swapping with self don't stop drag
+							if slot != self:
+								self._is_dragging = false
+								self._drag_item = null
+						# Add partial
+						else:
+							var diff: int = slot.item.max_stack - slot.item.stack
+							slot.item.stack += diff
+							self._drag_item.stack -= diff
+				# If moving to a slot with a different item
 				else:
+					# If no item in this slot just swap
 					if item == null:
 						var temp = slot.item
 						slot.item = _drag_item
 						self.item = temp
+						self._is_dragging = false
+						self._drag_item = null
 					else:
 						var temp = slot.item
 						slot.item = _drag_item
 						slot._is_dragging = true
 						slot._drag_item = temp
-						
-				self._is_dragging = false
-				_drag_item = null
+						# If swapping with self don't stop drag
+						if slot != self:
+							self._is_dragging = false
+							self._drag_item = null
 				
-		# Otherwise just move the item
+		# Otherwise if the slot is empty just move the item
 		else:
 			slot.item = _drag_item
 			self._is_dragging = false
