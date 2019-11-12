@@ -4,20 +4,15 @@ const item_hammer = preload("res://testing/basic_inventory/test_items/item_hamme
 const item_book = preload("res://testing/basic_inventory/test_items/item_book.gd")
 
 func _ready() -> void:
-	for child in $InventoryContainer.get_children():
-		var ham = item_hammer.new()
-		ham.stack = 5
-		child.item = ham
-		
-	for child in $InventoryContainer3.get_children():
-		var ham = item_hammer.new()
-		ham.stack = 5
-		child.item = ham
+	var ham = item_hammer.new()
+	ham.stack = 4
+	$InventoryContainer/DragSlot.item = ham
 	
 	var book = item_book.new()
-	book.stack = 5
-	$InventoryContainer2/DragSlot.item = book
+	book.stack = 4
+	$InventoryContainer/DragSlot2.item = book
 	
-	var book2 = item_book.new()
-	book2.stack = 5
-	$InventoryContainer2/DragSlot2.item = book2
+	for slot in $InventoryContainer2.get_children():
+		var book2 = item_book.new()
+		book2.stack = book2.max_stack
+		slot.item = book2

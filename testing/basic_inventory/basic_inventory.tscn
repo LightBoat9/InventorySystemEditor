@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
+[ext_resource path="res://addons/inventory/custom_nodes/drag_slot.gd" type="Script" id=1]
 [ext_resource path="res://testing/basic_inventory/basic_inventory.gd" type="Script" id=2]
-[ext_resource path="res://testing/custom_slot.gd" type="Script" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 8.0
@@ -27,22 +27,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DragSlot4" type="PanelContainer" parent="."]
-margin_left = 608.149
-margin_top = 433.258
-margin_right = 672.149
-margin_bottom = 497.258
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-confine_categories = PoolStringArray( "tool" )
-drag_disabled = true
-
 [node name="InventoryContainer" type="GridContainer" parent="."]
 margin_left = 102.0
 margin_top = 81.0
@@ -62,13 +46,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot2" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 108.0
@@ -79,13 +62,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot3" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 203.0
@@ -96,13 +78,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot4" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 13.0
@@ -113,13 +94,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot5" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 108.0
@@ -130,13 +110,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot6" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 203.0
@@ -147,13 +126,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot7" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 13.0
@@ -164,13 +142,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot8" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 108.0
@@ -181,13 +158,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="DragSlot9" type="PanelContainer" parent="InventoryContainer"]
 margin_left = 203.0
@@ -198,176 +174,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "main"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="InventoryContainer3" type="GridContainer" parent="."]
-margin_left = 485.0
-margin_top = 82.0
-margin_right = 767.0
-margin_bottom = 347.0
-columns = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="DragSlot" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 13.0
-margin_top = 10.0
-margin_right = 77.0
-margin_bottom = 74.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot2" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 108.0
-margin_top = 10.0
-margin_right = 172.0
-margin_bottom = 74.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot3" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 203.0
-margin_top = 10.0
-margin_right = 267.0
-margin_bottom = 74.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot4" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 13.0
-margin_top = 99.0
-margin_right = 77.0
-margin_bottom = 163.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot5" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 108.0
-margin_top = 99.0
-margin_right = 172.0
-margin_bottom = 163.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot6" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 203.0
-margin_top = 99.0
-margin_right = 267.0
-margin_bottom = 163.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot7" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 13.0
-margin_top = 188.0
-margin_right = 77.0
-margin_bottom = 252.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot8" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 108.0
-margin_top = 188.0
-margin_right = 172.0
-margin_bottom = 252.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
-
-[node name="DragSlot9" type="PanelContainer" parent="InventoryContainer3"]
-margin_left = 203.0
-margin_top = 188.0
-margin_right = 267.0
-margin_bottom = 252.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-slot_group = "main2"
-next_groups = PoolStringArray( "toolbar" )
-drag_disabled = true
+next_groups = PoolStringArray( "toolbar", "extra" )
 
 [node name="InventoryContainer2" type="GridContainer" parent="."]
 margin_left = 90.149
@@ -388,13 +200,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "toolbar"
-next_groups = PoolStringArray( "main", "main2" )
-drag_disabled = true
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot2" type="PanelContainer" parent="InventoryContainer2"]
 margin_left = 126.0
@@ -405,13 +216,12 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "toolbar"
-next_groups = PoolStringArray( "main", "main2" )
-drag_disabled = true
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot3" type="PanelContainer" parent="InventoryContainer2"]
 margin_left = 233.0
@@ -422,10 +232,67 @@ rect_min_size = Vector2( 64, 64 )
 size_flags_horizontal = 6
 size_flags_vertical = 6
 custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 slot_group = "toolbar"
-next_groups = PoolStringArray( "main", "main2" )
-drag_disabled = true
+next_groups = PoolStringArray( "main" )
+
+[node name="InventoryContainer3" type="GridContainer" parent="."]
+margin_left = 505.935
+margin_top = 228.206
+margin_right = 823.935
+margin_bottom = 296.206
+columns = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DragSlot" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 19.0
+margin_top = 2.0
+margin_right = 83.0
+margin_bottom = 66.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "extra"
+next_groups = PoolStringArray( "main" )
+
+[node name="DragSlot2" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 126.0
+margin_top = 2.0
+margin_right = 190.0
+margin_bottom = 66.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "extra"
+next_groups = PoolStringArray( "main" )
+
+[node name="DragSlot3" type="PanelContainer" parent="InventoryContainer3"]
+margin_left = 233.0
+margin_top = 2.0
+margin_right = 297.0
+margin_bottom = 66.0
+rect_min_size = Vector2( 64, 64 )
+size_flags_horizontal = 6
+size_flags_vertical = 6
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+slot_group = "extra"
+next_groups = PoolStringArray( "main" )

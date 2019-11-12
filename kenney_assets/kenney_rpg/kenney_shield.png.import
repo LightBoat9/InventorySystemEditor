@@ -1,0 +1,34 @@
+[remap]
+
+importer="texture"
+type="StreamTexture"
+path="res://.import/kenney_shield.png-19c08adb135ad0937c66d0cf55c07f90.stex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://kenney_assets/kenney_rpg/kenney_shield.png"
+dest_files=[ "res://.import/kenney_shield.png-19c08adb135ad0937c66d0cf55c07f90.stex" ]
+
+[params]
+
+compress/mode=0
+compress/lossy_quality=0.7
+compress/hdr_mode=0
+compress/bptc_ldr=0
+compress/normal_map=0
+flags/repeat=0
+flags/filter=false
+flags/mipmaps=false
+flags/anisotropic=false
+flags/srgb=2
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/HDR_as_SRGB=false
+process/invert_color=false
+stream=false
+size_limit=0
+detect_3d=false
+svg/scale=1.0

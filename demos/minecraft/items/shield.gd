@@ -1,10 +1,6 @@
-extends Item
-
-const texture: Texture = preload("res://kenney_assets/kenney_rpg/colored808.png")
+extends NumberedItem
 
 func _init():
 	item_name = "shield"
 	categories.append("equip_shield")
-
-func get_item_texture() -> Texture:
-	return texture
+	texture = preload("res://kenney_assets/kenney_rpg/kenney_shield.png")

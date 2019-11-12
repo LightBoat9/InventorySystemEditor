@@ -9,13 +9,19 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node",
+"base": "TextureRect",
 "class": "Item",
 "language": "GDScript",
 "path": "res://addons/inventory/custom_nodes/item.gd"
+}, {
+"base": "Item",
+"class": "NumberedItem",
+"language": "GDScript",
+"path": "res://addons/inventory/custom_nodes/numbered_item.gd"
 } ]
 _global_script_class_icons={
-"Item": ""
+"Item": "",
+"NumberedItem": ""
 }
 
 [application]
