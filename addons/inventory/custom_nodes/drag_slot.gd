@@ -93,8 +93,9 @@ func _drop():
 		
 	for slot in get_tree().get_nodes_in_group("inventory_slots"):
 		if slot.get_global_rect().has_point(get_global_mouse_position()):
-			move_drag_item_to_slot(slot)
-			return
+			if can_drop(slot):
+				move_drag_item_to_slot(slot)
+				return
 		
 	# If it gets this far then no slots were clicked and item must return
 	if _drag_item:
@@ -166,6 +167,9 @@ func set_drag_item(to: Item) -> void:
 	if _drag_item:
 		add_child(_drag_item)
 		_drag_item.set_as_toplevel(true)
+		
+func can_drop(slot) -> bool:
+	return true
 		
 func move_item_to_slot(slot) -> void:
 	""" Move this slot's item to the other slot. 

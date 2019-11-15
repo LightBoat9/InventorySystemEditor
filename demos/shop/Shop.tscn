@@ -1,202 +1,297 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=9 format=2]
 
-[ext_resource path="res://addons/inventory/custom_nodes/drag_slot.gd" type="Script" id=1]
+[ext_resource path="res://demos/shop/slot/Slot.tscn" type="PackedScene" id=1]
 [ext_resource path="res://demos/shop/shop.gd" type="Script" id=2]
+[ext_resource path="res://kenney_assets/kenney_rpg/face-happy.png" type="Texture" id=4]
+[ext_resource path="res://kenney_assets/kenney_fonts/Kenney Pixel Square.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://demos/shop/coin/CoinContainer.tscn" type="PackedScene" id=6]
+[ext_resource path="res://demos/shop/Slot/slot.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
-content_margin_left = 9.0
-content_margin_right = 9.0
-content_margin_top = 9.0
-content_margin_bottom = 9.0
-bg_color = Color( 0.176471, 0.239216, 0.552941, 1 )
-border_width_left = 5
-border_width_top = 5
-border_width_right = 5
-border_width_bottom = 5
-border_color = Color( 0.156863, 0.141176, 0.141176, 1 )
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+content_margin_left = 16.0
+content_margin_right = 16.0
+content_margin_top = 16.0
+content_margin_bottom = 16.0
+bg_color = Color( 0.682353, 0.356863, 0.313726, 1 )
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color( 0.180392, 0.180392, 0.180392, 1 )
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="DynamicFont" id=2]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 5 )
 
 [node name="ShopDemo" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 2 )
 __meta__ = {
+"_edit_horizontal_guides_": [  ],
 "_edit_use_anchors_": false
 }
 
-[node name="Inventory" type="GridContainer" parent="."]
-margin_left = 84.7895
-margin_top = 184.895
-margin_right = 420.789
-margin_bottom = 384.895
+[node name="Inventory" type="PanelContainer" parent="."]
+margin_left = 101.99
+margin_top = 146.832
+margin_right = 469.99
+margin_bottom = 414.832
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Inventory"]
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 352.0
+margin_bottom = 252.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CoinContainer" parent="Inventory/VBoxContainer" instance=ExtResource( 6 )]
+
+[node name="Inventory" type="GridContainer" parent="Inventory/VBoxContainer"]
+margin_top = 36.0
+margin_right = 336.0
+margin_bottom = 236.0
 columns = 5
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DragSlot" type="PanelContainer" parent="Inventory"]
-margin_right = 64.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+[node name="DragSlot" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot2" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot2" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 68.0
 margin_right = 132.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot3" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot3" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 136.0
 margin_right = 200.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot4" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot4" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 204.0
 margin_right = 268.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot5" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot5" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 272.0
 margin_right = 336.0
-margin_bottom = 64.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot6" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot6" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_top = 68.0
-margin_right = 64.0
 margin_bottom = 132.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot7" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot7" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 68.0
 margin_top = 68.0
 margin_right = 132.0
 margin_bottom = 132.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot8" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot8" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 136.0
 margin_top = 68.0
 margin_right = 200.0
 margin_bottom = 132.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot9" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot9" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 204.0
 margin_top = 68.0
 margin_right = 268.0
 margin_bottom = 132.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot10" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot10" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 272.0
 margin_top = 68.0
 margin_right = 336.0
 margin_bottom = 132.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot11" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot11" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_top = 136.0
-margin_right = 64.0
 margin_bottom = 200.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot12" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot12" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 68.0
 margin_top = 136.0
 margin_right = 132.0
 margin_bottom = 200.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot13" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot13" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 136.0
 margin_top = 136.0
 margin_right = 200.0
 margin_bottom = 200.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot14" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot14" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 204.0
 margin_top = 136.0
 margin_right = 268.0
 margin_bottom = 200.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="DragSlot15" type="PanelContainer" parent="Inventory"]
+[node name="DragSlot15" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
 margin_left = 272.0
 margin_top = 136.0
 margin_right = 336.0
 margin_bottom = 200.0
-rect_min_size = Vector2( 64, 64 )
-size_flags_horizontal = 6
-size_flags_vertical = 6
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 1 )
+slot_group = "main"
+next_groups = PoolStringArray( "main" )
 
-[node name="Shop" type="GridContainer" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+[node name="Shop" type="PanelContainer" parent="."]
+margin_left = 529.158
+margin_top = 144.684
+margin_right = 897.158
+margin_bottom = 412.684
+custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Shop"]
+margin_left = 16.0
+margin_top = 16.0
+margin_right = 352.0
+margin_bottom = 252.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Shop/VBoxContainer"]
+margin_right = 336.0
+margin_bottom = 32.0
+
+[node name="TextureRect" type="TextureRect" parent="Shop/VBoxContainer/HBoxContainer"]
+margin_right = 32.0
+margin_bottom = 32.0
+rect_min_size = Vector2( 32, 32 )
+texture = ExtResource( 4 )
+expand = true
+
+[node name="Label" type="Label" parent="Shop/VBoxContainer/HBoxContainer"]
+margin_left = 36.0
+margin_top = 4.0
+margin_right = 192.0
+margin_bottom = 28.0
+custom_fonts/font = SubResource( 2 )
+text = "Take your time."
+
+[node name="CoinContainer" parent="Shop/VBoxContainer/HBoxContainer" instance=ExtResource( 6 )]
+margin_left = 288.0
+size_flags_horizontal = 10
+
+[node name="Shop" type="GridContainer" parent="Shop/VBoxContainer"]
+margin_top = 36.0
+margin_right = 336.0
+margin_bottom = 236.0
+size_flags_vertical = 3
+columns = 5
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DragSlot" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+
+[node name="DragSlot2" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 68.0
+margin_right = 132.0
+
+[node name="DragSlot3" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_right = 200.0
+
+[node name="DragSlot4" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 204.0
+margin_right = 268.0
+
+[node name="DragSlot5" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 272.0
+margin_right = 336.0
+
+[node name="DragSlot6" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_top = 68.0
+margin_bottom = 132.0
+
+[node name="DragSlot7" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 68.0
+margin_top = 68.0
+margin_right = 132.0
+margin_bottom = 132.0
+
+[node name="DragSlot8" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = 68.0
+margin_right = 200.0
+margin_bottom = 132.0
+
+[node name="DragSlot9" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 204.0
+margin_top = 68.0
+margin_right = 268.0
+margin_bottom = 132.0
+
+[node name="DragSlot10" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 272.0
+margin_top = 68.0
+margin_right = 336.0
+margin_bottom = 132.0
+
+[node name="DragSlot11" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_top = 136.0
+margin_bottom = 200.0
+
+[node name="DragSlot12" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 68.0
+margin_top = 136.0
+margin_right = 132.0
+margin_bottom = 200.0
+
+[node name="DragSlot13" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 136.0
+margin_top = 136.0
+margin_right = 200.0
+margin_bottom = 200.0
+
+[node name="DragSlot14" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 204.0
+margin_top = 136.0
+margin_right = 268.0
+margin_bottom = 200.0
+
+[node name="DragSlot15" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+margin_left = 272.0
+margin_top = 136.0
+margin_right = 336.0
+margin_bottom = 200.0
