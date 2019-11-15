@@ -22,11 +22,16 @@ func _ready() -> void:
 	var inst = wood.new()
 	inst.stack = 20
 	$Inventory/VBoxContainer/Toolbar/DragSlot6.item = inst
+	
+	inst = wood.new()
+	inst.stack = 20
+	$Inventory/VBoxContainer/Toolbar/DragSlot7.item = inst
 
 func add_log(txt: String) -> void:
 	$Log/VBoxContainer/Label.text += "\n%s" % txt
 	
 func crafting_output_removed():
+	$Log/VBoxContainer/Label.text += "\ncrafted table"
 	for i in get_tree().get_nodes_in_group("crafting"):
 		if i.item:
 			i.item.queue_free()

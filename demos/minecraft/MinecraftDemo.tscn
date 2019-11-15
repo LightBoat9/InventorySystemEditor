@@ -1,15 +1,15 @@
 [gd_scene load_steps=15 format=2]
 
-[ext_resource path="res://kenney_assets/kenney_rpg/kenney_armor.png" type="Texture" id=1]
-[ext_resource path="res://demos/minecraft/MinecraftSlot.tscn" type="PackedScene" id=2]
+[ext_resource path="res://demos/minecraft/minecraft_demo.gd" type="Script" id=1]
+[ext_resource path="res://demos/minecraft/custom_slot/MinecraftSlot.tscn" type="PackedScene" id=2]
 [ext_resource path="res://kenney_assets/kenney_rpg/kenney_helmet.png" type="Texture" id=3]
-[ext_resource path="res://kenney_assets/kenney_rpg/kenney_shield.png" type="Texture" id=4]
-[ext_resource path="res://kenney_assets/kenney_rpg/kenney_boots.png" type="Texture" id=5]
-[ext_resource path="res://kenney_assets/kenney_rpg/kenney_parchment.png" type="Texture" id=6]
-[ext_resource path="res://kenney_assets/kenney_rpg/kenney_gloves.png" type="Texture" id=7]
+[ext_resource path="res://kenney_assets/kenney_rpg/kenney_gloves.png" type="Texture" id=4]
+[ext_resource path="res://kenney_assets/kenney_rpg/kenney_armor.png" type="Texture" id=5]
+[ext_resource path="res://kenney_assets/kenney_rpg/kenney_boots.png" type="Texture" id=6]
+[ext_resource path="res://kenney_assets/kenney_fonts/Kenney Pixel Square.ttf" type="DynamicFontData" id=7]
 [ext_resource path="res://kenney_assets/kenney_rpg/right_arrow.png" type="Texture" id=8]
-[ext_resource path="res://kenney_assets/kenney_fonts/Kenney Pixel Square.ttf" type="DynamicFontData" id=9]
-[ext_resource path="res://demos/minecraft/minecraft_demo.gd" type="Script" id=10]
+[ext_resource path="res://kenney_assets/kenney_rpg/kenney_shield.png" type="Texture" id=9]
+[ext_resource path="res://kenney_assets/kenney_rpg/kenney_parchment.png" type="Texture" id=10]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 8.0
@@ -29,7 +29,7 @@ corner_radius_bottom_left = 4
 
 [sub_resource type="DynamicFont" id=2]
 size = 12
-font_data = ExtResource( 9 )
+font_data = ExtResource( 7 )
 
 [sub_resource type="StyleBoxEmpty" id=3]
 
@@ -38,7 +38,7 @@ font_data = ExtResource( 9 )
 [node name="MinecraftDemo" type="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-script = ExtResource( 10 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_lock_": true,
 "_edit_use_anchors_": false
@@ -98,7 +98,7 @@ next_groups = PoolStringArray( "main" )
 self_modulate = Color( 1, 1, 1, 0.2 )
 margin_right = 32.0
 margin_bottom = 32.0
-texture = ExtResource( 7 )
+texture = ExtResource( 4 )
 expand = true
 
 [node name="BodySlot" parent="Inventory/VBoxContainer/TopArea/ArmorSlots" instance=ExtResource( 2 )]
@@ -112,7 +112,7 @@ next_groups = PoolStringArray( "main" )
 self_modulate = Color( 1, 1, 1, 0.2 )
 margin_right = 32.0
 margin_bottom = 32.0
-texture = ExtResource( 1 )
+texture = ExtResource( 5 )
 expand = true
 
 [node name="FootSlot" parent="Inventory/VBoxContainer/TopArea/ArmorSlots" instance=ExtResource( 2 )]
@@ -126,7 +126,7 @@ next_groups = PoolStringArray( "main" )
 self_modulate = Color( 1, 1, 1, 0.2 )
 margin_right = 32.0
 margin_bottom = 32.0
-texture = ExtResource( 5 )
+texture = ExtResource( 6 )
 expand = true
 
 [node name="ColorRect" type="ColorRect" parent="Inventory/VBoxContainer/TopArea"]
@@ -230,7 +230,7 @@ next_groups = PoolStringArray( "main" )
 self_modulate = Color( 1, 1, 1, 0.392157 )
 margin_right = 32.0
 margin_bottom = 32.0
-texture = ExtResource( 4 )
+texture = ExtResource( 9 )
 expand = true
 
 [node name="Panel" type="Panel" parent="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer2"]
@@ -248,7 +248,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 size_flags_horizontal = 4
 size_flags_stretch_ratio = 2.0
-texture_normal = ExtResource( 6 )
+texture_normal = ExtResource( 10 )
 expand = true
 __meta__ = {
 "_edit_use_anchors_": false
@@ -548,10 +548,13 @@ This demo aims to replicate the inventory from the game Minecraft.
 autowrap = true
 
 [node name="Log" type="ScrollContainer" parent="."]
-margin_left = 776.0
-margin_top = 24.0
-margin_right = 1000.0
-margin_bottom = 576.0
+anchor_left = 0.75
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 16.0
+margin_top = 16.0
+margin_right = -16.0
+margin_bottom = -16.0
 custom_styles/bg = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -561,7 +564,7 @@ __meta__ = {
 margin_left = 8.0
 margin_top = 8.0
 margin_right = 216.0
-margin_bottom = 544.0
+margin_bottom = 560.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -582,7 +585,7 @@ size_flags_horizontal = 3
 [node name="Label" type="Label" parent="Log/VBoxContainer"]
 margin_top = 26.0
 margin_right = 208.0
-margin_bottom = 536.0
+margin_bottom = 552.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_colors/font_color = Color( 0, 0, 0, 1 )

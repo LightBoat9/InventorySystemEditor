@@ -25,46 +25,40 @@ var _relative_pos: Vector2 = Vector2()
 var _drag_texture_rect: TextureRect = TextureRect.new()
 
 var _drag_item: Item = null setget set_drag_item
+
+func _enter_tree():
+	connect("gui_input", self, "slot_gui_input")
 	
-func _gui_input(event: InputEvent) -> void:
+func _exit_tree():
+	disconnect("gui_input", self, "slot_gui_input")
+	
+func slot_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
-		if not event.is_echo():
-			if item != null:
-				if event.button_index == BUTTON_LEFT and event.pressed:
-					if event.shift and next_groups.size() > 0:
-						var next_slot = _find_valid_slot(item, next_groups)
-						# Continue as long as slots are valid
-						while next_slot:
-							move_item_to_slot(next_slot)
-							# If set to not repeat only loop once
-							if not repeat_group_move:
-								break
-							# If the item is fully moved we're done
-							if not item:
-								break
-							# Grab the next slot
-							next_slot = _find_valid_slot(item, next_groups)
-					else:
-						self._drag_item = item
-						self.item = null
-						self._is_dragging = true
-				elif event.button_index == BUTTON_RIGHT and event.pressed:
-					if self.item.stack == 1:
-						self._drag_item = item
-						self.item = null
-						self._is_dragging = true
-					else:
-						self._drag_item = item.split_duplicate()
-						self._drag_item.stack = int(item.stack / 2)
-						self.item.stack -= _drag_item.stack
-						self._is_dragging = true
+		if item != null:
+			if event.button_index == BUTTON_LEFT and event.pressed:
+				if event.shift and next_groups.size() > 0:
+					quick_move_item()
+				else:
+					self._drag_item = item
+					self.item = null
+					self._is_dragging = true
+			elif event.button_index == BUTTON_RIGHT and event.pressed:
+				if self.item.stack == 1:
+					self._drag_item = item
+					self.item = null
+					self._is_dragging = true
+				else:
+					self._drag_item = item.split_duplicate()
+					self._drag_item.stack = int(item.stack / 2)
+					self.item.stack -= _drag_item.stack
+					self._is_dragging = true
 				
 func _input(event: InputEvent) -> void:
 	if _is_dragging:
 		if event is InputEventMouseButton:
 			if not event.is_echo():
 				if event.pressed:
-					if event.button_index == BUTTON_LEFT:
+					if event.button_index == BUTTON_LEFT and not event.doubleclick:
 						_drop()
 						# Prevent immediate picking up of the item
 						get_tree().set_input_as_handled()
@@ -99,7 +93,7 @@ func _drop():
 		
 	for slot in get_tree().get_nodes_in_group("inventory_slots"):
 		if slot.get_global_rect().has_point(get_global_mouse_position()):
-			move_dragging_item_to_slot(slot)
+			move_drag_item_to_slot(slot)
 			return
 		
 	# If it gets this far then no slots were clicked and item must return
@@ -152,12 +146,11 @@ func _drop_single() -> void:
 					break
 						
 func _find_valid_slot(for_item: Item, groups:PoolStringArray) -> PanelContainer:
-	if groups.size() > 0:
-		for gr in groups:
-			for slot in get_tree().get_nodes_in_group(gr):
-				if slot.confine_categories.size() == 0 or item.has_category_overlap(slot.confine_categories):
-					if not slot.item or (slot.item.item_name == for_item.item_name and not slot.item.is_full()):
-						return slot
+	for gr in groups:
+		for slot in get_tree().get_nodes_in_group(gr):
+			if slot.confine_categories.size() == 0 or item.has_category_overlap(slot.confine_categories):
+				if not slot.item or (slot.item.item_name == for_item.item_name and not slot.item.is_full()):
+					return slot
 	
 	return null
 	
@@ -190,7 +183,7 @@ func move_item_to_slot(slot) -> void:
 #		# Both slots must support the items that will swap
 #		if confine_categories.size() == 0 or slot.item.has_category_overlap(confine_categories):
 		# If the full item stack can be added
-		if item.stack + slot.item.stack < slot.item.max_stack:
+		if item.stack + slot.item.stack <= slot.item.max_stack:
 			item.queue_free()
 			slot.item.stack += item.stack
 			self.item = null
@@ -205,7 +198,7 @@ func move_item_to_slot(slot) -> void:
 		slot.item = item
 		self.item = null
 		
-func move_dragging_item_to_slot(slot) -> void:
+func move_drag_item_to_slot(slot) -> void:
 	if slot.confine_categories.size() == 0 or _drag_item.has_category_overlap(slot.confine_categories):
 		# If the other slot also has item they must swap
 		if slot.item:
@@ -222,7 +215,7 @@ func move_dragging_item_to_slot(slot) -> void:
 					# Otherwise either the stack is full or only partial can be added
 					else:
 						# If it is full
-						if slot.item.stack == slot.item.max_stack:
+						if slot.item.stack >= slot.item.max_stack:
 							var temp = slot.item
 							slot.item = _drag_item
 							slot._drag_item = temp
@@ -259,3 +252,49 @@ func move_dragging_item_to_slot(slot) -> void:
 			slot.item = _drag_item
 			self._is_dragging = false
 			_drag_item = null
+			
+func move_item_to_drag_item(slot) -> void:
+	if not item or not slot._drag_item:
+		return
+		
+	if slot.confine_categories.size() == 0 or item.has_category_overlap(slot.confine_categories):
+		# Both slots must support the items that will swap
+		if confine_categories.size() == 0 or slot._drag_item.has_category_overlap(confine_categories):
+			if item.item_name == slot._drag_item.item_name:
+				if item.stack + slot._drag_item.stack <= slot._drag_item.max_stack:
+					self.item.queue_free()
+					slot._drag_item.stack += self.item.stack
+					self.item = null
+				# Otherwise either the stack is full or only partial can be added
+				else:
+					# Add partial
+					if slot._drag_item.stack < slot._drag_item.max_stack:
+						var diff: int = slot._drag_item.max_stack - slot._drag_item.stack
+						slot._drag_item.stack += diff
+						self.item.stack -= diff
+						
+func quick_move_item() -> void:
+	var next_slot = _find_valid_slot(item, next_groups)
+	# Continue as long as slots are valid
+	while next_slot:
+		move_item_to_slot(next_slot)
+		# If set to not repeat only loop once
+		if not repeat_group_move:
+			break
+		# If the item is fully moved we're done
+		if not item:
+			break
+		# Grab the next slot
+		next_slot = _find_valid_slot(item, next_groups)
+		
+func collect_items_to_drag(groups: PoolStringArray) -> void:
+	for gr in groups:
+		for slot in get_tree().get_nodes_in_group(gr):
+			if slot != self and slot.item and _drag_item and slot.item.item_name == _drag_item.item_name and not slot.item.is_full():
+				slot.move_item_to_drag_item(self)
+				
+func collect_items(groups: PoolStringArray) -> void:
+	for gr in groups:
+		for slot in get_tree().get_nodes_in_group(gr):
+			if slot != self and slot.item and item and slot.item.item_name == item.item_name and not slot.item.is_full():
+				slot.move_item_to_slot(self)
