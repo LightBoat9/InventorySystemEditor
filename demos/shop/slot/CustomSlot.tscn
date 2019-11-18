@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://demos/shop/slot_panel.tres" type="StyleBox" id=1]
-[ext_resource path="res://demos/shop/slot/slot.gd" type="Script" id=2]
+[ext_resource path="res://demos/shop/slot/custom_slot.gd" type="Script" id=2]
 [ext_resource path="res://demos/shop/slot/CustomTooltip.tscn" type="PackedScene" id=3]
 
 [node name="DragSlot" type="PanelContainer"]
@@ -15,6 +15,9 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+shift_quick_move = false
+drag_disabled = true
+drag_origin = 1
 
 [node name="Layer" type="Node2D" parent="."]
 visible = false

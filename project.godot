@@ -12,16 +12,22 @@ _global_script_classes=[ {
 "base": "TextureRect",
 "class": "Item",
 "language": "GDScript",
-"path": "res://addons/inventory/custom_nodes/item.gd"
+"path": "res://addons/inventory/custom_nodes/base/item.gd"
 }, {
 "base": "Item",
 "class": "NumberedItem",
 "language": "GDScript",
-"path": "res://addons/inventory/custom_nodes/numbered_item.gd"
+"path": "res://addons/inventory/custom_nodes/drag/numbered_item.gd"
+}, {
+"base": "TextureRect",
+"class": "SpaceItem",
+"language": "GDScript",
+"path": "res://addons/inventory/custom_nodes/space/space_item.gd"
 } ]
 _global_script_class_icons={
 "Item": "",
-"NumberedItem": ""
+"NumberedItem": "",
+"SpaceItem": ""
 }
 
 [application]

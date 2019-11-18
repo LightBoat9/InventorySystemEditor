@@ -1,7 +1,8 @@
 [gd_scene load_steps=5 format=2]
 
-[ext_resource path="res://addons/inventory/custom_nodes/drag_slot.gd" type="Script" id=1]
+[ext_resource path="res://addons/inventory/custom_nodes/drag/drag_slot.gd" type="Script" id=1]
 [ext_resource path="res://kenney_assets/kenney_fonts/Kenney Pixel Square.ttf" type="DynamicFontData" id=2]
+
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.498039, 0.498039, 0.498039, 1 )

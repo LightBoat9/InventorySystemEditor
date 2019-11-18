@@ -13,7 +13,7 @@ var categories: PoolStringArray = PoolStringArray()
 var stack: int = 1 setget set_stack
 var max_stack: int = 99 setget set_stack
 
-func _init():
+func _enter_tree():
 	expand = true
 	mouse_filter = MOUSE_FILTER_IGNORE
 

@@ -56,3 +56,43 @@ func set_slot_group(to: String) -> void:
 
 	if slot_group and not is_in_group(slot_group):
 		add_to_group(slot_group)
+		
+func move_item_to_slot(slot) -> void:
+	""" Move this slot's item to the other slot. 
+	
+		If the other slot already contains an item they will.
+			a) Merge together if they are the same item
+			b) Swap places if they are different
+		
+		Otherwise the item will be moved to the other slot
+	"""
+	# Assume that since this item is in this slot it matches the category
+	# If the slot to move to has an item
+	if slot.item:
+#		TODO: Add back item swapping and fix infinite loop from shift clicking
+#		# Both slots must support the items that will swap
+#		if confine_categories.size() == 0 or slot.item.has_category_overlap(confine_categories):
+		# If the full item stack can be added
+		if item.stack + slot.item.stack <= slot.item.max_stack:
+			item.queue_free()
+			slot.item.stack += item.stack
+			item_moved(item, slot)
+			self.item = null
+		# Otherwise either the stack is full or only partial can be added
+		else:
+			# Add partial
+			if slot.item.stack != slot.item.max_stack:
+				var diff: int = slot.item.max_stack - slot.item.stack
+				slot.item.stack += diff
+				self.item.stack -= diff
+				item_moved(item, slot)
+	else:
+		slot.item = item
+		item_moved(item, slot)
+		self.item = null
+		
+func can_move_item(item, slot) -> bool:
+	return true
+	
+func item_moved(item, slot) -> void:
+	pass

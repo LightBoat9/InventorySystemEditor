@@ -19,6 +19,7 @@ script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+block_doubleclick = true
 
 [node name="Label" type="Label" parent="."]
 visible = false

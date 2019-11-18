@@ -1,11 +1,10 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://demos/shop/slot/Slot.tscn" type="PackedScene" id=1]
+[ext_resource path="res://demos/shop/slot/CustomSlot.tscn" type="PackedScene" id=1]
 [ext_resource path="res://demos/shop/shop.gd" type="Script" id=2]
 [ext_resource path="res://kenney_assets/kenney_rpg/face-happy.png" type="Texture" id=4]
 [ext_resource path="res://kenney_assets/kenney_fonts/Kenney Pixel Square.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://demos/shop/coin/CoinContainer.tscn" type="PackedScene" id=6]
-[ext_resource path="res://demos/shop/Slot/slot.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 16.0
@@ -59,6 +58,7 @@ __meta__ = {
 }
 
 [node name="CoinContainer" parent="Inventory/VBoxContainer" instance=ExtResource( 6 )]
+amount = 10
 
 [node name="Inventory" type="GridContainer" parent="Inventory/VBoxContainer"]
 margin_top = 36.0
@@ -69,109 +69,109 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="DragSlot" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot2" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot2" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 68.0
 margin_right = 132.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot3" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot3" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_right = 200.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot4" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot4" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 204.0
 margin_right = 268.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot5" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot5" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 272.0
 margin_right = 336.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot6" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot6" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_top = 68.0
 margin_bottom = 132.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot7" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot7" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 68.0
 margin_top = 68.0
 margin_right = 132.0
 margin_bottom = 132.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot8" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot8" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_top = 68.0
 margin_right = 200.0
 margin_bottom = 132.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot9" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot9" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 204.0
 margin_top = 68.0
 margin_right = 268.0
 margin_bottom = 132.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot10" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot10" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 272.0
 margin_top = 68.0
 margin_right = 336.0
 margin_bottom = 132.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot11" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot11" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_top = 136.0
 margin_bottom = 200.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot12" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot12" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 68.0
 margin_top = 136.0
 margin_right = 132.0
 margin_bottom = 200.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot13" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot13" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_top = 136.0
 margin_right = 200.0
 margin_bottom = 200.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot14" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot14" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 204.0
 margin_top = 136.0
 margin_right = 268.0
 margin_bottom = 200.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
-[node name="DragSlot15" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 7 )]
+[node name="DragSlot15" parent="Inventory/VBoxContainer/Inventory" instance=ExtResource( 1 )]
 margin_left = 272.0
 margin_top = 136.0
 margin_right = 336.0
 margin_bottom = 200.0
 slot_group = "main"
-next_groups = PoolStringArray( "main" )
+next_groups = PoolStringArray( "shop" )
 
 [node name="Shop" type="PanelContainer" parent="."]
 margin_left = 529.158
@@ -209,8 +209,9 @@ custom_fonts/font = SubResource( 2 )
 text = "Take your time."
 
 [node name="CoinContainer" parent="Shop/VBoxContainer/HBoxContainer" instance=ExtResource( 6 )]
-margin_left = 288.0
+margin_left = 268.0
 size_flags_horizontal = 10
+amount = 100
 
 [node name="Shop" type="GridContainer" parent="Shop/VBoxContainer"]
 margin_top = 36.0
@@ -223,75 +224,105 @@ __meta__ = {
 }
 
 [node name="DragSlot" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot2" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 68.0
 margin_right = 132.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot3" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_right = 200.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot4" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 204.0
 margin_right = 268.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot5" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 272.0
 margin_right = 336.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot6" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_top = 68.0
 margin_bottom = 132.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot7" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 68.0
 margin_top = 68.0
 margin_right = 132.0
 margin_bottom = 132.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot8" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_top = 68.0
 margin_right = 200.0
 margin_bottom = 132.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot9" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 204.0
 margin_top = 68.0
 margin_right = 268.0
 margin_bottom = 132.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot10" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 272.0
 margin_top = 68.0
 margin_right = 336.0
 margin_bottom = 132.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot11" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_top = 136.0
 margin_bottom = 200.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot12" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 68.0
 margin_top = 136.0
 margin_right = 132.0
 margin_bottom = 200.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot13" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 136.0
 margin_top = 136.0
 margin_right = 200.0
 margin_bottom = 200.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot14" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 204.0
 margin_top = 136.0
 margin_right = 268.0
 margin_bottom = 200.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
 
 [node name="DragSlot15" parent="Shop/VBoxContainer/Shop" instance=ExtResource( 1 )]
 margin_left = 272.0
 margin_top = 136.0
 margin_right = 336.0
 margin_bottom = 200.0
+slot_group = "shop"
+next_groups = PoolStringArray( "main" )
