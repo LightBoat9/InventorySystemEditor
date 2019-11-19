@@ -1,5 +1,5 @@
-extends Item
-class_name NumberedItem
+extends SpaceItem
+class_name SpaceNumberedItem
 
 var _number_label: Label = Label.new()
 

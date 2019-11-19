@@ -1,4 +1,4 @@
-extends "res://addons/inventory/custom_nodes/drag_slot.gd"
+extends "res://addons/inventory/custom_nodes/drag/drag_slot.gd"
 
 onready var tooltip_layer = $Layer
 

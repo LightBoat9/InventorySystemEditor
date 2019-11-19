@@ -9,25 +9,31 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Item",
+"class": "DragNumberedItem",
+"language": "GDScript",
+"path": "res://addons/inventory/custom_nodes/drag/drag_numbered_item.gd"
+}, {
 "base": "TextureRect",
 "class": "Item",
 "language": "GDScript",
 "path": "res://addons/inventory/custom_nodes/base/item.gd"
 }, {
-"base": "Item",
-"class": "NumberedItem",
-"language": "GDScript",
-"path": "res://addons/inventory/custom_nodes/drag/numbered_item.gd"
-}, {
 "base": "TextureRect",
 "class": "SpaceItem",
 "language": "GDScript",
 "path": "res://addons/inventory/custom_nodes/space/space_item.gd"
+}, {
+"base": "SpaceItem",
+"class": "SpaceNumberedItem",
+"language": "GDScript",
+"path": "res://addons/inventory/custom_nodes/space/space_numbered_item.gd"
 } ]
 _global_script_class_icons={
+"DragNumberedItem": "",
 "Item": "",
-"NumberedItem": "",
-"SpaceItem": ""
+"SpaceItem": "",
+"SpaceNumberedItem": ""
 }
 
 [application]

@@ -590,21 +590,3 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 autowrap = true
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/ArmorSlots/HeadSlot" to="." method="add_log" binds= [ "helmet equipped" ]]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/ArmorSlots/HeadSlot" to="." method="add_log" binds= [ "helmet unequpped" ]]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/ArmorSlots/HandSlot" to="." method="add_log" binds= [ "gloves equipped" ]]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/ArmorSlots/HandSlot" to="." method="add_log" binds= [ "gloves unequipped" ]]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/ArmorSlots/BodySlot" to="." method="add_log" binds= [ "armor equipped" ]]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/ArmorSlots/BodySlot" to="." method="add_log" binds= [ "armor unequipped" ]]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/ArmorSlots/FootSlot" to="." method="add_log" binds= [ "boots equipped" ]]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/ArmorSlots/FootSlot" to="." method="add_log" binds= [ "boots unequipped" ]]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot" to="." method="craft_area_changed"]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot" to="." method="craft_area_changed"]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot2" to="." method="craft_area_changed"]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot2" to="." method="craft_area_changed"]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot3" to="." method="craft_area_changed"]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot3" to="." method="craft_area_changed"]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot4" to="." method="craft_area_changed"]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer/VBoxContainer/HBoxContainer/CraftingArea/DragSlot4" to="." method="craft_area_changed"]
-[connection signal="item_added" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer2/DragSlot" to="." method="add_log" binds= [ "shield equipped" ]]
-[connection signal="item_removed" from="Inventory/VBoxContainer/TopArea/CraftingArea/HBoxContainer2/DragSlot" to="." method="add_log" binds= [ "shield unequipped" ]]

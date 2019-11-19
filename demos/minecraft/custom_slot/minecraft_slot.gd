@@ -1,4 +1,4 @@
-extends "res://addons/inventory/custom_nodes/drag_slot.gd"
+extends "res://addons/inventory/custom_nodes/drag/drag_slot.gd"
 
 func slot_gui_input(event) -> void:
 	if event is InputEventMouseButton:

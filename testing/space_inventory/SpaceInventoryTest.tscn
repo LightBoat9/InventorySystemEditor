@@ -1,15 +1,11 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://addons/inventory/custom_nodes/space/space_inventory.gd" type="Script" id=1]
+[ext_resource path="res://testing/slot-texture.png" type="Texture" id=2]
 [ext_resource path="res://testing/space_inventory/space_inventory_test.gd" type="Script" id=3]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.164706, 0.176471, 0.219608, 1 )
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color( 0.372549, 0.376471, 0.666667, 1 )
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 2 )
 
 [node name="SpaceInventoryTest" type="Control"]
 anchor_right = 1.0
@@ -24,10 +20,10 @@ __meta__ = {
 }
 
 [node name="SpaceInventory" type="Container" parent="."]
-margin_left = 215.0
-margin_top = 93.0
-margin_right = 727.0
-margin_bottom = 349.0
+margin_left = 154.984
+margin_top = 79.282
+margin_right = 666.984
+margin_bottom = 335.282
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

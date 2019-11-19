@@ -1,11 +1,11 @@
 # This slot adds drag and drop functionality.
-extends "res://addons/inventory/custom_nodes/drag/slot.gd"
+extends "res://addons/inventory/custom_nodes/base/slot.gd"
 
 signal drag_started
 signal drag_ended
 
 enum DragOrigin {
-	CENTER, RELATIVE, CUSTOM
+	CENTER, RELATIVE, TOPLEFT
 }
 
 # warning-ignore:unused_class_variable
@@ -47,8 +47,9 @@ func slot_gui_input(event: InputEvent) -> void:
 					self._drag_item = item
 					self.item = null
 				else:
+					_relative_pos = item.get_local_mouse_position()
 					self._drag_item = item.split_duplicate()
-					self._drag_item.stack = int(item.stack / 2)
+					_drag_item.stack = int(item.stack / 2)
 					self.item.stack -= _drag_item.stack
 				
 func _input(event: InputEvent) -> void:
@@ -68,12 +69,12 @@ func _input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if _drag_item:
 		match drag_origin:
-			DragOrigin.CUSTOM:
-				_drag_item.rect_global_position = get_global_mouse_position() - custom_drag_origin
+			DragOrigin.TOPLEFT:
+				_drag_item.rect_global_position = get_global_mouse_position() + custom_drag_origin
 			DragOrigin.CENTER:                                                    
-				_drag_item.rect_global_position = get_global_mouse_position() - _drag_item.rect_size / 2
+				_drag_item.rect_global_position = get_global_mouse_position() - _drag_item.rect_size / 2 + custom_drag_origin
 			DragOrigin.RELATIVE:
-				_drag_item.rect_global_position = get_global_mouse_position() - _relative_pos
+				_drag_item.rect_global_position = get_global_mouse_position() - _relative_pos + custom_drag_origin
 		
 func _drop():
 	if not _drag_item:
@@ -99,7 +100,7 @@ func _drop():
 			else:
 				var diff: int = item.max_stack - item.stack
 				self.item.stack += diff
-				self._drag_item.stack -= diff
+				_drag_item.stack -= diff
 		# Otherwise cannot return because item and _drag_item
 		# are different types
 		
@@ -182,7 +183,7 @@ func move_drag_item_to_slot(slot) -> void:
 					# Otherwise either the stack is full or only partial can be added
 					else:
 						# If it is full
-						if slot.item.stack >= slot.item.max_stack:
+						if slot.item.is_full():
 							var temp = slot.item
 							slot.item = _drag_item
 							slot._drag_item = temp
@@ -194,7 +195,7 @@ func move_drag_item_to_slot(slot) -> void:
 						else:
 							var diff: int = slot.item.max_stack - slot.item.stack
 							slot.item.stack += diff
-							self._drag_item.stack -= diff
+							_drag_item.stack -= diff
 							item_moved(_drag_item, slot)
 				# If moving to a slot with a different item
 				else:
@@ -217,7 +218,7 @@ func move_drag_item_to_slot(slot) -> void:
 		else:
 			slot.item = _drag_item
 			item_moved(_drag_item, slot)
-			_drag_item = null
+			self._drag_item = null
 			
 func move_item_to_drag_item(slot) -> void:
 	if not item or not slot._drag_item:

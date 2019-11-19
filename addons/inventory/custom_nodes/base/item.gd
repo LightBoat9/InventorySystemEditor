@@ -11,9 +11,9 @@ var item_name: String = "item_name"
 var categories: PoolStringArray = PoolStringArray()
 
 var stack: int = 1 setget set_stack
-var max_stack: int = 99 setget set_stack
+var max_stack: int = 1 setget set_max_stack
 
-func _enter_tree():
+func _init():
 	expand = true
 	mouse_filter = MOUSE_FILTER_IGNORE
 
