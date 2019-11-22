@@ -1,3 +1,4 @@
+tool
 extends SpaceItem
 
 func _init().():

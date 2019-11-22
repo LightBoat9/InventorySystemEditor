@@ -65,27 +65,22 @@ func _grab_relative_position(of: SpaceItem):
 	var local_rect = Rect2(Vector2(), of.rect_size)
 	
 	if local_rect.has_point(of.get_local_mouse_position()):
-		_relative_pos = of.get_local_mouse_position()
+		_relative_pos = get_global_mouse_position() - of.rect_global_position#of.get_local_mouse_position()
 	else:
 		var mouse = of.get_local_mouse_position()
 		_relative_pos = Vector2(clamp(mouse.x, 0, of.rect_size.x), clamp(mouse.y, 0, of.rect_size.y))
 					
 func _drop(item) -> void:
 	if item:
-		if item.item_name == drag_item.item_name:
+		if item.item_name == drag_item.item_name and not item.is_full():
 			if drag_item.stack + item.stack <= item.max_stack:
 				drag_item.queue_free()
 				item.stack += drag_item.stack
 				self.drag_item = null
 			else:
-				if item.is_full():
-					var temp = item.stack
-					item.stack = drag_item.stack
-					drag_item.stack = temp
-				else:
-					var diff: int = item.max_stack - item.stack
-					item.stack += diff
-					drag_item.stack -= diff
+				var diff: int = item.max_stack - item.stack
+				item.stack += diff
+				drag_item.stack -= diff
 		else:
 			var drop_pos = get_hovered_slot()
 			var overlaps = get_overlap_items(drop_pos, drag_item.span)
@@ -131,7 +126,6 @@ func _drop_single(item) -> void:
 		
 func _enter_tree():
 	_create_map()
-	print(map)
 	connect("gui_input", self, "slot_gui_input")
 	
 func _exit_tree():
@@ -141,11 +135,11 @@ func _process(delta: float) -> void:
 	if drag_item:
 		match drag_origin:
 			DragOrigin.TOPLEFT:
-				drag_item.rect_global_position = get_global_mouse_position() - custom_drag_origin
+				drag_item.rect_global_position = get_global_mouse_position() - custom_drag_origin + custom_drag_origin
 			DragOrigin.CENTER:                                                    
-				drag_item.rect_global_position = get_global_mouse_position() - drag_item.rect_size / 2
+				drag_item.rect_global_position = get_global_mouse_position() - drag_item.rect_size / 2 + custom_drag_origin
 			DragOrigin.RELATIVE:
-				drag_item.rect_global_position = get_global_mouse_position() - _relative_pos
+				drag_item.rect_global_position = get_global_mouse_position() - _relative_pos + custom_drag_origin
 				
 	update()
 
@@ -231,14 +225,18 @@ func get_hovered_slot() -> Vector2:
 	if drag_item:
 		match drag_origin:
 			DragOrigin.TOPLEFT:
-				loc -= custom_drag_origin
+				loc -= custom_drag_origin + custom_drag_origin
 			DragOrigin.CENTER:                                                    
-				loc -= drag_item.rect_size / 2
+				loc -= drag_item.rect_size / 2 + custom_drag_origin
 			DragOrigin.RELATIVE:
-				loc -= _relative_pos
+				loc -= _relative_pos + custom_drag_origin
 		
 	var min_size = Vector2(0, 0)
-	var max_size = Vector2(slot_size.x * grid_size.x, slot_size.y * grid_size.y) - Vector2(slot_size.x * drag_item.span.x, slot_size.y * drag_item.span.y)
+	var max_size = (
+		Vector2(slot_size.x * grid_size.x, slot_size.y * grid_size.y) - 
+		Vector2(
+			slot_size.x * drag_item.span.x, 
+			slot_size.y * drag_item.span.y))
 	
 	var loc_clamp = Vector2(clamp(loc.x, min_size.x, max_size.x), clamp(loc.y, min_size.y, max_size.y))
 	return (loc_clamp / slot_size).round()
